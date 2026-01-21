@@ -1,0 +1,5602 @@
+[
+  {
+    "name": "Carlos Alcaraz",
+    "rank_single": 1,
+    "country": "ESP",
+    "plays_hand": "U",
+    "points": 11700
+  },
+  {
+    "name": "Jannik Sinner",
+    "rank_single": 2,
+    "country": "ITA",
+    "plays_hand": "U",
+    "points": 9550
+  },
+  {
+    "name": "Lorenzo Musetti",
+    "rank_single": 3,
+    "country": "ITA",
+    "plays_hand": "U",
+    "points": 4055
+  },
+  {
+    "name": "Novak Djokovi\u0107",
+    "rank_single": 4,
+    "country": "SRB",
+    "plays_hand": "U",
+    "points": 4030
+  },
+  {
+    "name": "Alexander Zverev",
+    "rank_single": 5,
+    "country": "GER",
+    "plays_hand": "U",
+    "points": 3855
+  },
+  {
+    "name": "Taylor Fritz",
+    "rank_single": 6,
+    "country": "USA",
+    "plays_hand": "U",
+    "points": 3790
+  },
+  {
+    "name": "Alex de Minaur",
+    "rank_single": 7,
+    "country": "AUS",
+    "plays_hand": "U",
+    "points": 3730
+  },
+  {
+    "name": "F\u00e9lix Auger-Aliassime",
+    "rank_single": 8,
+    "country": "CAN",
+    "plays_hand": "U",
+    "points": 3725
+  },
+  {
+    "name": "Ben Shelton",
+    "rank_single": 9,
+    "country": "USA",
+    "plays_hand": "U",
+    "points": 3250
+  },
+  {
+    "name": "Alexander Bublik",
+    "rank_single": 10,
+    "country": "KAZ",
+    "plays_hand": "U",
+    "points": 3085
+  },
+  {
+    "name": "Daniil Medvedev",
+    "rank_single": 11,
+    "country": "RUS",
+    "plays_hand": "U",
+    "points": 2910
+  },
+  {
+    "name": "Casper Ruud",
+    "rank_single": 12,
+    "country": "NOR",
+    "plays_hand": "U",
+    "points": 2795
+  },
+  {
+    "name": "Jack Draper",
+    "rank_single": 13,
+    "country": "GBR",
+    "plays_hand": "U",
+    "points": 2790
+  },
+  {
+    "name": "Andrey Rublev",
+    "rank_single": 14,
+    "country": "RUS",
+    "plays_hand": "U",
+    "points": 2550
+  },
+  {
+    "name": "Alejandro Davidovich Fokina",
+    "rank_single": 15,
+    "country": "ESP",
+    "plays_hand": "U",
+    "points": 2485
+  },
+  {
+    "name": "Holger Rune",
+    "rank_single": 16,
+    "country": "DEN",
+    "plays_hand": "U",
+    "points": 2380
+  },
+  {
+    "name": "Jakub Men\u0161\u00edk",
+    "rank_single": 17,
+    "country": "CZE",
+    "plays_hand": "U",
+    "points": 2295
+  },
+  {
+    "name": "Karen Khachanov",
+    "rank_single": 18,
+    "country": "RUS",
+    "plays_hand": "U",
+    "points": 2270
+  },
+  {
+    "name": "Francisco Cer\u00fandolo",
+    "rank_single": 19,
+    "country": "ARG",
+    "plays_hand": "U",
+    "points": 1985
+  },
+  {
+    "name": "Flavio Cobolli",
+    "rank_single": 20,
+    "country": "ITA",
+    "plays_hand": "U",
+    "points": 1955
+  },
+  {
+    "name": "Ji\u0159\u00ed Lehe\u010dka",
+    "rank_single": 21,
+    "country": "CZE",
+    "plays_hand": "U",
+    "points": 1900
+  },
+  {
+    "name": "Tommy Paul",
+    "rank_single": 22,
+    "country": "USA",
+    "plays_hand": "U",
+    "points": 1700
+  },
+  {
+    "name": "Denis Shapovalov",
+    "rank_single": 23,
+    "country": "CAN",
+    "plays_hand": "U",
+    "points": 1650
+  },
+  {
+    "name": "Luciano Darderi",
+    "rank_single": 24,
+    "country": "ITA",
+    "plays_hand": "U",
+    "points": 1639
+  },
+  {
+    "name": "Cameron Norrie",
+    "rank_single": 25,
+    "country": "GBR",
+    "plays_hand": "U",
+    "points": 1593
+  },
+  {
+    "name": "Tallon Griekspoor",
+    "rank_single": 26,
+    "country": "NED",
+    "plays_hand": "U",
+    "points": 1565
+  },
+  {
+    "name": "Valentin Vacherot",
+    "rank_single": 27,
+    "country": "MON",
+    "plays_hand": "U",
+    "points": 1561
+  },
+  {
+    "name": "Tom\u00e1\u0161 Mach\u00e1\u010d",
+    "rank_single": 28,
+    "country": "CZE",
+    "plays_hand": "U",
+    "points": 1560
+  },
+  {
+    "name": "Arthur Rinderknech",
+    "rank_single": 29,
+    "country": "FRA",
+    "plays_hand": "U",
+    "points": 1542
+  },
+  {
+    "name": "Brandon Nakashima",
+    "rank_single": 30,
+    "country": "USA",
+    "plays_hand": "U",
+    "points": 1535
+  },
+  {
+    "name": "Frances Tiafoe",
+    "rank_single": 31,
+    "country": "USA",
+    "plays_hand": "U",
+    "points": 1500
+  },
+  {
+    "name": "Stefanos Tsitsipas",
+    "rank_single": 32,
+    "country": "GRE",
+    "plays_hand": "U",
+    "points": 1495
+  },
+  {
+    "name": "Jo\u00e3o Fonseca",
+    "rank_single": 33,
+    "country": "BRA",
+    "plays_hand": "U",
+    "points": 1440
+  },
+  {
+    "name": "Sebasti\u00e1n B\u00e1ez",
+    "rank_single": 34,
+    "country": "ARG",
+    "plays_hand": "U",
+    "points": 1430
+  },
+  {
+    "name": "Jaume Munar",
+    "rank_single": 35,
+    "country": "ESP",
+    "plays_hand": "U",
+    "points": 1375
+  },
+  {
+    "name": "Learner Tien",
+    "rank_single": 36,
+    "country": "USA",
+    "plays_hand": "U",
+    "points": 1360
+  },
+  {
+    "name": "Corentin Moutet",
+    "rank_single": 37,
+    "country": "FRA",
+    "plays_hand": "U",
+    "points": 1333
+  },
+  {
+    "name": "Ugo Humbert",
+    "rank_single": 38,
+    "country": "FRA",
+    "plays_hand": "U",
+    "points": 1320
+  },
+  {
+    "name": "Gabriel Diallo",
+    "rank_single": 39,
+    "country": "CAN",
+    "plays_hand": "U",
+    "points": 1175
+  },
+  {
+    "name": "Zizou Bergs",
+    "rank_single": 40,
+    "country": "BEL",
+    "plays_hand": "U",
+    "points": 1170
+  },
+  {
+    "name": "Alex Michelsen",
+    "rank_single": 41,
+    "country": "USA",
+    "plays_hand": "U",
+    "points": 1160
+  },
+  {
+    "name": "Arthur Fils",
+    "rank_single": 42,
+    "country": "FRA",
+    "plays_hand": "U",
+    "points": 1110
+  },
+  {
+    "name": "Grigor Dimitrov",
+    "rank_single": 43,
+    "country": "BUL",
+    "plays_hand": "U",
+    "points": 1105
+  },
+  {
+    "name": "Daniel Altmaier",
+    "rank_single": 44,
+    "country": "GER",
+    "plays_hand": "U",
+    "points": 1083
+  },
+  {
+    "name": "Jenson Brooksby",
+    "rank_single": 45,
+    "country": "USA",
+    "plays_hand": "U",
+    "points": 1042
+  },
+  {
+    "name": "Camilo Ugo Carabelli",
+    "rank_single": 46,
+    "country": "ARG",
+    "plays_hand": "U",
+    "points": 1028
+  },
+  {
+    "name": "Nuno Borges",
+    "rank_single": 47,
+    "country": "POR",
+    "plays_hand": "U",
+    "points": 1020
+  },
+  {
+    "name": "Alexandre M\u00fcller",
+    "rank_single": 48,
+    "country": "FRA",
+    "plays_hand": "U",
+    "points": 1020
+  },
+  {
+    "name": "F\u00e1bi\u00e1n Marozs\u00e1n",
+    "rank_single": 49,
+    "country": "HUN",
+    "plays_hand": "U",
+    "points": 1015
+  },
+  {
+    "name": "M\u00e1rton Fucsovics",
+    "rank_single": 50,
+    "country": "HUN",
+    "plays_hand": "U",
+    "points": 1009
+  },
+  {
+    "name": "Alexei Popyrin",
+    "rank_single": 51,
+    "country": "AUS",
+    "plays_hand": "U",
+    "points": 1000
+  },
+  {
+    "name": "Hubert Hurkacz",
+    "rank_single": 52,
+    "country": "POL",
+    "plays_hand": "U",
+    "points": 965
+  },
+  {
+    "name": "Sebastian Korda",
+    "rank_single": 53,
+    "country": "USA",
+    "plays_hand": "U",
+    "points": 935
+  },
+  {
+    "name": "Kamil Majchrzak",
+    "rank_single": 54,
+    "country": "POL",
+    "plays_hand": "U",
+    "points": 928
+  },
+  {
+    "name": "Valentin Royer",
+    "rank_single": 55,
+    "country": "FRA",
+    "plays_hand": "U",
+    "points": 920
+  },
+  {
+    "name": "Giovanni Mpetshi Perricard",
+    "rank_single": 56,
+    "country": "FRA",
+    "plays_hand": "U",
+    "points": 905
+  },
+  {
+    "name": "Matteo Berrettini",
+    "rank_single": 57,
+    "country": "ITA",
+    "plays_hand": "U",
+    "points": 895
+  },
+  {
+    "name": "Marcos Giron",
+    "rank_single": 58,
+    "country": "USA",
+    "plays_hand": "U",
+    "points": 895
+  },
+  {
+    "name": "Tom\u00e1s Mart\u00edn Etcheverry",
+    "rank_single": 59,
+    "country": "ARG",
+    "plays_hand": "U",
+    "points": 895
+  },
+  {
+    "name": "Lorenzo Sonego",
+    "rank_single": 60,
+    "country": "ITA",
+    "plays_hand": "U",
+    "points": 890
+  },
+  {
+    "name": "Damir D\u017eumhur",
+    "rank_single": 61,
+    "country": "BIH",
+    "plays_hand": "U",
+    "points": 877
+  },
+  {
+    "name": "Reilly Opelka",
+    "rank_single": 62,
+    "country": "USA",
+    "plays_hand": "U",
+    "points": 873
+  },
+  {
+    "name": "Francisco Comesa\u00f1a",
+    "rank_single": 63,
+    "country": "ARG",
+    "plays_hand": "U",
+    "points": 869
+  },
+  {
+    "name": "Matteo Arnaldi",
+    "rank_single": 64,
+    "country": "ITA",
+    "plays_hand": "U",
+    "points": 858
+  },
+  {
+    "name": "T\u00e9rence Atmane",
+    "rank_single": 65,
+    "country": "FRA",
+    "plays_hand": "U",
+    "points": 849
+  },
+  {
+    "name": "Marin \u010cili\u0107",
+    "rank_single": 66,
+    "country": "CRO",
+    "plays_hand": "U",
+    "points": 840
+  },
+  {
+    "name": "Miomir Kecmanovi\u0107",
+    "rank_single": 67,
+    "country": "SRB",
+    "plays_hand": "U",
+    "points": 820
+  },
+  {
+    "name": "Adrian Mannarino",
+    "rank_single": 68,
+    "country": "FRA",
+    "plays_hand": "U",
+    "points": 810
+  },
+  {
+    "name": "Botic van de Zandschulp",
+    "rank_single": 69,
+    "country": "NED",
+    "plays_hand": "U",
+    "points": 799
+  },
+  {
+    "name": "Rapha\u00ebl Collignon",
+    "rank_single": 70,
+    "country": "BEL",
+    "plays_hand": "U",
+    "points": 777
+  },
+  {
+    "name": "Ethan Quinn",
+    "rank_single": 71,
+    "country": "USA",
+    "plays_hand": "U",
+    "points": 770
+  },
+  {
+    "name": "Mariano Navone",
+    "rank_single": 72,
+    "country": "ARG",
+    "plays_hand": "U",
+    "points": 760
+  },
+  {
+    "name": "Arthur Cazaux",
+    "rank_single": 73,
+    "country": "FRA",
+    "plays_hand": "U",
+    "points": 755
+  },
+  {
+    "name": "Mattia Bellucci",
+    "rank_single": 74,
+    "country": "ITA",
+    "plays_hand": "U",
+    "points": 743
+  },
+  {
+    "name": "Alejandro Tabilo",
+    "rank_single": 75,
+    "country": "CHI",
+    "plays_hand": "U",
+    "points": 737
+  },
+  {
+    "name": "Eliot Spizzirri",
+    "rank_single": 76,
+    "country": "USA",
+    "plays_hand": "U",
+    "points": 731
+  },
+  {
+    "name": "Pedro Mart\u00ednez",
+    "rank_single": 77,
+    "country": "ESP",
+    "plays_hand": "U",
+    "points": 728
+  },
+  {
+    "name": "Filip Misolic",
+    "rank_single": 78,
+    "country": "AUT",
+    "plays_hand": "U",
+    "points": 728
+  },
+  {
+    "name": "Quentin Halys",
+    "rank_single": 79,
+    "country": "FRA",
+    "plays_hand": "U",
+    "points": 725
+  },
+  {
+    "name": "Hamad Medjedovi\u0107",
+    "rank_single": 80,
+    "country": "SRB",
+    "plays_hand": "U",
+    "points": 717
+  },
+  {
+    "name": "Adam Walton",
+    "rank_single": 81,
+    "country": "AUS",
+    "plays_hand": "U",
+    "points": 712
+  },
+  {
+    "name": "Emilio Nava",
+    "rank_single": 82,
+    "country": "USA",
+    "plays_hand": "U",
+    "points": 710
+  },
+  {
+    "name": "Aleksandar Kova\u010devi\u0107",
+    "rank_single": 83,
+    "country": "USA",
+    "plays_hand": "U",
+    "points": 709
+  },
+  {
+    "name": "Jan Lennard Struff",
+    "rank_single": 84,
+    "country": "GER",
+    "plays_hand": "U",
+    "points": 706
+  },
+  {
+    "name": "Juan Manuel Cer\u00fandolo",
+    "rank_single": 85,
+    "country": "ARG",
+    "plays_hand": "U",
+    "points": 698
+  },
+  {
+    "name": "James Duckworth",
+    "rank_single": 86,
+    "country": "AUS",
+    "plays_hand": "U",
+    "points": 694
+  },
+  {
+    "name": "Alexander Shevchenko",
+    "rank_single": 87,
+    "country": "KAZ",
+    "plays_hand": "U",
+    "points": 690
+  },
+  {
+    "name": "Jesper de Jong",
+    "rank_single": 88,
+    "country": "NED",
+    "plays_hand": "U",
+    "points": 673
+  },
+  {
+    "name": "Roberto Bautista Agut",
+    "rank_single": 89,
+    "country": "ESP",
+    "plays_hand": "U",
+    "points": 670
+  },
+  {
+    "name": "Jacob Fearnley",
+    "rank_single": 90,
+    "country": "GBR",
+    "plays_hand": "U",
+    "points": 662
+  },
+  {
+    "name": "Aleksandar Vukic",
+    "rank_single": 91,
+    "country": "AUS",
+    "plays_hand": "U",
+    "points": 656
+  },
+  {
+    "name": "Cristian Gar\u00edn",
+    "rank_single": 92,
+    "country": "CHI",
+    "plays_hand": "U",
+    "points": 656
+  },
+  {
+    "name": "Yannick Hanfmann",
+    "rank_single": 93,
+    "country": "GER",
+    "plays_hand": "U",
+    "points": 651
+  },
+  {
+    "name": "Laslo Djere",
+    "rank_single": 94,
+    "country": "SRB",
+    "plays_hand": "U",
+    "points": 651
+  },
+  {
+    "name": "Dalibor Svr\u010dina",
+    "rank_single": 95,
+    "country": "CZE",
+    "plays_hand": "U",
+    "points": 643
+  },
+  {
+    "name": "Thiago Agust\u00edn Tirante",
+    "rank_single": 96,
+    "country": "ARG",
+    "plays_hand": "U",
+    "points": 639
+  },
+  {
+    "name": "V\u00edt Kop\u0159iva",
+    "rank_single": 97,
+    "country": "CZE",
+    "plays_hand": "U",
+    "points": 632
+  },
+  {
+    "name": "Ignacio Buse",
+    "rank_single": 98,
+    "country": "PER",
+    "plays_hand": "U",
+    "points": 623
+  },
+  {
+    "name": "Hugo Gaston",
+    "rank_single": 99,
+    "country": "FRA",
+    "plays_hand": "U",
+    "points": 616
+  },
+  {
+    "name": "Pablo Carre\u00f1o Busta",
+    "rank_single": 100,
+    "country": "ESP",
+    "plays_hand": "U",
+    "points": 616
+  },
+  {
+    "name": "Carlos Taberner",
+    "rank_single": 101,
+    "country": "ESP",
+    "plays_hand": "U",
+    "points": 608
+  },
+  {
+    "name": "Rinky Hijikata",
+    "rank_single": 102,
+    "country": "AUS",
+    "plays_hand": "U",
+    "points": 582
+  },
+  {
+    "name": "Alexander Blockx",
+    "rank_single": 103,
+    "country": "BEL",
+    "plays_hand": "U",
+    "points": 579
+  },
+  {
+    "name": "Shintaro Mochizuki",
+    "rank_single": 104,
+    "country": "JPN",
+    "plays_hand": "U",
+    "points": 551
+  },
+  {
+    "name": "Jordan Thompson",
+    "rank_single": 105,
+    "country": "AUS",
+    "plays_hand": "U",
+    "points": 548
+  },
+  {
+    "name": "Mackenzie McDonald",
+    "rank_single": 106,
+    "country": "USA",
+    "plays_hand": "U",
+    "points": 544
+  },
+  {
+    "name": "Tristan Schoolkate",
+    "rank_single": 107,
+    "country": "AUS",
+    "plays_hand": "U",
+    "points": 534
+  },
+  {
+    "name": "Tom\u00e1s Barrios Vera",
+    "rank_single": 108,
+    "country": "CHI",
+    "plays_hand": "U",
+    "points": 529
+  },
+  {
+    "name": "Patrick Kypson",
+    "rank_single": 109,
+    "country": "USA",
+    "plays_hand": "U",
+    "points": 527
+  },
+  {
+    "name": "David Goffin",
+    "rank_single": 110,
+    "country": "BEL",
+    "plays_hand": "U",
+    "points": 515
+  },
+  {
+    "name": "Francesco Maestrelli",
+    "rank_single": 111,
+    "country": "ITA",
+    "plays_hand": "U",
+    "points": 512
+  },
+  {
+    "name": "Rom\u00e1n Andr\u00e9s Burruchaga",
+    "rank_single": 112,
+    "country": "ARG",
+    "plays_hand": "U",
+    "points": 512
+  },
+  {
+    "name": "Christopher O'Connell",
+    "rank_single": 113,
+    "country": "AUS",
+    "plays_hand": "U",
+    "points": 511
+  },
+  {
+    "name": "Elmer M\u00f8ller",
+    "rank_single": 114,
+    "country": "DEN",
+    "plays_hand": "U",
+    "points": 509
+  },
+  {
+    "name": "Luca Nardi",
+    "rank_single": 115,
+    "country": "ITA",
+    "plays_hand": "U",
+    "points": 507
+  },
+  {
+    "name": "Dino Pri\u017emi\u0107",
+    "rank_single": 116,
+    "country": "CRO",
+    "plays_hand": "U",
+    "points": 507
+  },
+  {
+    "name": "Du\u0161an Lajovi\u0107",
+    "rank_single": 117,
+    "country": "SRB",
+    "plays_hand": "U",
+    "points": 503
+  },
+  {
+    "name": "Rafael J\u00f3dar",
+    "rank_single": 118,
+    "country": "ESP",
+    "plays_hand": "U",
+    "points": 498
+  },
+  {
+    "name": "Jan Choinski",
+    "rank_single": 119,
+    "country": "GBR",
+    "plays_hand": "U",
+    "points": 498
+  },
+  {
+    "name": "Billy Harris",
+    "rank_single": 120,
+    "country": "GBR",
+    "plays_hand": "U",
+    "points": 491
+  },
+  {
+    "name": "Chun Hsin Tseng",
+    "rank_single": 121,
+    "country": "TWN",
+    "plays_hand": "U",
+    "points": 490
+  },
+  {
+    "name": "Borna \u0106ori\u0107",
+    "rank_single": 122,
+    "country": "CRO",
+    "plays_hand": "U",
+    "points": 488
+  },
+  {
+    "name": "Stan Wawrinka",
+    "rank_single": 123,
+    "country": "SUI",
+    "plays_hand": "U",
+    "points": 487
+  },
+  {
+    "name": "Yoshihito Nishioka",
+    "rank_single": 124,
+    "country": "JPN",
+    "plays_hand": "U",
+    "points": 486
+  },
+  {
+    "name": "Otto Virtanen",
+    "rank_single": 125,
+    "country": "FIN",
+    "plays_hand": "U",
+    "points": 478
+  },
+  {
+    "name": "Brandon Holt",
+    "rank_single": 126,
+    "country": "USA",
+    "plays_hand": "U",
+    "points": 478
+  },
+  {
+    "name": "Vilius Gaubas",
+    "rank_single": 127,
+    "country": "LTU",
+    "plays_hand": "U",
+    "points": 477
+  },
+  {
+    "name": "Benjamin Bonzi",
+    "rank_single": 128,
+    "country": "FRA",
+    "plays_hand": "U",
+    "points": 476
+  },
+  {
+    "name": "Marco Trungelliti",
+    "rank_single": 129,
+    "country": "ARG",
+    "plays_hand": "U",
+    "points": 472
+  },
+  {
+    "name": "Sebastian Ofner",
+    "rank_single": 130,
+    "country": "AUT",
+    "plays_hand": "U",
+    "points": 471
+  },
+  {
+    "name": "Nicolai Budkov Kjaer",
+    "rank_single": 131,
+    "country": "NOR",
+    "plays_hand": "U",
+    "points": 470
+  },
+  {
+    "name": "Kyrian Jacquet",
+    "rank_single": 132,
+    "country": "FRA",
+    "plays_hand": "U",
+    "points": 464
+  },
+  {
+    "name": "Coleman Wong",
+    "rank_single": 133,
+    "country": "HKG",
+    "plays_hand": "U",
+    "points": 458
+  },
+  {
+    "name": "Nikoloz Basilashvili",
+    "rank_single": 134,
+    "country": "GEO",
+    "plays_hand": "U",
+    "points": 456
+  },
+  {
+    "name": "Zachary Svajda",
+    "rank_single": 135,
+    "country": "USA",
+    "plays_hand": "U",
+    "points": 451
+  },
+  {
+    "name": "Yunchaokete Bu",
+    "rank_single": 136,
+    "country": "CHN",
+    "plays_hand": "U",
+    "points": 449
+  },
+  {
+    "name": "Nicol\u00e1s Jarry",
+    "rank_single": 137,
+    "country": "CHI",
+    "plays_hand": "U",
+    "points": 441
+  },
+  {
+    "name": "Moez Echargui",
+    "rank_single": 138,
+    "country": "TUN",
+    "plays_hand": "U",
+    "points": 434
+  },
+  {
+    "name": "Andrea Pellegrino",
+    "rank_single": 139,
+    "country": "ITA",
+    "plays_hand": "U",
+    "points": 431
+  },
+  {
+    "name": "Yibing Wu",
+    "rank_single": 140,
+    "country": "CHN",
+    "plays_hand": "U",
+    "points": 427
+  },
+  {
+    "name": "Luk\u00e1\u0161 Klein",
+    "rank_single": 141,
+    "country": "SVK",
+    "plays_hand": "U",
+    "points": 420
+  },
+  {
+    "name": "Adolfo Daniel Vallejo",
+    "rank_single": 142,
+    "country": "PAR",
+    "plays_hand": "U",
+    "points": 417
+  },
+  {
+    "name": "Sho Shimabukuro",
+    "rank_single": 143,
+    "country": "JPN",
+    "plays_hand": "U",
+    "points": 416
+  },
+  {
+    "name": "Liam Draxl",
+    "rank_single": 144,
+    "country": "CAN",
+    "plays_hand": "U",
+    "points": 415
+  },
+  {
+    "name": "Michael Zheng",
+    "rank_single": 145,
+    "country": "USA",
+    "plays_hand": "U",
+    "points": 414
+  },
+  {
+    "name": "Jaime Faria",
+    "rank_single": 146,
+    "country": "POR",
+    "plays_hand": "U",
+    "points": 413
+  },
+  {
+    "name": "Hugo Dellien",
+    "rank_single": 147,
+    "country": "BOL",
+    "plays_hand": "U",
+    "points": 403
+  },
+  {
+    "name": "Dane Sweeny",
+    "rank_single": 148,
+    "country": "AUS",
+    "plays_hand": "U",
+    "points": 397
+  },
+  {
+    "name": "Arthur Fery",
+    "rank_single": 149,
+    "country": "GBR",
+    "plays_hand": "U",
+    "points": 396
+  },
+  {
+    "name": "Giulio Zeppieri",
+    "rank_single": 150,
+    "country": "ITA",
+    "plays_hand": "U",
+    "points": 393
+  },
+  {
+    "name": "Titouan Droguet",
+    "rank_single": 151,
+    "country": "FRA",
+    "plays_hand": "U",
+    "points": 393
+  },
+  {
+    "name": "Martin Landaluce",
+    "rank_single": 152,
+    "country": "ESP",
+    "plays_hand": "U",
+    "points": 388
+  },
+  {
+    "name": "Harold Mayot",
+    "rank_single": 153,
+    "country": "FRA",
+    "plays_hand": "U",
+    "points": 380
+  },
+  {
+    "name": "Henrique Rocha",
+    "rank_single": 154,
+    "country": "POR",
+    "plays_hand": "U",
+    "points": 379
+  },
+  {
+    "name": "Francesco Passaro",
+    "rank_single": 155,
+    "country": "ITA",
+    "plays_hand": "U",
+    "points": 378
+  },
+  {
+    "name": "Mark Lajal",
+    "rank_single": 156,
+    "country": "EST",
+    "plays_hand": "U",
+    "points": 378
+  },
+  {
+    "name": "Elias Ymer",
+    "rank_single": 157,
+    "country": "SWE",
+    "plays_hand": "U",
+    "points": 376
+  },
+  {
+    "name": "Martin Damm",
+    "rank_single": 158,
+    "country": "USA",
+    "plays_hand": "U",
+    "points": 373
+  },
+  {
+    "name": "Guy Den Ouden",
+    "rank_single": 159,
+    "country": "NED",
+    "plays_hand": "U",
+    "points": 371
+  },
+  {
+    "name": "Luca Van Assche",
+    "rank_single": 160,
+    "country": "FRA",
+    "plays_hand": "U",
+    "points": 368
+  },
+  {
+    "name": "Matteo Gigante",
+    "rank_single": 161,
+    "country": "ITA",
+    "plays_hand": "U",
+    "points": 367
+  },
+  {
+    "name": "Luka Mikrut",
+    "rank_single": 162,
+    "country": "CRO",
+    "plays_hand": "U",
+    "points": 361
+  },
+  {
+    "name": "Ga\u00ebl Monfils",
+    "rank_single": 163,
+    "country": "FRA",
+    "plays_hand": "U",
+    "points": 360
+  },
+  {
+    "name": "Colton Smith",
+    "rank_single": 164,
+    "country": "USA",
+    "plays_hand": "U",
+    "points": 357
+  },
+  {
+    "name": "Yosuke Watanuki",
+    "rank_single": 165,
+    "country": "JPN",
+    "plays_hand": "U",
+    "points": 356
+  },
+  {
+    "name": "Arthur G\u00e9a",
+    "rank_single": 166,
+    "country": "FRA",
+    "plays_hand": "U",
+    "points": 353
+  },
+  {
+    "name": "Pierre Hugues Herbert",
+    "rank_single": 167,
+    "country": "FRA",
+    "plays_hand": "U",
+    "points": 351
+  },
+  {
+    "name": "Jurij Rodionov",
+    "rank_single": 168,
+    "country": "AUT",
+    "plays_hand": "U",
+    "points": 350
+  },
+  {
+    "name": "Juan Pablo Ficovich",
+    "rank_single": 169,
+    "country": "ARG",
+    "plays_hand": "U",
+    "points": 347
+  },
+  {
+    "name": "Leandro Riedi",
+    "rank_single": 170,
+    "country": "SUI",
+    "plays_hand": "U",
+    "points": 341
+  },
+  {
+    "name": "Nicol\u00e1s Mej\u00eda",
+    "rank_single": 171,
+    "country": "COL",
+    "plays_hand": "U",
+    "points": 341
+  },
+  {
+    "name": "Jason Kubler",
+    "rank_single": 172,
+    "country": "AUS",
+    "plays_hand": "U",
+    "points": 339
+  },
+  {
+    "name": "Zden\u011bk Kol\u00e1\u0159",
+    "rank_single": 173,
+    "country": "CZE",
+    "plays_hand": "U",
+    "points": 337
+  },
+  {
+    "name": "Vitaliy Sachko",
+    "rank_single": 174,
+    "country": "UKR",
+    "plays_hand": "U",
+    "points": 336
+  },
+  {
+    "name": "Daniel M\u00e9rida",
+    "rank_single": 175,
+    "country": "ESP",
+    "plays_hand": "U",
+    "points": 336
+  },
+  {
+    "name": "Roberto Carball\u00e9s Baena",
+    "rank_single": 176,
+    "country": "ESP",
+    "plays_hand": "U",
+    "points": 335
+  },
+  {
+    "name": "Rei Sakamoto",
+    "rank_single": 177,
+    "country": "JPN",
+    "plays_hand": "U",
+    "points": 332
+  },
+  {
+    "name": "Jay Clarke",
+    "rank_single": 178,
+    "country": "GBR",
+    "plays_hand": "U",
+    "points": 330
+  },
+  {
+    "name": "Roman Safiullin",
+    "rank_single": 179,
+    "country": "RUS",
+    "plays_hand": "U",
+    "points": 328
+  },
+  {
+    "name": "Ugo Blanchet",
+    "rank_single": 180,
+    "country": "FRA",
+    "plays_hand": "U",
+    "points": 327
+  },
+  {
+    "name": "Alex Bolt",
+    "rank_single": 181,
+    "country": "AUS",
+    "plays_hand": "U",
+    "points": 327
+  },
+  {
+    "name": "Stefano Travaglia",
+    "rank_single": 182,
+    "country": "ITA",
+    "plays_hand": "U",
+    "points": 324
+  },
+  {
+    "name": "Timofey Skatov",
+    "rank_single": 183,
+    "country": "KAZ",
+    "plays_hand": "U",
+    "points": 324
+  },
+  {
+    "name": "Daniel Elahi Gal\u00e1n",
+    "rank_single": 184,
+    "country": "COL",
+    "plays_hand": "U",
+    "points": 323
+  },
+  {
+    "name": "Hugo Grenier",
+    "rank_single": 185,
+    "country": "FRA",
+    "plays_hand": "U",
+    "points": 322
+  },
+  {
+    "name": "Alex Barrena",
+    "rank_single": 186,
+    "country": "ARG",
+    "plays_hand": "U",
+    "points": 316
+  },
+  {
+    "name": "J\u00e9r\u00f4me Kym",
+    "rank_single": 187,
+    "country": "SUI",
+    "plays_hand": "U",
+    "points": 315
+  },
+  {
+    "name": "Daniel Evans",
+    "rank_single": 188,
+    "country": "GBR",
+    "plays_hand": "U",
+    "points": 314
+  },
+  {
+    "name": "Bernard Tomic",
+    "rank_single": 189,
+    "country": "AUS",
+    "plays_hand": "U",
+    "points": 313
+  },
+  {
+    "name": "Nishesh Basavareddy",
+    "rank_single": 190,
+    "country": "USA",
+    "plays_hand": "U",
+    "points": 310
+  },
+  {
+    "name": "Federico Agustin Gomez",
+    "rank_single": 191,
+    "country": "ARG",
+    "plays_hand": "U",
+    "points": 306
+  },
+  {
+    "name": "Jack Pinnington Jones",
+    "rank_single": 192,
+    "country": "GBR",
+    "plays_hand": "U",
+    "points": 306
+  },
+  {
+    "name": "Justin Engel",
+    "rank_single": 193,
+    "country": "GER",
+    "plays_hand": "U",
+    "points": 301
+  },
+  {
+    "name": "Zsombor Piros",
+    "rank_single": 194,
+    "country": "HUN",
+    "plays_hand": "U",
+    "points": 298
+  },
+  {
+    "name": "Cl\u00e9ment Chidekh",
+    "rank_single": 195,
+    "country": "FRA",
+    "plays_hand": "U",
+    "points": 298
+  },
+  {
+    "name": "August Holmgren",
+    "rank_single": 196,
+    "country": "DEN",
+    "plays_hand": "U",
+    "points": 297
+  },
+  {
+    "name": "Daniil Glinka",
+    "rank_single": 197,
+    "country": "EST",
+    "plays_hand": "U",
+    "points": 296
+  },
+  {
+    "name": "Dan Added",
+    "rank_single": 198,
+    "country": "FRA",
+    "plays_hand": "U",
+    "points": 295
+  },
+  {
+    "name": "Alex Mol\u010dan",
+    "rank_single": 199,
+    "country": "SVK",
+    "plays_hand": "U",
+    "points": 294
+  },
+  {
+    "name": "\u00c1lvaro Guill\u00e9n Meza",
+    "rank_single": 200,
+    "country": "ECU",
+    "plays_hand": "U",
+    "points": 294
+  },
+  {
+    "name": "George Loffhagen",
+    "rank_single": 201,
+    "country": "GBR",
+    "plays_hand": "U",
+    "points": 291
+  },
+  {
+    "name": "Gilles Arnaud Bailly",
+    "rank_single": 202,
+    "country": "BEL",
+    "plays_hand": "U",
+    "points": 291
+  },
+  {
+    "name": "James McCabe",
+    "rank_single": 203,
+    "country": "AUS",
+    "plays_hand": "U",
+    "points": 289
+  },
+  {
+    "name": "Chris Rodesch",
+    "rank_single": 204,
+    "country": "LUX",
+    "plays_hand": "U",
+    "points": 288
+  },
+  {
+    "name": "Jo\u00e3o Lucas Reis Da Silva",
+    "rank_single": 205,
+    "country": "BRA",
+    "plays_hand": "U",
+    "points": 281
+  },
+  {
+    "name": "Pablo Llamas Ruiz",
+    "rank_single": 206,
+    "country": "ESP",
+    "plays_hand": "U",
+    "points": 280
+  },
+  {
+    "name": "Juan Carlos Prado Angelo",
+    "rank_single": 207,
+    "country": "BOL",
+    "plays_hand": "U",
+    "points": 279
+  },
+  {
+    "name": "Lorenzo Giustino",
+    "rank_single": 208,
+    "country": "ITA",
+    "plays_hand": "U",
+    "points": 279
+  },
+  {
+    "name": "Oliver Crawford",
+    "rank_single": 209,
+    "country": "GBR",
+    "plays_hand": "U",
+    "points": 274
+  },
+  {
+    "name": "Thiago Monteiro",
+    "rank_single": 210,
+    "country": "BRA",
+    "plays_hand": "U",
+    "points": 270
+  },
+  {
+    "name": "Thiago Seyboth Wild",
+    "rank_single": 211,
+    "country": "BRA",
+    "plays_hand": "U",
+    "points": 267
+  },
+  {
+    "name": "Cl\u00e9ment Tabur",
+    "rank_single": 212,
+    "country": "FRA",
+    "plays_hand": "U",
+    "points": 266
+  },
+  {
+    "name": "Lloyd Harris",
+    "rank_single": 213,
+    "country": "RSA",
+    "plays_hand": "U",
+    "points": 262
+  },
+  {
+    "name": "Tristan Boyer",
+    "rank_single": 214,
+    "country": "USA",
+    "plays_hand": "U",
+    "points": 262
+  },
+  {
+    "name": "Luka Pavlovic",
+    "rank_single": 215,
+    "country": "FRA",
+    "plays_hand": "U",
+    "points": 262
+  },
+  {
+    "name": "Gonzalo Bueno",
+    "rank_single": 216,
+    "country": "PER",
+    "plays_hand": "U",
+    "points": 259
+  },
+  {
+    "name": "Yu-hsiou Hsu",
+    "rank_single": 217,
+    "country": "TWN",
+    "plays_hand": "U",
+    "points": 257
+  },
+  {
+    "name": "Nerman Fati\u0107",
+    "rank_single": 218,
+    "country": "BIH",
+    "plays_hand": "U",
+    "points": 254
+  },
+  {
+    "name": "Federico Cina",
+    "rank_single": 219,
+    "country": "ITA",
+    "plays_hand": "U",
+    "points": 252
+  },
+  {
+    "name": "Felipe Meligeni Alves",
+    "rank_single": 220,
+    "country": "BRA",
+    "plays_hand": "U",
+    "points": 251
+  },
+  {
+    "name": "Rodrigo Pacheco Mendez",
+    "rank_single": 221,
+    "country": "MEX",
+    "plays_hand": "U",
+    "points": 250
+  },
+  {
+    "name": "Lukas Neumayer",
+    "rank_single": 222,
+    "country": "AUT",
+    "plays_hand": "U",
+    "points": 249
+  },
+  {
+    "name": "Dmitry Popko",
+    "rank_single": 223,
+    "country": "KAZ",
+    "plays_hand": "U",
+    "points": 248
+  },
+  {
+    "name": "Arthur Bouquier",
+    "rank_single": 224,
+    "country": "FRA",
+    "plays_hand": "U",
+    "points": 247
+  },
+  {
+    "name": "Andrea Collarini",
+    "rank_single": 225,
+    "country": "ARG",
+    "plays_hand": "U",
+    "points": 246
+  },
+  {
+    "name": "Santiago Taverna",
+    "rank_single": 226,
+    "country": "ARG",
+    "plays_hand": "U",
+    "points": 246
+  },
+  {
+    "name": "Marco Cecchinato",
+    "rank_single": 227,
+    "country": "ITA",
+    "plays_hand": "U",
+    "points": 244
+  },
+  {
+    "name": "Ryan Peniston",
+    "rank_single": 228,
+    "country": "GBR",
+    "plays_hand": "U",
+    "points": 244
+  },
+  {
+    "name": "Matej Dodig",
+    "rank_single": 229,
+    "country": "CRO",
+    "plays_hand": "U",
+    "points": 244
+  },
+  {
+    "name": "Johannus Monday",
+    "rank_single": 230,
+    "country": "GBR",
+    "plays_hand": "U",
+    "points": 244
+  },
+  {
+    "name": "Michael Mmoh",
+    "rank_single": 231,
+    "country": "USA",
+    "plays_hand": "U",
+    "points": 241
+  },
+  {
+    "name": "Genaro Alberto Olivieri",
+    "rank_single": 232,
+    "country": "ARG",
+    "plays_hand": "U",
+    "points": 241
+  },
+  {
+    "name": "Max Houkes",
+    "rank_single": 233,
+    "country": "NED",
+    "plays_hand": "U",
+    "points": 237
+  },
+  {
+    "name": "Yi Zhou",
+    "rank_single": 234,
+    "country": "CHN",
+    "plays_hand": "U",
+    "points": 236
+  },
+  {
+    "name": "Lautaro Midon",
+    "rank_single": 235,
+    "country": "ARG",
+    "plays_hand": "U",
+    "points": 235
+  },
+  {
+    "name": "Marko Topo",
+    "rank_single": 236,
+    "country": "GER",
+    "plays_hand": "U",
+    "points": 234
+  },
+  {
+    "name": "Rio Noguchi",
+    "rank_single": 237,
+    "country": "JPN",
+    "plays_hand": "U",
+    "points": 234
+  },
+  {
+    "name": "Murphy Cassone",
+    "rank_single": 238,
+    "country": "USA",
+    "plays_hand": "U",
+    "points": 227
+  },
+  {
+    "name": "Joel Schw\u00e4rzler",
+    "rank_single": 239,
+    "country": "AUT",
+    "plays_hand": "U",
+    "points": 223
+  },
+  {
+    "name": "Kaichi Uchida",
+    "rank_single": 240,
+    "country": "JPN",
+    "plays_hand": "U",
+    "points": 223
+  },
+  {
+    "name": "Alexis Galarneau",
+    "rank_single": 241,
+    "country": "CAN",
+    "plays_hand": "U",
+    "points": 222
+  },
+  {
+    "name": "Kimmer Coppejans",
+    "rank_single": 242,
+    "country": "BEL",
+    "plays_hand": "U",
+    "points": 221
+  },
+  {
+    "name": "Alejandro Moro Ca\u00f1as",
+    "rank_single": 243,
+    "country": "ESP",
+    "plays_hand": "U",
+    "points": 220
+  },
+  {
+    "name": "Murkel Dellien",
+    "rank_single": 244,
+    "country": "BOL",
+    "plays_hand": "U",
+    "points": 220
+  },
+  {
+    "name": "Toby Samuel",
+    "rank_single": 245,
+    "country": "GBR",
+    "plays_hand": "U",
+    "points": 218
+  },
+  {
+    "name": "Filip Jianu",
+    "rank_single": 246,
+    "country": "ROU",
+    "plays_hand": "U",
+    "points": 218
+  },
+  {
+    "name": "Gustavo Heide",
+    "rank_single": 247,
+    "country": "BRA",
+    "plays_hand": "U",
+    "points": 215
+  },
+  {
+    "name": "Daniel Michalski",
+    "rank_single": 248,
+    "country": "POL",
+    "plays_hand": "U",
+    "points": 213
+  },
+  {
+    "name": "Calvin H\u00e9mery",
+    "rank_single": 249,
+    "country": "FRA",
+    "plays_hand": "U",
+    "points": 212
+  },
+  {
+    "name": "Remy Bertola",
+    "rank_single": 250,
+    "country": "SUI",
+    "plays_hand": "U",
+    "points": 212
+  },
+  {
+    "name": "Geoffrey Blancaneaux",
+    "rank_single": 251,
+    "country": "FRA",
+    "plays_hand": "U",
+    "points": 211
+  },
+  {
+    "name": "Marc-Andrea H\u00fcsler",
+    "rank_single": 252,
+    "country": "SUI",
+    "plays_hand": "U",
+    "points": 209
+  },
+  {
+    "name": "Andr\u00e9s Andrade",
+    "rank_single": 253,
+    "country": "ECU",
+    "plays_hand": "U",
+    "points": 209
+  },
+  {
+    "name": "Benjamin Hassan",
+    "rank_single": 254,
+    "country": "LBN",
+    "plays_hand": "U",
+    "points": 208
+  },
+  {
+    "name": "Mitchell Krueger",
+    "rank_single": 255,
+    "country": "USA",
+    "plays_hand": "U",
+    "points": 207
+  },
+  {
+    "name": "Ilia Simakin",
+    "rank_single": 256,
+    "country": "RUS",
+    "plays_hand": "U",
+    "points": 207
+  },
+  {
+    "name": "Daniel Rincon",
+    "rank_single": 257,
+    "country": "ESP",
+    "plays_hand": "U",
+    "points": 206
+  },
+  {
+    "name": "Juncheng Shang",
+    "rank_single": 258,
+    "country": "CHN",
+    "plays_hand": "U",
+    "points": 205
+  },
+  {
+    "name": "Mikhail Kukushkin",
+    "rank_single": 259,
+    "country": "KAZ",
+    "plays_hand": "U",
+    "points": 204
+  },
+  {
+    "name": "Franco Agamenone",
+    "rank_single": 260,
+    "country": "ITA",
+    "plays_hand": "U",
+    "points": 203
+  },
+  {
+    "name": "Dimitar Kuzmanov",
+    "rank_single": 261,
+    "country": "BUL",
+    "plays_hand": "U",
+    "points": 202
+  },
+  {
+    "name": "Pedro Boscardin Dias",
+    "rank_single": 262,
+    "country": "BRA",
+    "plays_hand": "U",
+    "points": 201
+  },
+  {
+    "name": "Nicol\u00e1s Kicker",
+    "rank_single": 263,
+    "country": "ARG",
+    "plays_hand": "U",
+    "points": 200
+  },
+  {
+    "name": "Tiago Pereira",
+    "rank_single": 264,
+    "country": "POR",
+    "plays_hand": "U",
+    "points": 200
+  },
+  {
+    "name": "Patrick Zahraj",
+    "rank_single": 265,
+    "country": "GER",
+    "plays_hand": "U",
+    "points": 199
+  },
+  {
+    "name": "Ivan Gakhov",
+    "rank_single": 266,
+    "country": "RUS",
+    "plays_hand": "U",
+    "points": 199
+  },
+  {
+    "name": "Saba Purtseladze",
+    "rank_single": 267,
+    "country": "GEO",
+    "plays_hand": "U",
+    "points": 199
+  },
+  {
+    "name": "Fajing Sun",
+    "rank_single": 268,
+    "country": "CHN",
+    "plays_hand": "U",
+    "points": 196
+  },
+  {
+    "name": "Pol Mart\u00edn Tiffon",
+    "rank_single": 269,
+    "country": "ESP",
+    "plays_hand": "U",
+    "points": 195
+  },
+  {
+    "name": "Andres Martin",
+    "rank_single": 270,
+    "country": "USA",
+    "plays_hand": "U",
+    "points": 195
+  },
+  {
+    "name": "Frederico Ferreira Silva",
+    "rank_single": 271,
+    "country": "POR",
+    "plays_hand": "U",
+    "points": 194
+  },
+  {
+    "name": "Edas Butvilas",
+    "rank_single": 272,
+    "country": "LTU",
+    "plays_hand": "U",
+    "points": 194
+  },
+  {
+    "name": "Florent Bax",
+    "rank_single": 273,
+    "country": "FRA",
+    "plays_hand": "U",
+    "points": 192
+  },
+  {
+    "name": "Tom Gentzsch",
+    "rank_single": 274,
+    "country": "GER",
+    "plays_hand": "U",
+    "points": 192
+  },
+  {
+    "name": "Michael Geerts",
+    "rank_single": 275,
+    "country": "BEL",
+    "plays_hand": "U",
+    "points": 187
+  },
+  {
+    "name": "Sumit Nagal",
+    "rank_single": 276,
+    "country": "IND",
+    "plays_hand": "U",
+    "points": 186
+  },
+  {
+    "name": "Andrea Vavassori",
+    "rank_single": 277,
+    "country": "ITA",
+    "plays_hand": "U",
+    "points": 185
+  },
+  {
+    "name": "Liam Broady",
+    "rank_single": 278,
+    "country": "GBR",
+    "plays_hand": "U",
+    "points": 184
+  },
+  {
+    "name": "Henri Squire",
+    "rank_single": 279,
+    "country": "GER",
+    "plays_hand": "U",
+    "points": 183
+  },
+  {
+    "name": "Kei Nishikori",
+    "rank_single": 280,
+    "country": "JPN",
+    "plays_hand": "U",
+    "points": 182
+  },
+  {
+    "name": "Andrej Nedi\u0107",
+    "rank_single": 281,
+    "country": "BIH",
+    "plays_hand": "U",
+    "points": 182
+  },
+  {
+    "name": "Hynek Barto\u0148",
+    "rank_single": 282,
+    "country": "CZE",
+    "plays_hand": "U",
+    "points": 181
+  },
+  {
+    "name": "Stefanos Sakellaridis",
+    "rank_single": 283,
+    "country": "GRE",
+    "plays_hand": "U",
+    "points": 180
+  },
+  {
+    "name": "Darwin Blanch",
+    "rank_single": 284,
+    "country": "USA",
+    "plays_hand": "U",
+    "points": 180
+  },
+  {
+    "name": "Fabrizio Andaloro",
+    "rank_single": 285,
+    "country": "ITA",
+    "plays_hand": "U",
+    "points": 180
+  },
+  {
+    "name": "Matheus Pucinelli De Almeida",
+    "rank_single": 286,
+    "country": "BRA",
+    "plays_hand": "U",
+    "points": 180
+  },
+  {
+    "name": "Garrett Johns",
+    "rank_single": 287,
+    "country": "USA",
+    "plays_hand": "U",
+    "points": 179
+  },
+  {
+    "name": "Stefan Kozlov",
+    "rank_single": 288,
+    "country": "USA",
+    "plays_hand": "U",
+    "points": 177
+  },
+  {
+    "name": "Juan Pablo Varillas",
+    "rank_single": 289,
+    "country": "PER",
+    "plays_hand": "U",
+    "points": 177
+  },
+  {
+    "name": "Alex Rybakov",
+    "rank_single": 290,
+    "country": "USA",
+    "plays_hand": "U",
+    "points": 177
+  },
+  {
+    "name": "Charles Broom",
+    "rank_single": 291,
+    "country": "GBR",
+    "plays_hand": "U",
+    "points": 177
+  },
+  {
+    "name": "Borna Gojo",
+    "rank_single": 292,
+    "country": "CRO",
+    "plays_hand": "U",
+    "points": 176
+  },
+  {
+    "name": "Robin Bertrand",
+    "rank_single": 293,
+    "country": "FRA",
+    "plays_hand": "U",
+    "points": 176
+  },
+  {
+    "name": "Beibit Zhukayev",
+    "rank_single": 294,
+    "country": "KAZ",
+    "plays_hand": "U",
+    "points": 175
+  },
+  {
+    "name": "Jacopo Berrettini",
+    "rank_single": 295,
+    "country": "ITA",
+    "plays_hand": "U",
+    "points": 175
+  },
+  {
+    "name": "Norbert Gombos",
+    "rank_single": 296,
+    "country": "SVK",
+    "plays_hand": "U",
+    "points": 175
+  },
+  {
+    "name": "Facundo D\u00edaz Acosta",
+    "rank_single": 297,
+    "country": "ARG",
+    "plays_hand": "U",
+    "points": 174
+  },
+  {
+    "name": "Petr Bruncl\u00edk",
+    "rank_single": 298,
+    "country": "CZE",
+    "plays_hand": "U",
+    "points": 174
+  },
+  {
+    "name": "Marat Sharipov",
+    "rank_single": 299,
+    "country": "RUS",
+    "plays_hand": "U",
+    "points": 174
+  },
+  {
+    "name": "Sandro Kopp",
+    "rank_single": 300,
+    "country": "AUT",
+    "plays_hand": "U",
+    "points": 171
+  },
+  {
+    "name": "Abdullah Shelbayh",
+    "rank_single": 301,
+    "country": "JOR",
+    "plays_hand": "U",
+    "points": 170
+  },
+  {
+    "name": "Sascha Gueymard Wayenburg",
+    "rank_single": 302,
+    "country": "FRA",
+    "plays_hand": "U",
+    "points": 170
+  },
+  {
+    "name": "Lilian Marmousez",
+    "rank_single": 303,
+    "country": "FRA",
+    "plays_hand": "U",
+    "points": 169
+  },
+  {
+    "name": "Maximus Jones",
+    "rank_single": 304,
+    "country": "THA",
+    "plays_hand": "U",
+    "points": 169
+  },
+  {
+    "name": "Tom Paris",
+    "rank_single": 305,
+    "country": "FRA",
+    "plays_hand": "U",
+    "points": 167
+  },
+  {
+    "name": "Harry Wendelken",
+    "rank_single": 306,
+    "country": "GBR",
+    "plays_hand": "U",
+    "points": 167
+  },
+  {
+    "name": "Gianluca Cadenasso",
+    "rank_single": 307,
+    "country": "ITA",
+    "plays_hand": "U",
+    "points": 165
+  },
+  {
+    "name": "Akira Santillan",
+    "rank_single": 308,
+    "country": "JPN",
+    "plays_hand": "U",
+    "points": 165
+  },
+  {
+    "name": "Nikol\u00e1s S\u00e1nchez Izquierdo",
+    "rank_single": 309,
+    "country": "ESP",
+    "plays_hand": "U",
+    "points": 165
+  },
+  {
+    "name": "Federico Coria",
+    "rank_single": 310,
+    "country": "ARG",
+    "plays_hand": "U",
+    "points": 164
+  },
+  {
+    "name": "Eliakim Coulibaly",
+    "rank_single": 311,
+    "country": "CIV",
+    "plays_hand": "U",
+    "points": 163
+  },
+  {
+    "name": "Viktor Durasovic",
+    "rank_single": 312,
+    "country": "NOR",
+    "plays_hand": "U",
+    "points": 163
+  },
+  {
+    "name": "Mats Rosenkranz",
+    "rank_single": 313,
+    "country": "GER",
+    "plays_hand": "U",
+    "points": 162
+  },
+  {
+    "name": "Philip Henning",
+    "rank_single": 314,
+    "country": "RSA",
+    "plays_hand": "U",
+    "points": 160
+  },
+  {
+    "name": "Gauthier Onclin",
+    "rank_single": 315,
+    "country": "BEL",
+    "plays_hand": "U",
+    "points": 160
+  },
+  {
+    "name": "Petr Bar Biryukov",
+    "rank_single": 316,
+    "country": "RUS",
+    "plays_hand": "U",
+    "points": 160
+  },
+  {
+    "name": "Cedrik Marcel Stebe",
+    "rank_single": 317,
+    "country": "GER",
+    "plays_hand": "U",
+    "points": 158
+  },
+  {
+    "name": "Miguel Damas",
+    "rank_single": 318,
+    "country": "ESP",
+    "plays_hand": "U",
+    "points": 158
+  },
+  {
+    "name": "Gabi Adrian Boitan",
+    "rank_single": 319,
+    "country": "ROU",
+    "plays_hand": "U",
+    "points": 157
+  },
+  {
+    "name": "Renta Tokuda",
+    "rank_single": 320,
+    "country": "JPN",
+    "plays_hand": "U",
+    "points": 157
+  },
+  {
+    "name": "Yasutaka Uchiyama",
+    "rank_single": 321,
+    "country": "JPN",
+    "plays_hand": "U",
+    "points": 154
+  },
+  {
+    "name": "Diego Dedura",
+    "rank_single": 322,
+    "country": "GER",
+    "plays_hand": "U",
+    "points": 154
+  },
+  {
+    "name": "James Trotter",
+    "rank_single": 323,
+    "country": "JPN",
+    "plays_hand": "U",
+    "points": 153
+  },
+  {
+    "name": "Felix Gill",
+    "rank_single": 324,
+    "country": "GBR",
+    "plays_hand": "U",
+    "points": 152
+  },
+  {
+    "name": "Duje Ajdukovi\u0107",
+    "rank_single": 325,
+    "country": "CRO",
+    "plays_hand": "U",
+    "points": 151
+  },
+  {
+    "name": "Mathys Erhard",
+    "rank_single": 326,
+    "country": "FRA",
+    "plays_hand": "U",
+    "points": 151
+  },
+  {
+    "name": "Oliver Tarvet",
+    "rank_single": 327,
+    "country": "GBR",
+    "plays_hand": "U",
+    "points": 150
+  },
+  {
+    "name": "Maxim Mrva",
+    "rank_single": 328,
+    "country": "CZE",
+    "plays_hand": "U",
+    "points": 150
+  },
+  {
+    "name": "Tyler Zink",
+    "rank_single": 329,
+    "country": "USA",
+    "plays_hand": "U",
+    "points": 150
+  },
+  {
+    "name": "Sergey Fomin",
+    "rank_single": 330,
+    "country": "UZB",
+    "plays_hand": "U",
+    "points": 150
+  },
+  {
+    "name": "Andrej Martin",
+    "rank_single": 331,
+    "country": "SVK",
+    "plays_hand": "U",
+    "points": 149
+  },
+  {
+    "name": "Alfredo Perez",
+    "rank_single": 332,
+    "country": "USA",
+    "plays_hand": "U",
+    "points": 147
+  },
+  {
+    "name": "Daniel Dutra da Silva",
+    "rank_single": 333,
+    "country": "BRA",
+    "plays_hand": "U",
+    "points": 147
+  },
+  {
+    "name": "Christopher Eubanks",
+    "rank_single": 334,
+    "country": "USA",
+    "plays_hand": "U",
+    "points": 145
+  },
+  {
+    "name": "Martin Krumich",
+    "rank_single": 335,
+    "country": "CZE",
+    "plays_hand": "U",
+    "points": 145
+  },
+  {
+    "name": "Matt\u00e9o Martineau",
+    "rank_single": 336,
+    "country": "FRA",
+    "plays_hand": "U",
+    "points": 144
+  },
+  {
+    "name": "Christian Langmo",
+    "rank_single": 337,
+    "country": "USA",
+    "plays_hand": "U",
+    "points": 144
+  },
+  {
+    "name": "Hady Habib",
+    "rank_single": 338,
+    "country": "LBN",
+    "plays_hand": "U",
+    "points": 143
+  },
+  {
+    "name": "Jelle Sels",
+    "rank_single": 339,
+    "country": "NED",
+    "plays_hand": "U",
+    "points": 143
+  },
+  {
+    "name": "Hamish Stewart",
+    "rank_single": 340,
+    "country": "GBR",
+    "plays_hand": "U",
+    "points": 142
+  },
+  {
+    "name": "Carlos S\u00e1nchez Jover",
+    "rank_single": 341,
+    "country": "ESP",
+    "plays_hand": "U",
+    "points": 142
+  },
+  {
+    "name": "Alastair Gray",
+    "rank_single": 342,
+    "country": "GBR",
+    "plays_hand": "U",
+    "points": 141
+  },
+  {
+    "name": "Franco Roncadelli",
+    "rank_single": 343,
+    "country": "URU",
+    "plays_hand": "U",
+    "points": 140
+  },
+  {
+    "name": "Keegan Smith",
+    "rank_single": 344,
+    "country": "USA",
+    "plays_hand": "U",
+    "points": 140
+  },
+  {
+    "name": "Giles Hussey",
+    "rank_single": 345,
+    "country": "GBR",
+    "plays_hand": "U",
+    "points": 138
+  },
+  {
+    "name": "Mat\u00edas Soto",
+    "rank_single": 346,
+    "country": "CHI",
+    "plays_hand": "U",
+    "points": 138
+  },
+  {
+    "name": "Omar Jasika",
+    "rank_single": 347,
+    "country": "AUS",
+    "plays_hand": "U",
+    "points": 137
+  },
+  {
+    "name": "Andre Ilagan",
+    "rank_single": 348,
+    "country": "USA",
+    "plays_hand": "U",
+    "points": 137
+  },
+  {
+    "name": "Gonzalo Villanueva",
+    "rank_single": 349,
+    "country": "ARG",
+    "plays_hand": "U",
+    "points": 137
+  },
+  {
+    "name": "Sanhui Shin",
+    "rank_single": 350,
+    "country": "KOR",
+    "plays_hand": "U",
+    "points": 136
+  },
+  {
+    "name": "Antoine Ghibaudo",
+    "rank_single": 351,
+    "country": "FRA",
+    "plays_hand": "U",
+    "points": 134
+  },
+  {
+    "name": "Richard Gasquet",
+    "rank_single": 352,
+    "country": "FRA",
+    "plays_hand": "U",
+    "points": 133
+  },
+  {
+    "name": "Nicol\u00e1s \u00c1lvarez Varona",
+    "rank_single": 353,
+    "country": "ESP",
+    "plays_hand": "U",
+    "points": 133
+  },
+  {
+    "name": "Florian Broska",
+    "rank_single": 354,
+    "country": "GER",
+    "plays_hand": "U",
+    "points": 133
+  },
+  {
+    "name": "Yuta Shimizu",
+    "rank_single": 355,
+    "country": "JPN",
+    "plays_hand": "U",
+    "points": 133
+  },
+  {
+    "name": "Javier Barranco Cosano",
+    "rank_single": 356,
+    "country": "ESP",
+    "plays_hand": "U",
+    "points": 132
+  },
+  {
+    "name": "Paul Jubb",
+    "rank_single": 357,
+    "country": "GBR",
+    "plays_hand": "U",
+    "points": 131
+  },
+  {
+    "name": "Gabriele Piraino",
+    "rank_single": 358,
+    "country": "ITA",
+    "plays_hand": "U",
+    "points": 131
+  },
+  {
+    "name": "Zhizhen Zhang",
+    "rank_single": 359,
+    "country": "CHN",
+    "plays_hand": "U",
+    "points": 130
+  },
+  {
+    "name": "Guido Iv\u00e1n Justo",
+    "rank_single": 360,
+    "country": "ARG",
+    "plays_hand": "U",
+    "points": 130
+  },
+  {
+    "name": "Jon\u00e1\u0161 Forejtek",
+    "rank_single": 361,
+    "country": "CZE",
+    "plays_hand": "U",
+    "points": 128
+  },
+  {
+    "name": "Viacheslav Bielinskyi",
+    "rank_single": 362,
+    "country": "UKR",
+    "plays_hand": "U",
+    "points": 127
+  },
+  {
+    "name": "Tung Lin Wu",
+    "rank_single": 363,
+    "country": "TWN",
+    "plays_hand": "U",
+    "points": 127
+  },
+  {
+    "name": "Juan Bautista Torres",
+    "rank_single": 364,
+    "country": "ARG",
+    "plays_hand": "U",
+    "points": 127
+  },
+  {
+    "name": "Max Basing",
+    "rank_single": 365,
+    "country": "GBR",
+    "plays_hand": "U",
+    "points": 126
+  },
+  {
+    "name": "Aziz Dougaz",
+    "rank_single": 366,
+    "country": "TUN",
+    "plays_hand": "U",
+    "points": 126
+  },
+  {
+    "name": "Facundo Mena",
+    "rank_single": 367,
+    "country": "ARG",
+    "plays_hand": "U",
+    "points": 126
+  },
+  {
+    "name": "Cezar Cre\u021bu",
+    "rank_single": 368,
+    "country": "ROU",
+    "plays_hand": "U",
+    "points": 126
+  },
+  {
+    "name": "Mert Alkaya",
+    "rank_single": 369,
+    "country": "TUR",
+    "plays_hand": "U",
+    "points": 126
+  },
+  {
+    "name": "Trevor Svajda",
+    "rank_single": 370,
+    "country": "USA",
+    "plays_hand": "U",
+    "points": 124
+  },
+  {
+    "name": "Igor Marcondes",
+    "rank_single": 371,
+    "country": "BRA",
+    "plays_hand": "U",
+    "points": 124
+  },
+  {
+    "name": "Pedro Sakamoto",
+    "rank_single": 372,
+    "country": "BRA",
+    "plays_hand": "U",
+    "points": 124
+  },
+  {
+    "name": "Max Alcal\u00e1 Gurri",
+    "rank_single": 373,
+    "country": "ESP",
+    "plays_hand": "U",
+    "points": 124
+  },
+  {
+    "name": "Denis Yevseyev",
+    "rank_single": 374,
+    "country": "KAZ",
+    "plays_hand": "U",
+    "points": 124
+  },
+  {
+    "name": "Dominic Stricker",
+    "rank_single": 375,
+    "country": "SUI",
+    "plays_hand": "U",
+    "points": 123
+  },
+  {
+    "name": "Gast\u00e3o Elias",
+    "rank_single": 376,
+    "country": "POR",
+    "plays_hand": "U",
+    "points": 123
+  },
+  {
+    "name": "Marc Polmans",
+    "rank_single": 377,
+    "country": "AUS",
+    "plays_hand": "U",
+    "points": 123
+  },
+  {
+    "name": "Aidan McHugh",
+    "rank_single": 378,
+    "country": "GBR",
+    "plays_hand": "U",
+    "points": 123
+  },
+  {
+    "name": "David Jord\u00e1 Sanchis",
+    "rank_single": 379,
+    "country": "ESP",
+    "plays_hand": "U",
+    "points": 123
+  },
+  {
+    "name": "Lucas Poullain",
+    "rank_single": 380,
+    "country": "FRA",
+    "plays_hand": "U",
+    "points": 123
+  },
+  {
+    "name": "Christoph Negritu",
+    "rank_single": 381,
+    "country": "GER",
+    "plays_hand": "U",
+    "points": 123
+  },
+  {
+    "name": "Facundo Bagnis",
+    "rank_single": 382,
+    "country": "ARG",
+    "plays_hand": "U",
+    "points": 120
+  },
+  {
+    "name": "Li Tu",
+    "rank_single": 383,
+    "country": "AUS",
+    "plays_hand": "U",
+    "points": 120
+  },
+  {
+    "name": "Carlo Alberto Caniato",
+    "rank_single": 384,
+    "country": "ITA",
+    "plays_hand": "U",
+    "points": 120
+  },
+  {
+    "name": "Hyeon Chung",
+    "rank_single": 385,
+    "country": "KOR",
+    "plays_hand": "U",
+    "points": 120
+  },
+  {
+    "name": "Ioannis Xilas",
+    "rank_single": 386,
+    "country": "GRE",
+    "plays_hand": "U",
+    "points": 120
+  },
+  {
+    "name": "Mili Polji\u010dak",
+    "rank_single": 387,
+    "country": "CRO",
+    "plays_hand": "U",
+    "points": 120
+  },
+  {
+    "name": "Kasidit Samrej",
+    "rank_single": 388,
+    "country": "THA",
+    "plays_hand": "U",
+    "points": 120
+  },
+  {
+    "name": "Andrea Picchione",
+    "rank_single": 389,
+    "country": "ITA",
+    "plays_hand": "U",
+    "points": 119
+  },
+  {
+    "name": "Albert Ramos Vi\u00f1olas",
+    "rank_single": 390,
+    "country": "ESP",
+    "plays_hand": "U",
+    "points": 118
+  },
+  {
+    "name": "Taro Daniel",
+    "rank_single": 391,
+    "country": "JPN",
+    "plays_hand": "U",
+    "points": 118
+  },
+  {
+    "name": "Adria Soriano Barrera",
+    "rank_single": 392,
+    "country": "COL",
+    "plays_hand": "U",
+    "points": 118
+  },
+  {
+    "name": "Sean Cuenin",
+    "rank_single": 393,
+    "country": "FRA",
+    "plays_hand": "U",
+    "points": 118
+  },
+  {
+    "name": "Ra\u00fal Brancaccio",
+    "rank_single": 394,
+    "country": "ITA",
+    "plays_hand": "U",
+    "points": 118
+  },
+  {
+    "name": "Aryan Shah",
+    "rank_single": 395,
+    "country": "IND",
+    "plays_hand": "U",
+    "points": 118
+  },
+  {
+    "name": "Rapha\u00ebl P\u00e9rot",
+    "rank_single": 396,
+    "country": "FRA",
+    "plays_hand": "U",
+    "points": 117
+  },
+  {
+    "name": "Dan Martin",
+    "rank_single": 397,
+    "country": "CAN",
+    "plays_hand": "U",
+    "points": 116
+  },
+  {
+    "name": "Samir Banerjee",
+    "rank_single": 398,
+    "country": "USA",
+    "plays_hand": "U",
+    "points": 116
+  },
+  {
+    "name": "Juan Manuel La Serna",
+    "rank_single": 399,
+    "country": "ARG",
+    "plays_hand": "U",
+    "points": 116
+  },
+  {
+    "name": "Alexey Vatutin",
+    "rank_single": 400,
+    "country": "RUS",
+    "plays_hand": "U",
+    "points": 116
+  },
+  {
+    "name": "Aryna Sabalenka",
+    "rank_single": 1,
+    "country": "BLR",
+    "plays_hand": "U",
+    "points": 9760
+  },
+  {
+    "name": "Iga \u015awi\u0105tek",
+    "rank_single": 2,
+    "country": "POL",
+    "plays_hand": "U",
+    "points": 7618
+  },
+  {
+    "name": "Amanda Anisimova",
+    "rank_single": 3,
+    "country": "USA",
+    "plays_hand": "U",
+    "points": 6320
+  },
+  {
+    "name": "Coco Gauff",
+    "rank_single": 4,
+    "country": "USA",
+    "plays_hand": "U",
+    "points": 6063
+  },
+  {
+    "name": "Elena Rybakina",
+    "rank_single": 5,
+    "country": "KAZ",
+    "plays_hand": "U",
+    "points": 5680
+  },
+  {
+    "name": "Jessica Pegula",
+    "rank_single": 6,
+    "country": "USA",
+    "plays_hand": "U",
+    "points": 5393
+  },
+  {
+    "name": "Mirra Andreeva",
+    "rank_single": 7,
+    "country": "RUS",
+    "plays_hand": "U",
+    "points": 4561
+  },
+  {
+    "name": "Jasmine Paolini",
+    "rank_single": 8,
+    "country": "ITA",
+    "plays_hand": "U",
+    "points": 4207
+  },
+  {
+    "name": "Belinda Bencic",
+    "rank_single": 9,
+    "country": "SUI",
+    "plays_hand": "U",
+    "points": 3342
+  },
+  {
+    "name": "Ekaterina Alexandrova",
+    "rank_single": 10,
+    "country": "RUS",
+    "plays_hand": "U",
+    "points": 2983
+  },
+  {
+    "name": "Linda Noskov\u00e1",
+    "rank_single": 11,
+    "country": "CZE",
+    "plays_hand": "U",
+    "points": 2701
+  },
+  {
+    "name": "Elina Svitolina",
+    "rank_single": 12,
+    "country": "UKR",
+    "plays_hand": "U",
+    "points": 2495
+  },
+  {
+    "name": "Victoria Mboko",
+    "rank_single": 13,
+    "country": "CAN",
+    "plays_hand": "U",
+    "points": 2436
+  },
+  {
+    "name": "Naomi Osaka",
+    "rank_single": 14,
+    "country": "JPN",
+    "plays_hand": "U",
+    "points": 2306
+  },
+  {
+    "name": "Clara Tauson",
+    "rank_single": 15,
+    "country": "DEN",
+    "plays_hand": "U",
+    "points": 2285
+  },
+  {
+    "name": "Madison Keys",
+    "rank_single": 16,
+    "country": "USA",
+    "plays_hand": "U",
+    "points": 2181
+  },
+  {
+    "name": "Emma Navarro",
+    "rank_single": 17,
+    "country": "USA",
+    "plays_hand": "U",
+    "points": 2095
+  },
+  {
+    "name": "Ludmilla Samsonova",
+    "rank_single": 18,
+    "country": "RUS",
+    "plays_hand": "U",
+    "points": 2062
+  },
+  {
+    "name": "Diana Shnaider",
+    "rank_single": 19,
+    "country": "RUS",
+    "plays_hand": "U",
+    "points": 1893
+  },
+  {
+    "name": "Karol\u00edna Muchov\u00e1",
+    "rank_single": 20,
+    "country": "CZE",
+    "plays_hand": "U",
+    "points": 1888
+  },
+  {
+    "name": "Marta Kostyuk",
+    "rank_single": 21,
+    "country": "UKR",
+    "plays_hand": "U",
+    "points": 1863
+  },
+  {
+    "name": "Je\u013cena Ostapenko",
+    "rank_single": 22,
+    "country": "LAT",
+    "plays_hand": "U",
+    "points": 1801
+  },
+  {
+    "name": "Elise Mertens",
+    "rank_single": 23,
+    "country": "BEL",
+    "plays_hand": "U",
+    "points": 1766
+  },
+  {
+    "name": "Leylah Fernandez",
+    "rank_single": 24,
+    "country": "CAN",
+    "plays_hand": "U",
+    "points": 1701
+  },
+  {
+    "name": "Iva Jovic",
+    "rank_single": 25,
+    "country": "USA",
+    "plays_hand": "U",
+    "points": 1671
+  },
+  {
+    "name": "Qinwen Zheng",
+    "rank_single": 26,
+    "country": "CHN",
+    "plays_hand": "U",
+    "points": 1658
+  },
+  {
+    "name": "Sofia Kenin",
+    "rank_single": 27,
+    "country": "USA",
+    "plays_hand": "U",
+    "points": 1567
+  },
+  {
+    "name": "Maya Joint",
+    "rank_single": 28,
+    "country": "AUS",
+    "plays_hand": "U",
+    "points": 1549
+  },
+  {
+    "name": "Emma Raducanu",
+    "rank_single": 29,
+    "country": "GBR",
+    "plays_hand": "U",
+    "points": 1547
+  },
+  {
+    "name": "Anna Kalinskaya",
+    "rank_single": 30,
+    "country": "RUS",
+    "plays_hand": "U",
+    "points": 1483
+  },
+  {
+    "name": "Mark\u00e9ta Vondrou\u0161ov\u00e1",
+    "rank_single": 31,
+    "country": "CZE",
+    "plays_hand": "U",
+    "points": 1446
+  },
+  {
+    "name": "Mccartney Kessler",
+    "rank_single": 32,
+    "country": "USA",
+    "plays_hand": "U",
+    "points": 1395
+  },
+  {
+    "name": "Lo\u00efs Boisson",
+    "rank_single": 33,
+    "country": "FRA",
+    "plays_hand": "U",
+    "points": 1351
+  },
+  {
+    "name": "Jaqueline Cristian",
+    "rank_single": 34,
+    "country": "ROU",
+    "plays_hand": "U",
+    "points": 1307
+  },
+  {
+    "name": "Sorana C\u00eerstea",
+    "rank_single": 35,
+    "country": "ROU",
+    "plays_hand": "U",
+    "points": 1303
+  },
+  {
+    "name": "Marie Bouzkov\u00e1",
+    "rank_single": 36,
+    "country": "CZE",
+    "plays_hand": "U",
+    "points": 1285
+  },
+  {
+    "name": "Veronika Kudermetova",
+    "rank_single": 37,
+    "country": "RUS",
+    "plays_hand": "U",
+    "points": 1277
+  },
+  {
+    "name": "Kate\u0159ina Siniakov\u00e1",
+    "rank_single": 38,
+    "country": "CZE",
+    "plays_hand": "U",
+    "points": 1275
+  },
+  {
+    "name": "Ann Li",
+    "rank_single": 39,
+    "country": "USA",
+    "plays_hand": "U",
+    "points": 1243
+  },
+  {
+    "name": "Magda Linette",
+    "rank_single": 40,
+    "country": "POL",
+    "plays_hand": "U",
+    "points": 1217
+  },
+  {
+    "name": "J\u00e9ssica Bouzas Maneiro",
+    "rank_single": 41,
+    "country": "ESP",
+    "plays_hand": "U",
+    "points": 1202
+  },
+  {
+    "name": "Xinyu Wang",
+    "rank_single": 42,
+    "country": "CHN",
+    "plays_hand": "U",
+    "points": 1186
+  },
+  {
+    "name": "Dayana Yastremska",
+    "rank_single": 43,
+    "country": "UKR",
+    "plays_hand": "U",
+    "points": 1175
+  },
+  {
+    "name": "Alexandra Eala",
+    "rank_single": 44,
+    "country": "PHI",
+    "plays_hand": "U",
+    "points": 1154
+  },
+  {
+    "name": "Emiliana Arango",
+    "rank_single": 45,
+    "country": "COL",
+    "plays_hand": "U",
+    "points": 1142
+  },
+  {
+    "name": "Janice Tjen",
+    "rank_single": 46,
+    "country": "INA",
+    "plays_hand": "U",
+    "points": 1139
+  },
+  {
+    "name": "Tereza Valentov\u00e1",
+    "rank_single": 47,
+    "country": "CZE",
+    "plays_hand": "U",
+    "points": 1115
+  },
+  {
+    "name": "Laura Siegemund",
+    "rank_single": 48,
+    "country": "GER",
+    "plays_hand": "U",
+    "points": 1111
+  },
+  {
+    "name": "Maria Sakkari",
+    "rank_single": 49,
+    "country": "GRE",
+    "plays_hand": "U",
+    "points": 1110
+  },
+  {
+    "name": "Elisabetta Cocciaretto",
+    "rank_single": 50,
+    "country": "ITA",
+    "plays_hand": "U",
+    "points": 1099
+  },
+  {
+    "name": "Barbora Krej\u010d\u00edkov\u00e1",
+    "rank_single": 51,
+    "country": "CZE",
+    "plays_hand": "U",
+    "points": 1091
+  },
+  {
+    "name": "Elsa Jacquemot",
+    "rank_single": 52,
+    "country": "FRA",
+    "plays_hand": "U",
+    "points": 1091
+  },
+  {
+    "name": "Tatjana Maria",
+    "rank_single": 53,
+    "country": "GER",
+    "plays_hand": "U",
+    "points": 1089
+  },
+  {
+    "name": "Ashlyn Krueger",
+    "rank_single": 54,
+    "country": "USA",
+    "plays_hand": "U",
+    "points": 1086
+  },
+  {
+    "name": "Cristina Buc\u0219a",
+    "rank_single": 55,
+    "country": "ESP",
+    "plays_hand": "U",
+    "points": 1069
+  },
+  {
+    "name": "Peyton Stearns",
+    "rank_single": 56,
+    "country": "USA",
+    "plays_hand": "U",
+    "points": 1047
+  },
+  {
+    "name": "Eva Lys",
+    "rank_single": 57,
+    "country": "GER",
+    "plays_hand": "U",
+    "points": 1043
+  },
+  {
+    "name": "Magdalena Fr\u0119ch",
+    "rank_single": 58,
+    "country": "POL",
+    "plays_hand": "U",
+    "points": 1033
+  },
+  {
+    "name": "Hailey Baptiste",
+    "rank_single": 59,
+    "country": "USA",
+    "plays_hand": "U",
+    "points": 1011
+  },
+  {
+    "name": "Anastasia Potapova",
+    "rank_single": 60,
+    "country": "AUT",
+    "plays_hand": "U",
+    "points": 1008
+  },
+  {
+    "name": "Sonay Kartal",
+    "rank_single": 61,
+    "country": "GBR",
+    "plays_hand": "U",
+    "points": 1004
+  },
+  {
+    "name": "Daria Kasatkina",
+    "rank_single": 62,
+    "country": "AUS",
+    "plays_hand": "U",
+    "points": 997
+  },
+  {
+    "name": "Anna Bond\u00e1r",
+    "rank_single": 63,
+    "country": "HUN",
+    "plays_hand": "U",
+    "points": 973
+  },
+  {
+    "name": "Paula Badosa",
+    "rank_single": 64,
+    "country": "ESP",
+    "plays_hand": "U",
+    "points": 966
+  },
+  {
+    "name": "Solana Sierra",
+    "rank_single": 65,
+    "country": "ARG",
+    "plays_hand": "U",
+    "points": 953
+  },
+  {
+    "name": "Francesca Jones",
+    "rank_single": 66,
+    "country": "GBR",
+    "plays_hand": "U",
+    "points": 941
+  },
+  {
+    "name": "Antonia Ru\u017ei\u0107",
+    "rank_single": 67,
+    "country": "CRO",
+    "plays_hand": "U",
+    "points": 933
+  },
+  {
+    "name": "Beatriz Haddad Maia",
+    "rank_single": 68,
+    "country": "BRA",
+    "plays_hand": "U",
+    "points": 932
+  },
+  {
+    "name": "Petra Mar\u010dinko",
+    "rank_single": 69,
+    "country": "CRO",
+    "plays_hand": "U",
+    "points": 912
+  },
+  {
+    "name": "Caty McNally",
+    "rank_single": 70,
+    "country": "USA",
+    "plays_hand": "U",
+    "points": 896
+  },
+  {
+    "name": "Varvara Gracheva",
+    "rank_single": 71,
+    "country": "FRA",
+    "plays_hand": "U",
+    "points": 887
+  },
+  {
+    "name": "Ajla Tomljanovi\u0107",
+    "rank_single": 72,
+    "country": "AUS",
+    "plays_hand": "U",
+    "points": 881
+  },
+  {
+    "name": "Anna Blinkova",
+    "rank_single": 73,
+    "country": "RUS",
+    "plays_hand": "U",
+    "points": 868
+  },
+  {
+    "name": "Danielle Collins",
+    "rank_single": 74,
+    "country": "USA",
+    "plays_hand": "U",
+    "points": 865
+  },
+  {
+    "name": "Julia Grabher",
+    "rank_single": 75,
+    "country": "AUT",
+    "plays_hand": "U",
+    "points": 859
+  },
+  {
+    "name": "Rebecca \u0160ramkov\u00e1",
+    "rank_single": 76,
+    "country": "SVK",
+    "plays_hand": "U",
+    "points": 848
+  },
+  {
+    "name": "Shuai Zhang",
+    "rank_single": 77,
+    "country": "CHN",
+    "plays_hand": "U",
+    "points": 839
+  },
+  {
+    "name": "Ella Seidel",
+    "rank_single": 78,
+    "country": "GER",
+    "plays_hand": "U",
+    "points": 837
+  },
+  {
+    "name": "Kimberly Birrell",
+    "rank_single": 79,
+    "country": "AUS",
+    "plays_hand": "U",
+    "points": 837
+  },
+  {
+    "name": "Elena-Gabriela Ruse",
+    "rank_single": 80,
+    "country": "ROU",
+    "plays_hand": "U",
+    "points": 832
+  },
+  {
+    "name": "Alycia Parks",
+    "rank_single": 81,
+    "country": "USA",
+    "plays_hand": "U",
+    "points": 828
+  },
+  {
+    "name": "Lulu Sun",
+    "rank_single": 82,
+    "country": "NZL",
+    "plays_hand": "U",
+    "points": 825
+  },
+  {
+    "name": "Moyuka Uchijima",
+    "rank_single": 83,
+    "country": "JPN",
+    "plays_hand": "U",
+    "points": 822
+  },
+  {
+    "name": "Olga Danilovi\u0107",
+    "rank_single": 84,
+    "country": "SRB",
+    "plays_hand": "U",
+    "points": 811
+  },
+  {
+    "name": "Viktorija Golubic",
+    "rank_single": 85,
+    "country": "SUI",
+    "plays_hand": "U",
+    "points": 810
+  },
+  {
+    "name": "Oksana Selekhmeteva",
+    "rank_single": 86,
+    "country": "RUS",
+    "plays_hand": "U",
+    "points": 808
+  },
+  {
+    "name": "Dalma G\u00e1lfi",
+    "rank_single": 87,
+    "country": "HUN",
+    "plays_hand": "U",
+    "points": 806
+  },
+  {
+    "name": "Oleksandra Oliynykova",
+    "rank_single": 88,
+    "country": "UKR",
+    "plays_hand": "U",
+    "points": 805
+  },
+  {
+    "name": "Kamilla Rakhimova",
+    "rank_single": 89,
+    "country": "UZB",
+    "plays_hand": "U",
+    "points": 802
+  },
+  {
+    "name": "Renata Zaraz\u00faa",
+    "rank_single": 90,
+    "country": "MEX",
+    "plays_hand": "U",
+    "points": 795
+  },
+  {
+    "name": "Zeynep S\u00f6nmez",
+    "rank_single": 91,
+    "country": "TUR",
+    "plays_hand": "U",
+    "points": 794
+  },
+  {
+    "name": "Simona Waltert",
+    "rank_single": 92,
+    "country": "SUI",
+    "plays_hand": "U",
+    "points": 786
+  },
+  {
+    "name": "Katie Volynets",
+    "rank_single": 93,
+    "country": "USA",
+    "plays_hand": "U",
+    "points": 783
+  },
+  {
+    "name": "Kaja Juvan",
+    "rank_single": 94,
+    "country": "SLO",
+    "plays_hand": "U",
+    "points": 778
+  },
+  {
+    "name": "Panna Udvardy",
+    "rank_single": 95,
+    "country": "HUN",
+    "plays_hand": "U",
+    "points": 771
+  },
+  {
+    "name": "Darja Semenistaja",
+    "rank_single": 96,
+    "country": "LAT",
+    "plays_hand": "U",
+    "points": 769
+  },
+  {
+    "name": "Anastasia Pavlyuchenkova",
+    "rank_single": 97,
+    "country": "RUS",
+    "plays_hand": "U",
+    "points": 765
+  },
+  {
+    "name": "S\u00e1ra Bejlek",
+    "rank_single": 98,
+    "country": "CZE",
+    "plays_hand": "U",
+    "points": 753
+  },
+  {
+    "name": "Yulia Putintseva",
+    "rank_single": 99,
+    "country": "KAZ",
+    "plays_hand": "U",
+    "points": 739
+  },
+  {
+    "name": "Veronika Erjavec",
+    "rank_single": 100,
+    "country": "SLO",
+    "plays_hand": "U",
+    "points": 735
+  },
+  {
+    "name": "Yulia Starodubtseva",
+    "rank_single": 101,
+    "country": "UKR",
+    "plays_hand": "U",
+    "points": 731
+  },
+  {
+    "name": "Camila Osorio",
+    "rank_single": 102,
+    "country": "COL",
+    "plays_hand": "U",
+    "points": 727
+  },
+  {
+    "name": "Sinja Kraus",
+    "rank_single": 103,
+    "country": "AUT",
+    "plays_hand": "U",
+    "points": 727
+  },
+  {
+    "name": "Suzan Lamens",
+    "rank_single": 104,
+    "country": "NED",
+    "plays_hand": "U",
+    "points": 720
+  },
+  {
+    "name": "Mayar Sherif",
+    "rank_single": 105,
+    "country": "EGY",
+    "plays_hand": "U",
+    "points": 720
+  },
+  {
+    "name": "Anastasia Zakharova",
+    "rank_single": 106,
+    "country": "RUS",
+    "plays_hand": "U",
+    "points": 719
+  },
+  {
+    "name": "Aliaksandra Sasnovich",
+    "rank_single": 107,
+    "country": "BLR",
+    "plays_hand": "U",
+    "points": 710
+  },
+  {
+    "name": "Donna Veki\u0107",
+    "rank_single": 108,
+    "country": "CRO",
+    "plays_hand": "U",
+    "points": 705
+  },
+  {
+    "name": "Lucia Bronzetti",
+    "rank_single": 109,
+    "country": "ITA",
+    "plays_hand": "U",
+    "points": 688
+  },
+  {
+    "name": "Taylor Townsend",
+    "rank_single": 110,
+    "country": "USA",
+    "plays_hand": "U",
+    "points": 671
+  },
+  {
+    "name": "Victoria Jimenez Kasintseva",
+    "rank_single": 111,
+    "country": "AND",
+    "plays_hand": "U",
+    "points": 657
+  },
+  {
+    "name": "Nikola Bart\u016f\u0148kov\u00e1",
+    "rank_single": 112,
+    "country": "CZE",
+    "plays_hand": "U",
+    "points": 652
+  },
+  {
+    "name": "Rebeka Masarova",
+    "rank_single": 113,
+    "country": "SUI",
+    "plays_hand": "U",
+    "points": 649
+  },
+  {
+    "name": "L\u00e9olia Jeanjean",
+    "rank_single": 114,
+    "country": "FRA",
+    "plays_hand": "U",
+    "points": 649
+  },
+  {
+    "name": "Tiantsoa Rakotomanga Rajaonah",
+    "rank_single": 115,
+    "country": "FRA",
+    "plays_hand": "U",
+    "points": 649
+  },
+  {
+    "name": "Caroline Dolehide",
+    "rank_single": 116,
+    "country": "USA",
+    "plays_hand": "U",
+    "points": 641
+  },
+  {
+    "name": "Talia Gibson",
+    "rank_single": 117,
+    "country": "AUS",
+    "plays_hand": "U",
+    "points": 634
+  },
+  {
+    "name": "Katie Boulter",
+    "rank_single": 118,
+    "country": "GBR",
+    "plays_hand": "U",
+    "points": 624
+  },
+  {
+    "name": "Linda Fruhvirtov\u00e1",
+    "rank_single": 119,
+    "country": "CZE",
+    "plays_hand": "U",
+    "points": 618
+  },
+  {
+    "name": "Joanna Garland",
+    "rank_single": 120,
+    "country": "TWN",
+    "plays_hand": "U",
+    "points": 612
+  },
+  {
+    "name": "Diane Parry",
+    "rank_single": 121,
+    "country": "FRA",
+    "plays_hand": "U",
+    "points": 607
+  },
+  {
+    "name": "Marina Stakusic",
+    "rank_single": 122,
+    "country": "CAN",
+    "plays_hand": "U",
+    "points": 603
+  },
+  {
+    "name": "Tamara Korpatsch",
+    "rank_single": 123,
+    "country": "GER",
+    "plays_hand": "U",
+    "points": 600
+  },
+  {
+    "name": "Greet Minnen",
+    "rank_single": 124,
+    "country": "BEL",
+    "plays_hand": "U",
+    "points": 599
+  },
+  {
+    "name": "Priscilla Hon",
+    "rank_single": 125,
+    "country": "AUS",
+    "plays_hand": "U",
+    "points": 596
+  },
+  {
+    "name": "Ons Jabeur",
+    "rank_single": 126,
+    "country": "TUN",
+    "plays_hand": "U",
+    "points": 595
+  },
+  {
+    "name": "Yue Yuan",
+    "rank_single": 127,
+    "country": "CHN",
+    "plays_hand": "U",
+    "points": 582
+  },
+  {
+    "name": "Linda Klimovi\u010dov\u00e1",
+    "rank_single": 128,
+    "country": "POL",
+    "plays_hand": "U",
+    "points": 569
+  },
+  {
+    "name": "Lanlana Tararudee",
+    "rank_single": 129,
+    "country": "THA",
+    "plays_hand": "U",
+    "points": 568
+  },
+  {
+    "name": "Kaitlin Quevedo",
+    "rank_single": 130,
+    "country": "ESP",
+    "plays_hand": "U",
+    "points": 553
+  },
+  {
+    "name": "Himeno Sakatsume",
+    "rank_single": 131,
+    "country": "JPN",
+    "plays_hand": "U",
+    "points": 550
+  },
+  {
+    "name": "Arantxa Rus",
+    "rank_single": 132,
+    "country": "NED",
+    "plays_hand": "U",
+    "points": 546
+  },
+  {
+    "name": "Hanne Vandewinkel",
+    "rank_single": 133,
+    "country": "BEL",
+    "plays_hand": "U",
+    "points": 539
+  },
+  {
+    "name": "Katarzyna Kawa",
+    "rank_single": 134,
+    "country": "POL",
+    "plays_hand": "U",
+    "points": 537
+  },
+  {
+    "name": "Darja Vi\u010fmanov\u00e1",
+    "rank_single": 135,
+    "country": "CZE",
+    "plays_hand": "U",
+    "points": 536
+  },
+  {
+    "name": "Lola Radivojevic",
+    "rank_single": 136,
+    "country": "SRB",
+    "plays_hand": "U",
+    "points": 534
+  },
+  {
+    "name": "Lucrezia Stefanini",
+    "rank_single": 137,
+    "country": "ITA",
+    "plays_hand": "U",
+    "points": 527
+  },
+  {
+    "name": "Jil Teichmann",
+    "rank_single": 138,
+    "country": "SUI",
+    "plays_hand": "U",
+    "points": 521
+  },
+  {
+    "name": "Polina Kudermetova",
+    "rank_single": 139,
+    "country": "UZB",
+    "plays_hand": "U",
+    "points": 520
+  },
+  {
+    "name": "Viktoriya Tomova",
+    "rank_single": 140,
+    "country": "BUL",
+    "plays_hand": "U",
+    "points": 518
+  },
+  {
+    "name": "Daria Snigur",
+    "rank_single": 141,
+    "country": "UKR",
+    "plays_hand": "U",
+    "points": 516
+  },
+  {
+    "name": "Sofia Costoulas",
+    "rank_single": 142,
+    "country": "BEL",
+    "plays_hand": "U",
+    "points": 501
+  },
+  {
+    "name": "Maja Chwali\u0144ska",
+    "rank_single": 143,
+    "country": "POL",
+    "plays_hand": "U",
+    "points": 493
+  },
+  {
+    "name": "Lilli Tagger",
+    "rank_single": 144,
+    "country": "AUT",
+    "plays_hand": "U",
+    "points": 492
+  },
+  {
+    "name": "Leyre Romero Gormaz",
+    "rank_single": 145,
+    "country": "ESP",
+    "plays_hand": "U",
+    "points": 491
+  },
+  {
+    "name": "Irina-Camelia Begu",
+    "rank_single": 146,
+    "country": "ROU",
+    "plays_hand": "U",
+    "points": 486
+  },
+  {
+    "name": "Taylah Preston",
+    "rank_single": 147,
+    "country": "AUS",
+    "plays_hand": "U",
+    "points": 486
+  },
+  {
+    "name": "Victoria Azarenka",
+    "rank_single": 148,
+    "country": "BLR",
+    "plays_hand": "U",
+    "points": 485
+  },
+  {
+    "name": "Maddison Inglis",
+    "rank_single": 149,
+    "country": "AUS",
+    "plays_hand": "U",
+    "points": 484
+  },
+  {
+    "name": "Varvara Lepchenko",
+    "rank_single": 150,
+    "country": "USA",
+    "plays_hand": "U",
+    "points": 483
+  },
+  {
+    "name": "Dominika \u0160\u00e1lkov\u00e1",
+    "rank_single": 151,
+    "country": "CZE",
+    "plays_hand": "U",
+    "points": 475
+  },
+  {
+    "name": "Tamara Zidan\u0161ek",
+    "rank_single": 152,
+    "country": "SLO",
+    "plays_hand": "U",
+    "points": 467
+  },
+  {
+    "name": "Maria Timofeeva",
+    "rank_single": 153,
+    "country": "UZB",
+    "plays_hand": "U",
+    "points": 463
+  },
+  {
+    "name": "Mar\u00eda Carl\u00e9",
+    "rank_single": 154,
+    "country": "ARG",
+    "plays_hand": "U",
+    "points": 457
+  },
+  {
+    "name": "Iryna Shymanovich",
+    "rank_single": 155,
+    "country": "BLR",
+    "plays_hand": "U",
+    "points": 453
+  },
+  {
+    "name": "Despina Papamichail",
+    "rank_single": 156,
+    "country": "GRE",
+    "plays_hand": "U",
+    "points": 451
+  },
+  {
+    "name": "Polina Iatcenko",
+    "rank_single": 157,
+    "country": "RUS",
+    "plays_hand": "U",
+    "points": 447
+  },
+  {
+    "name": "Lin Zhu",
+    "rank_single": 158,
+    "country": "CHN",
+    "plays_hand": "U",
+    "points": 446
+  },
+  {
+    "name": "Emerson Jones",
+    "rank_single": 159,
+    "country": "AUS",
+    "plays_hand": "U",
+    "points": 435
+  },
+  {
+    "name": "Alina Charaeva",
+    "rank_single": 160,
+    "country": "RUS",
+    "plays_hand": "U",
+    "points": 433
+  },
+  {
+    "name": "Nuria Brancaccio",
+    "rank_single": 161,
+    "country": "ITA",
+    "plays_hand": "U",
+    "points": 430
+  },
+  {
+    "name": "Jessika Ponchet",
+    "rank_single": 162,
+    "country": "FRA",
+    "plays_hand": "U",
+    "points": 424
+  },
+  {
+    "name": "Anhelina Kalinina",
+    "rank_single": 163,
+    "country": "UKR",
+    "plays_hand": "U",
+    "points": 422
+  },
+  {
+    "name": "Aoi Ito",
+    "rank_single": 164,
+    "country": "JPN",
+    "plays_hand": "U",
+    "points": 421
+  },
+  {
+    "name": "Elina Avanesyan",
+    "rank_single": 165,
+    "country": "ARM",
+    "plays_hand": "U",
+    "points": 421
+  },
+  {
+    "name": "Ekaterine Gorgodze",
+    "rank_single": 166,
+    "country": "GEO",
+    "plays_hand": "U",
+    "points": 418
+  },
+  {
+    "name": "Whitney Osuigwe",
+    "rank_single": 167,
+    "country": "USA",
+    "plays_hand": "U",
+    "points": 417
+  },
+  {
+    "name": "Teodora Kostovi\u0107",
+    "rank_single": 168,
+    "country": "SRB",
+    "plays_hand": "U",
+    "points": 416
+  },
+  {
+    "name": "Guiomar Maristany",
+    "rank_single": 169,
+    "country": "ESP",
+    "plays_hand": "U",
+    "points": 406
+  },
+  {
+    "name": "Astra Sharma",
+    "rank_single": 170,
+    "country": "AUS",
+    "plays_hand": "U",
+    "points": 406
+  },
+  {
+    "name": "Anca Todoni",
+    "rank_single": 171,
+    "country": "ROU",
+    "plays_hand": "U",
+    "points": 399
+  },
+  {
+    "name": "Bernarda Pera",
+    "rank_single": 172,
+    "country": "USA",
+    "plays_hand": "U",
+    "points": 398
+  },
+  {
+    "name": "Hanyu Guo",
+    "rank_single": 173,
+    "country": "CHN",
+    "plays_hand": "U",
+    "points": 393
+  },
+  {
+    "name": "Louisa Chirico",
+    "rank_single": 174,
+    "country": "USA",
+    "plays_hand": "U",
+    "points": 389
+  },
+  {
+    "name": "Olivia Gadecki",
+    "rank_single": 175,
+    "country": "AUS",
+    "plays_hand": "U",
+    "points": 387
+  },
+  {
+    "name": "Anouk Koevermans",
+    "rank_single": 176,
+    "country": "NED",
+    "plays_hand": "U",
+    "points": 386
+  },
+  {
+    "name": "Anastasija Sevastova",
+    "rank_single": 177,
+    "country": "LAT",
+    "plays_hand": "U",
+    "points": 385
+  },
+  {
+    "name": "Anna-Lena Friedsam",
+    "rank_single": 178,
+    "country": "GER",
+    "plays_hand": "U",
+    "points": 384
+  },
+  {
+    "name": "Carole Monnet",
+    "rank_single": 179,
+    "country": "FRA",
+    "plays_hand": "U",
+    "points": 381
+  },
+  {
+    "name": "Yeon Woo Ku",
+    "rank_single": 180,
+    "country": "KOR",
+    "plays_hand": "U",
+    "points": 380
+  },
+  {
+    "name": "Carol Lee",
+    "rank_single": 181,
+    "country": "USA",
+    "plays_hand": "U",
+    "points": 378
+  },
+  {
+    "name": "Gabriela Knutson",
+    "rank_single": 182,
+    "country": "CZE",
+    "plays_hand": "U",
+    "points": 374
+  },
+  {
+    "name": "Lisa Pigato",
+    "rank_single": 183,
+    "country": "ITA",
+    "plays_hand": "U",
+    "points": 374
+  },
+  {
+    "name": "Carson Branstine",
+    "rank_single": 184,
+    "country": "CAN",
+    "plays_hand": "U",
+    "points": 373
+  },
+  {
+    "name": "Elvina Kalieva",
+    "rank_single": 185,
+    "country": "USA",
+    "plays_hand": "U",
+    "points": 373
+  },
+  {
+    "name": "Ana Sof\u00eda S\u00e1nchez",
+    "rank_single": 186,
+    "country": "MEX",
+    "plays_hand": "U",
+    "points": 373
+  },
+  {
+    "name": "Elena Pridankina",
+    "rank_single": 187,
+    "country": "RUS",
+    "plays_hand": "U",
+    "points": 368
+  },
+  {
+    "name": "Alice Ram\u00e9",
+    "rank_single": 188,
+    "country": "FRA",
+    "plays_hand": "U",
+    "points": 368
+  },
+  {
+    "name": "Julia Riera",
+    "rank_single": 189,
+    "country": "ARG",
+    "plays_hand": "U",
+    "points": 367
+  },
+  {
+    "name": "Lina Gjorcheska",
+    "rank_single": 190,
+    "country": "MKD",
+    "plays_hand": "U",
+    "points": 367
+  },
+  {
+    "name": "Ena Shibahara",
+    "rank_single": 191,
+    "country": "JPN",
+    "plays_hand": "U",
+    "points": 365
+  },
+  {
+    "name": "Bianca Andreescu",
+    "rank_single": 192,
+    "country": "CAN",
+    "plays_hand": "U",
+    "points": 354
+  },
+  {
+    "name": "Daria Saville",
+    "rank_single": 193,
+    "country": "AUS",
+    "plays_hand": "U",
+    "points": 354
+  },
+  {
+    "name": "Anastasia Gasanova",
+    "rank_single": 194,
+    "country": "RUS",
+    "plays_hand": "U",
+    "points": 352
+  },
+  {
+    "name": "Alina Korneeva",
+    "rank_single": 195,
+    "country": "RUS",
+    "plays_hand": "U",
+    "points": 352
+  },
+  {
+    "name": "Silvia Ambrosio",
+    "rank_single": 196,
+    "country": "ITA",
+    "plays_hand": "U",
+    "points": 351
+  },
+  {
+    "name": "Elizabeth Mandlik",
+    "rank_single": 197,
+    "country": "USA",
+    "plays_hand": "U",
+    "points": 349
+  },
+  {
+    "name": "Miriam Bulgaru",
+    "rank_single": 198,
+    "country": "ROU",
+    "plays_hand": "U",
+    "points": 346
+  },
+  {
+    "name": "Vikt\u00f3ria Hrun\u010d\u00e1kov\u00e1",
+    "rank_single": 199,
+    "country": "SVK",
+    "plays_hand": "U",
+    "points": 345
+  },
+  {
+    "name": "Ye-Xin Ma",
+    "rank_single": 200,
+    "country": "CHN",
+    "plays_hand": "U",
+    "points": 341
+  },
+  {
+    "name": "Jana Fett",
+    "rank_single": 201,
+    "country": "CRO",
+    "plays_hand": "U",
+    "points": 340
+  },
+  {
+    "name": "Cadence Brace",
+    "rank_single": 202,
+    "country": "CAN",
+    "plays_hand": "U",
+    "points": 340
+  },
+  {
+    "name": "Claire Liu",
+    "rank_single": 203,
+    "country": "USA",
+    "plays_hand": "U",
+    "points": 339
+  },
+  {
+    "name": "Laura Samson",
+    "rank_single": 204,
+    "country": "CZE",
+    "plays_hand": "U",
+    "points": 339
+  },
+  {
+    "name": "Kayla Cross",
+    "rank_single": 205,
+    "country": "CAN",
+    "plays_hand": "U",
+    "points": 337
+  },
+  {
+    "name": "Andrea Laz\u00e1ro Garc\u00eda",
+    "rank_single": 206,
+    "country": "ESP",
+    "plays_hand": "U",
+    "points": 337
+  },
+  {
+    "name": "Mary Stoiana",
+    "rank_single": 207,
+    "country": "USA",
+    "plays_hand": "U",
+    "points": 334
+  },
+  {
+    "name": "Rebecca Marino",
+    "rank_single": 208,
+    "country": "CAN",
+    "plays_hand": "U",
+    "points": 331
+  },
+  {
+    "name": "Harriet Dart",
+    "rank_single": 209,
+    "country": "GBR",
+    "plays_hand": "U",
+    "points": 330
+  },
+  {
+    "name": "Laura Pigossi",
+    "rank_single": 210,
+    "country": "BRA",
+    "plays_hand": "U",
+    "points": 328
+  },
+  {
+    "name": "Mona Barthel",
+    "rank_single": 211,
+    "country": "GER",
+    "plays_hand": "U",
+    "points": 326
+  },
+  {
+    "name": "Mai Hontama",
+    "rank_single": 212,
+    "country": "JPN",
+    "plays_hand": "U",
+    "points": 325
+  },
+  {
+    "name": "Francisca Jorge",
+    "rank_single": 213,
+    "country": "POR",
+    "plays_hand": "U",
+    "points": 324
+  },
+  {
+    "name": "Camilla Rosatello",
+    "rank_single": 214,
+    "country": "ITA",
+    "plays_hand": "U",
+    "points": 323
+  },
+  {
+    "name": "Clervie Ngounoue",
+    "rank_single": 215,
+    "country": "USA",
+    "plays_hand": "U",
+    "points": 322
+  },
+  {
+    "name": "Marina Bassols Ribera",
+    "rank_single": 216,
+    "country": "ESP",
+    "plays_hand": "U",
+    "points": 319
+  },
+  {
+    "name": "Arina Rodionova",
+    "rank_single": 217,
+    "country": "AUS",
+    "plays_hand": "U",
+    "points": 319
+  },
+  {
+    "name": "Xinyu Gao",
+    "rank_single": 218,
+    "country": "CHN",
+    "plays_hand": "U",
+    "points": 319
+  },
+  {
+    "name": "Sada Nahimana",
+    "rank_single": 219,
+    "country": "BDI",
+    "plays_hand": "U",
+    "points": 319
+  },
+  {
+    "name": "Wakana Sonobe",
+    "rank_single": 220,
+    "country": "JPN",
+    "plays_hand": "U",
+    "points": 317
+  },
+  {
+    "name": "Xiyu Wang",
+    "rank_single": 221,
+    "country": "CHN",
+    "plays_hand": "U",
+    "points": 315
+  },
+  {
+    "name": "Kayla Day",
+    "rank_single": 222,
+    "country": "USA",
+    "plays_hand": "U",
+    "points": 314
+  },
+  {
+    "name": "Chlo\u00e9 Paquet",
+    "rank_single": 223,
+    "country": "FRA",
+    "plays_hand": "U",
+    "points": 313
+  },
+  {
+    "name": "Tara W\u00fcrth",
+    "rank_single": 224,
+    "country": "CRO",
+    "plays_hand": "U",
+    "points": 311
+  },
+  {
+    "name": "Nao Hibino",
+    "rank_single": 225,
+    "country": "JPN",
+    "plays_hand": "U",
+    "points": 310
+  },
+  {
+    "name": "Jazmin Ortenzi",
+    "rank_single": 226,
+    "country": "ARG",
+    "plays_hand": "U",
+    "points": 307
+  },
+  {
+    "name": "Harmony Tan",
+    "rank_single": 227,
+    "country": "FRA",
+    "plays_hand": "U",
+    "points": 302
+  },
+  {
+    "name": "Aliona Bolsova",
+    "rank_single": 228,
+    "country": "ESP",
+    "plays_hand": "U",
+    "points": 302
+  },
+  {
+    "name": "Hina Inoue",
+    "rank_single": 229,
+    "country": "USA",
+    "plays_hand": "U",
+    "points": 300
+  },
+  {
+    "name": "Mingge Xu",
+    "rank_single": 230,
+    "country": "GBR",
+    "plays_hand": "U",
+    "points": 300
+  },
+  {
+    "name": "Tatiana Prozorova",
+    "rank_single": 231,
+    "country": "RUS",
+    "plays_hand": "U",
+    "points": 299
+  },
+  {
+    "name": "S\u00e9l\u00e9na Janicijevic",
+    "rank_single": 232,
+    "country": "FRA",
+    "plays_hand": "U",
+    "points": 298
+  },
+  {
+    "name": "Fiona Crawley",
+    "rank_single": 233,
+    "country": "USA",
+    "plays_hand": "U",
+    "points": 297
+  },
+  {
+    "name": "Barbora Palicov\u00e1",
+    "rank_single": 234,
+    "country": "CZE",
+    "plays_hand": "U",
+    "points": 296
+  },
+  {
+    "name": "Caroline Werner",
+    "rank_single": 235,
+    "country": "GER",
+    "plays_hand": "U",
+    "points": 295
+  },
+  {
+    "name": "Susan Bandecchi",
+    "rank_single": 236,
+    "country": "SUI",
+    "plays_hand": "U",
+    "points": 293
+  },
+  {
+    "name": "Amarissa T\u00f3th",
+    "rank_single": 237,
+    "country": "HUN",
+    "plays_hand": "U",
+    "points": 293
+  },
+  {
+    "name": "Raluca \u0218erban",
+    "rank_single": 238,
+    "country": "CYP",
+    "plays_hand": "U",
+    "points": 288
+  },
+  {
+    "name": "Luisina Giovannini",
+    "rank_single": 239,
+    "country": "ARG",
+    "plays_hand": "U",
+    "points": 288
+  },
+  {
+    "name": "Angela Fita Boluda",
+    "rank_single": 240,
+    "country": "ESP",
+    "plays_hand": "U",
+    "points": 286
+  },
+  {
+    "name": "Justina Mikulskyt\u0117",
+    "rank_single": 241,
+    "country": "LTU",
+    "plays_hand": "U",
+    "points": 285
+  },
+  {
+    "name": "Anna Rogers",
+    "rank_single": 242,
+    "country": "USA",
+    "plays_hand": "U",
+    "points": 284
+  },
+  {
+    "name": "Mananchaya Sawangkaew",
+    "rank_single": 243,
+    "country": "THA",
+    "plays_hand": "U",
+    "points": 283
+  },
+  {
+    "name": "Ayana Akli",
+    "rank_single": 244,
+    "country": "USA",
+    "plays_hand": "U",
+    "points": 280
+  },
+  {
+    "name": "Storm Hunter",
+    "rank_single": 245,
+    "country": "AUS",
+    "plays_hand": "U",
+    "points": 279
+  },
+  {
+    "name": "Arianne Hartono",
+    "rank_single": 246,
+    "country": "NED",
+    "plays_hand": "U",
+    "points": 279
+  },
+  {
+    "name": "Manon L\u00e9onard",
+    "rank_single": 247,
+    "country": "FRA",
+    "plays_hand": "U",
+    "points": 278
+  },
+  {
+    "name": "Eva Vedder",
+    "rank_single": 248,
+    "country": "NED",
+    "plays_hand": "U",
+    "points": 278
+  },
+  {
+    "name": "Jessica Pieri",
+    "rank_single": 249,
+    "country": "ITA",
+    "plays_hand": "U",
+    "points": 277
+  },
+  {
+    "name": "Carolina Alves",
+    "rank_single": 250,
+    "country": "BRA",
+    "plays_hand": "U",
+    "points": 275
+  },
+  {
+    "name": "Anna Siskov\u00e1",
+    "rank_single": 251,
+    "country": "CZE",
+    "plays_hand": "U",
+    "points": 274
+  },
+  {
+    "name": "Anastasia Tikhonova",
+    "rank_single": 252,
+    "country": "RUS",
+    "plays_hand": "U",
+    "points": 273
+  },
+  {
+    "name": "Eva Guerrero \u00c1lvarez",
+    "rank_single": 253,
+    "country": "ESP",
+    "plays_hand": "U",
+    "points": 271
+  },
+  {
+    "name": "Kathinka von Deichmann",
+    "rank_single": 254,
+    "country": "LIE",
+    "plays_hand": "U",
+    "points": 270
+  },
+  {
+    "name": "Irene Burillo",
+    "rank_single": 255,
+    "country": "ESP",
+    "plays_hand": "U",
+    "points": 270
+  },
+  {
+    "name": "Yuriko Miyazaki",
+    "rank_single": 256,
+    "country": "GBR",
+    "plays_hand": "U",
+    "points": 270
+  },
+  {
+    "name": "Sara Saito",
+    "rank_single": 257,
+    "country": "JPN",
+    "plays_hand": "U",
+    "points": 268
+  },
+  {
+    "name": "Anastasiya Soboleva",
+    "rank_single": 258,
+    "country": "UKR",
+    "plays_hand": "U",
+    "points": 266
+  },
+  {
+    "name": "Nuria P\u00e1rrizas D\u00edaz",
+    "rank_single": 259,
+    "country": "ESP",
+    "plays_hand": "U",
+    "points": 263
+  },
+  {
+    "name": "Sohyun Park",
+    "rank_single": 260,
+    "country": "KOR",
+    "plays_hand": "U",
+    "points": 263
+  },
+  {
+    "name": "Julie Belgraver",
+    "rank_single": 261,
+    "country": "FRA",
+    "plays_hand": "U",
+    "points": 261
+  },
+  {
+    "name": "Lizette Cabrera",
+    "rank_single": 262,
+    "country": "AUS",
+    "plays_hand": "U",
+    "points": 260
+  },
+  {
+    "name": "Kajsa Rinaldo Persson",
+    "rank_single": 263,
+    "country": "SWE",
+    "plays_hand": "U",
+    "points": 260
+  },
+  {
+    "name": "Celine Naef",
+    "rank_single": 264,
+    "country": "SUI",
+    "plays_hand": "U",
+    "points": 259
+  },
+  {
+    "name": "Katherine Sebov",
+    "rank_single": 265,
+    "country": "CAN",
+    "plays_hand": "U",
+    "points": 255
+  },
+  {
+    "name": "Katie Swan",
+    "rank_single": 266,
+    "country": "GBR",
+    "plays_hand": "U",
+    "points": 255
+  },
+  {
+    "name": "Mia Risti\u0107",
+    "rank_single": 267,
+    "country": "SRB",
+    "plays_hand": "U",
+    "points": 254
+  },
+  {
+    "name": "Noma Noha Akugue",
+    "rank_single": 268,
+    "country": "GER",
+    "plays_hand": "U",
+    "points": 252
+  },
+  {
+    "name": "Tyra Grant",
+    "rank_single": 269,
+    "country": "ITA",
+    "plays_hand": "U",
+    "points": 247
+  },
+  {
+    "name": "Mika Stojsavljevic",
+    "rank_single": 270,
+    "country": "GBR",
+    "plays_hand": "U",
+    "points": 246
+  },
+  {
+    "name": "Valentina Ryser",
+    "rank_single": 271,
+    "country": "SUI",
+    "plays_hand": "U",
+    "points": 244
+  },
+  {
+    "name": "Lucie Havl\u00ed\u010dkov\u00e1",
+    "rank_single": 272,
+    "country": "CZE",
+    "plays_hand": "U",
+    "points": 243
+  },
+  {
+    "name": "Heather Watson",
+    "rank_single": 273,
+    "country": "GBR",
+    "plays_hand": "U",
+    "points": 242
+  },
+  {
+    "name": "Mei Yamaguchi",
+    "rank_single": 274,
+    "country": "JPN",
+    "plays_hand": "U",
+    "points": 241
+  },
+  {
+    "name": "Zarina Diyas",
+    "rank_single": 275,
+    "country": "KAZ",
+    "plays_hand": "U",
+    "points": 239
+  },
+  {
+    "name": "Tessah Andrianjafitrimo",
+    "rank_single": 276,
+    "country": "FRA",
+    "plays_hand": "U",
+    "points": 237
+  },
+  {
+    "name": "Dalila Spiteri",
+    "rank_single": 277,
+    "country": "ITA",
+    "plays_hand": "U",
+    "points": 236
+  },
+  {
+    "name": "Katharina Hobgarski",
+    "rank_single": 278,
+    "country": "GER",
+    "plays_hand": "U",
+    "points": 235
+  },
+  {
+    "name": "Veronika Podrez",
+    "rank_single": 279,
+    "country": "UKR",
+    "plays_hand": "U",
+    "points": 232
+  },
+  {
+    "name": "Tessa Johanna Brockmann",
+    "rank_single": 280,
+    "country": "GER",
+    "plays_hand": "U",
+    "points": 232
+  },
+  {
+    "name": "Xiaodi You",
+    "rank_single": 281,
+    "country": "CHN",
+    "plays_hand": "U",
+    "points": 230
+  },
+  {
+    "name": "Matilde Jorge",
+    "rank_single": 282,
+    "country": "POR",
+    "plays_hand": "U",
+    "points": 230
+  },
+  {
+    "name": "Julia Avdeeva",
+    "rank_single": 283,
+    "country": "RUS",
+    "plays_hand": "U",
+    "points": 230
+  },
+  {
+    "name": "Hiromi Abe",
+    "rank_single": 284,
+    "country": "JPN",
+    "plays_hand": "U",
+    "points": 229
+  },
+  {
+    "name": "Robin Montgomery",
+    "rank_single": 285,
+    "country": "USA",
+    "plays_hand": "U",
+    "points": 224
+  },
+  {
+    "name": "Renata Jamrichov\u00e1",
+    "rank_single": 286,
+    "country": "SVK",
+    "plays_hand": "U",
+    "points": 221
+  },
+  {
+    "name": "Rina Saigo",
+    "rank_single": 287,
+    "country": "JPN",
+    "plays_hand": "U",
+    "points": 216
+  },
+  {
+    "name": "Carolyn Ansari",
+    "rank_single": 288,
+    "country": "USA",
+    "plays_hand": "U",
+    "points": 216
+  },
+  {
+    "name": "Ekaterina Reyngold",
+    "rank_single": 289,
+    "country": "RUS",
+    "plays_hand": "U",
+    "points": 215
+  },
+  {
+    "name": "Elena Ruxandra Bertea",
+    "rank_single": 290,
+    "country": "ROU",
+    "plays_hand": "U",
+    "points": 215
+  },
+  {
+    "name": "Jule Niemeier",
+    "rank_single": 291,
+    "country": "GER",
+    "plays_hand": "U",
+    "points": 214
+  },
+  {
+    "name": "Haruka Kaji",
+    "rank_single": 292,
+    "country": "JPN",
+    "plays_hand": "U",
+    "points": 214
+  },
+  {
+    "name": "Anouck Vrancken Peeters",
+    "rank_single": 293,
+    "country": "NED",
+    "plays_hand": "U",
+    "points": 210
+  },
+  {
+    "name": "Dayeon Back",
+    "rank_single": 294,
+    "country": "KOR",
+    "plays_hand": "U",
+    "points": 209
+  },
+  {
+    "name": "Ky\u014dka Okamura",
+    "rank_single": 295,
+    "country": "JPN",
+    "plays_hand": "U",
+    "points": 208
+  },
+  {
+    "name": "Anastasia Zolotareva",
+    "rank_single": 296,
+    "country": "RUS",
+    "plays_hand": "U",
+    "points": 208
+  },
+  {
+    "name": "Alicia Herrero Li\u00f1ana",
+    "rank_single": 297,
+    "country": "ESP",
+    "plays_hand": "U",
+    "points": 207
+  },
+  {
+    "name": "Lia Karatancheva",
+    "rank_single": 298,
+    "country": "BUL",
+    "plays_hand": "U",
+    "points": 207
+  },
+  {
+    "name": "Katarina Joki\u0107",
+    "rank_single": 299,
+    "country": "SRB",
+    "plays_hand": "U",
+    "points": 206
+  },
+  {
+    "name": "Eunhye Lee",
+    "rank_single": 300,
+    "country": "KOR",
+    "plays_hand": "U",
+    "points": 205
+  },
+  {
+    "name": "Laura Hietaranta",
+    "rank_single": 301,
+    "country": "FIN",
+    "plays_hand": "U",
+    "points": 205
+  },
+  {
+    "name": "Sakura Hosogi",
+    "rank_single": 302,
+    "country": "JPN",
+    "plays_hand": "U",
+    "points": 205
+  },
+  {
+    "name": "Polona Hercog",
+    "rank_single": 303,
+    "country": "SLO",
+    "plays_hand": "U",
+    "points": 204
+  },
+  {
+    "name": "Katrina Scott",
+    "rank_single": 304,
+    "country": "USA",
+    "plays_hand": "U",
+    "points": 203
+  },
+  {
+    "name": "Elizara Yaneva",
+    "rank_single": 305,
+    "country": "BUL",
+    "plays_hand": "U",
+    "points": 203
+  },
+  {
+    "name": "Alevtina Ibragimova",
+    "rank_single": 306,
+    "country": "RUS",
+    "plays_hand": "U",
+    "points": 202
+  },
+  {
+    "name": "Jennifer Ruggeri",
+    "rank_single": 307,
+    "country": "ITA",
+    "plays_hand": "U",
+    "points": 202
+  },
+  {
+    "name": "Vendula Valdmannov\u00e1",
+    "rank_single": 308,
+    "country": "CZE",
+    "plays_hand": "U",
+    "points": 202
+  },
+  {
+    "name": "Caroline Garcia",
+    "rank_single": 309,
+    "country": "FRA",
+    "plays_hand": "U",
+    "points": 201
+  },
+  {
+    "name": "Alisa Oktiabreva",
+    "rank_single": 310,
+    "country": "RUS",
+    "plays_hand": "U",
+    "points": 201
+  },
+  {
+    "name": "Destanee Aiava",
+    "rank_single": 311,
+    "country": "AUS",
+    "plays_hand": "U",
+    "points": 200
+  },
+  {
+    "name": "Fiona Ferro",
+    "rank_single": 312,
+    "country": "FRA",
+    "plays_hand": "U",
+    "points": 200
+  },
+  {
+    "name": "Gabriela C\u00e9",
+    "rank_single": 313,
+    "country": "BRA",
+    "plays_hand": "U",
+    "points": 200
+  },
+  {
+    "name": "Samira de Stefano",
+    "rank_single": 314,
+    "country": "ITA",
+    "plays_hand": "U",
+    "points": 200
+  },
+  {
+    "name": "Julie \u0160truplov\u00e1",
+    "rank_single": 315,
+    "country": "CZE",
+    "plays_hand": "U",
+    "points": 200
+  },
+  {
+    "name": "Aurora Zantedeschi",
+    "rank_single": 316,
+    "country": "ITA",
+    "plays_hand": "U",
+    "points": 197
+  },
+  {
+    "name": "Martyna Kubka",
+    "rank_single": 317,
+    "country": "POL",
+    "plays_hand": "U",
+    "points": 196
+  },
+  {
+    "name": "Fangran Tian",
+    "rank_single": 318,
+    "country": "CHN",
+    "plays_hand": "U",
+    "points": 195
+  },
+  {
+    "name": "Tina Smith",
+    "rank_single": 319,
+    "country": "AUS",
+    "plays_hand": "U",
+    "points": 194
+  },
+  {
+    "name": "Lea Ma",
+    "rank_single": 320,
+    "country": "USA",
+    "plays_hand": "U",
+    "points": 194
+  },
+  {
+    "name": "Mariam Bolkvadze",
+    "rank_single": 321,
+    "country": "GEO",
+    "plays_hand": "U",
+    "points": 193
+  },
+  {
+    "name": "Tiphanie Lema\u00eetre",
+    "rank_single": 322,
+    "country": "FRA",
+    "plays_hand": "U",
+    "points": 193
+  },
+  {
+    "name": "Vivian Wolff",
+    "rank_single": 323,
+    "country": "USA",
+    "plays_hand": "U",
+    "points": 192
+  },
+  {
+    "name": "Katarina Zavatska",
+    "rank_single": 324,
+    "country": "UKR",
+    "plays_hand": "U",
+    "points": 192
+  },
+  {
+    "name": "Amarni Banks",
+    "rank_single": 325,
+    "country": "GBR",
+    "plays_hand": "U",
+    "points": 191
+  },
+  {
+    "name": "Carol Zhao",
+    "rank_single": 326,
+    "country": "CAN",
+    "plays_hand": "U",
+    "points": 190
+  },
+  {
+    "name": "Daria Khomutsianskaya",
+    "rank_single": 327,
+    "country": "BLR",
+    "plays_hand": "U",
+    "points": 190
+  },
+  {
+    "name": "Lea Bo\u0161kovi\u0107",
+    "rank_single": 328,
+    "country": "CRO",
+    "plays_hand": "U",
+    "points": 187
+  },
+  {
+    "name": "Nina Stojanovi\u0107",
+    "rank_single": 329,
+    "country": "SRB",
+    "plays_hand": "U",
+    "points": 185
+  },
+  {
+    "name": "Ariana Geerlings",
+    "rank_single": 330,
+    "country": "ESP",
+    "plays_hand": "U",
+    "points": 185
+  },
+  {
+    "name": "Victoria Bosio",
+    "rank_single": 331,
+    "country": "ARG",
+    "plays_hand": "U",
+    "points": 185
+  },
+  {
+    "name": "Wushuang Zheng",
+    "rank_single": 332,
+    "country": "CHN",
+    "plays_hand": "U",
+    "points": 184
+  },
+  {
+    "name": "Petra Marti\u0107",
+    "rank_single": 333,
+    "country": "CRO",
+    "plays_hand": "U",
+    "points": 183
+  },
+  {
+    "name": "Erika Andreeva",
+    "rank_single": 334,
+    "country": "RUS",
+    "plays_hand": "U",
+    "points": 183
+  },
+  {
+    "name": "Amandine Hesse",
+    "rank_single": 335,
+    "country": "FRA",
+    "plays_hand": "U",
+    "points": 183
+  },
+  {
+    "name": "Francesca Curmi",
+    "rank_single": 336,
+    "country": "MLT",
+    "plays_hand": "U",
+    "points": 183
+  },
+  {
+    "name": "Jeline Vandromme",
+    "rank_single": 337,
+    "country": "BEL",
+    "plays_hand": "U",
+    "points": 183
+  },
+  {
+    "name": "Natalija Seni\u0107",
+    "rank_single": 338,
+    "country": "SRB",
+    "plays_hand": "U",
+    "points": 182
+  },
+  {
+    "name": "Yafan Wang",
+    "rank_single": 339,
+    "country": "CHN",
+    "plays_hand": "U",
+    "points": 180
+  },
+  {
+    "name": "Julieta Pareja",
+    "rank_single": 340,
+    "country": "USA",
+    "plays_hand": "U",
+    "points": 180
+  },
+  {
+    "name": "Gabriela Lee",
+    "rank_single": 341,
+    "country": "ROU",
+    "plays_hand": "U",
+    "points": 180
+  },
+  {
+    "name": "Aliona Falei",
+    "rank_single": 342,
+    "country": "BLR",
+    "plays_hand": "U",
+    "points": 180
+  },
+  {
+    "name": "Vikt\u00f3ria Morvayov\u00e1",
+    "rank_single": 343,
+    "country": "SVK",
+    "plays_hand": "U",
+    "points": 179
+  },
+  {
+    "name": "Sijia Wei",
+    "rank_single": 344,
+    "country": "CHN",
+    "plays_hand": "U",
+    "points": 178
+  },
+  {
+    "name": "Isabella Shinikova",
+    "rank_single": 345,
+    "country": "BUL",
+    "plays_hand": "U",
+    "points": 178
+  },
+  {
+    "name": "Francesca Pace",
+    "rank_single": 346,
+    "country": "ITA",
+    "plays_hand": "U",
+    "points": 177
+  },
+  {
+    "name": "Monika Ekstrand",
+    "rank_single": 347,
+    "country": "USA",
+    "plays_hand": "U",
+    "points": 176
+  },
+  {
+    "name": "Yidi Yang",
+    "rank_single": 348,
+    "country": "CHN",
+    "plays_hand": "U",
+    "points": 175
+  },
+  {
+    "name": "En-shuo Liang",
+    "rank_single": 349,
+    "country": "TWN",
+    "plays_hand": "U",
+    "points": 174
+  },
+  {
+    "name": "Jenny Duerst",
+    "rank_single": 350,
+    "country": "SUI",
+    "plays_hand": "U",
+    "points": 174
+  },
+  {
+    "name": "Giorgia Pedone",
+    "rank_single": 351,
+    "country": "ITA",
+    "plays_hand": "U",
+    "points": 173
+  },
+  {
+    "name": "Miho Kuramochi",
+    "rank_single": 352,
+    "country": "JPN",
+    "plays_hand": "U",
+    "points": 173
+  },
+  {
+    "name": "Emina Bektas",
+    "rank_single": 353,
+    "country": "USA",
+    "plays_hand": "U",
+    "points": 172
+  },
+  {
+    "name": "Nastasja Schunk",
+    "rank_single": 354,
+    "country": "GER",
+    "plays_hand": "U",
+    "points": 172
+  },
+  {
+    "name": "Katar\u00edna Kuzmov\u00e1",
+    "rank_single": 355,
+    "country": "SVK",
+    "plays_hand": "U",
+    "points": 171
+  },
+  {
+    "name": "Han-na Chang",
+    "rank_single": 356,
+    "country": "USA",
+    "plays_hand": "U",
+    "points": 170
+  },
+  {
+    "name": "Ane Mintegi Del Olmo",
+    "rank_single": 357,
+    "country": "ESP",
+    "plays_hand": "U",
+    "points": 169
+  },
+  {
+    "name": "Akasha Urhobo",
+    "rank_single": 358,
+    "country": "USA",
+    "plays_hand": "U",
+    "points": 168
+  },
+  {
+    "name": "Alexandra Shubladze",
+    "rank_single": 359,
+    "country": "RUS",
+    "plays_hand": "U",
+    "points": 168
+  },
+  {
+    "name": "Alexis Blokhina",
+    "rank_single": 360,
+    "country": "USA",
+    "plays_hand": "U",
+    "points": 168
+  },
+  {
+    "name": "Elena Micic",
+    "rank_single": 361,
+    "country": "AUS",
+    "plays_hand": "U",
+    "points": 167
+  },
+  {
+    "name": "Irina Bara",
+    "rank_single": 362,
+    "country": "ROU",
+    "plays_hand": "U",
+    "points": 166
+  },
+  {
+    "name": "Caijsa Hennemann",
+    "rank_single": 363,
+    "country": "SWE",
+    "plays_hand": "U",
+    "points": 166
+  },
+  {
+    "name": "Zhuoxuan Bai",
+    "rank_single": 364,
+    "country": "CHN",
+    "plays_hand": "U",
+    "points": 165
+  },
+  {
+    "name": "Darya Astakhova",
+    "rank_single": 365,
+    "country": "RUS",
+    "plays_hand": "U",
+    "points": 165
+  },
+  {
+    "name": "Lucciana Perez Alarcon",
+    "rank_single": 366,
+    "country": "PER",
+    "plays_hand": "U",
+    "points": 165
+  },
+  {
+    "name": "Antonia Schmidt",
+    "rank_single": 367,
+    "country": "GER",
+    "plays_hand": "U",
+    "points": 165
+  },
+  {
+    "name": "Denislava Glushkova",
+    "rank_single": 368,
+    "country": "BUL",
+    "plays_hand": "U",
+    "points": 165
+  },
+  {
+    "name": "Miriana Tona",
+    "rank_single": 369,
+    "country": "ITA",
+    "plays_hand": "U",
+    "points": 164
+  },
+  {
+    "name": "Eva Bennemann",
+    "rank_single": 370,
+    "country": "GER",
+    "plays_hand": "U",
+    "points": 163
+  },
+  {
+    "name": "Martina Colmegna",
+    "rank_single": 371,
+    "country": "ITA",
+    "plays_hand": "U",
+    "points": 162
+  },
+  {
+    "name": "Tatiana Pieri",
+    "rank_single": 372,
+    "country": "ITA",
+    "plays_hand": "U",
+    "points": 162
+  },
+  {
+    "name": "Alina Granwehr",
+    "rank_single": 373,
+    "country": "SUI",
+    "plays_hand": "U",
+    "points": 162
+  },
+  {
+    "name": "Diletta Cherubini",
+    "rank_single": 374,
+    "country": "ITA",
+    "plays_hand": "U",
+    "points": 161
+  },
+  {
+    "name": "Haley Giavara",
+    "rank_single": 375,
+    "country": "USA",
+    "plays_hand": "U",
+    "points": 161
+  },
+  {
+    "name": "Zhibek Kulambayeva",
+    "rank_single": 376,
+    "country": "KAZ",
+    "plays_hand": "U",
+    "points": 161
+  },
+  {
+    "name": "Dalila Jakupovi\u0107",
+    "rank_single": 377,
+    "country": "SLO",
+    "plays_hand": "U",
+    "points": 161
+  },
+  {
+    "name": "Saki Imamura",
+    "rank_single": 378,
+    "country": "JPN",
+    "plays_hand": "U",
+    "points": 161
+  },
+  {
+    "name": "Sandra Samir",
+    "rank_single": 379,
+    "country": "EGY",
+    "plays_hand": "U",
+    "points": 161
+  },
+  {
+    "name": "Weronika Ewald",
+    "rank_single": 380,
+    "country": "POL",
+    "plays_hand": "U",
+    "points": 160
+  },
+  {
+    "name": "Margaux Rouvroy",
+    "rank_single": 381,
+    "country": "FRA",
+    "plays_hand": "U",
+    "points": 159
+  },
+  {
+    "name": "\u00c7a\u011fla B\u00fcy\u00fckak\u00e7ay",
+    "rank_single": 382,
+    "country": "TUR",
+    "plays_hand": "U",
+    "points": 159
+  },
+  {
+    "name": "Ikumi Yamazaki",
+    "rank_single": 383,
+    "country": "JPN",
+    "plays_hand": "U",
+    "points": 159
+  },
+  {
+    "name": "Carlota Martinez Cirez",
+    "rank_single": 384,
+    "country": "ESP",
+    "plays_hand": "U",
+    "points": 158
+  },
+  {
+    "name": "Martina Capurro Taborda",
+    "rank_single": 385,
+    "country": "ARG",
+    "plays_hand": "U",
+    "points": 158
+  },
+  {
+    "name": "Cristina Diaz Adrover",
+    "rank_single": 386,
+    "country": "ESP",
+    "plays_hand": "U",
+    "points": 158
+  },
+  {
+    "name": "Martha Matoula",
+    "rank_single": 387,
+    "country": "GRE",
+    "plays_hand": "U",
+    "points": 157
+  },
+  {
+    "name": "Jodie Burrage",
+    "rank_single": 388,
+    "country": "GBR",
+    "plays_hand": "U",
+    "points": 156
+  },
+  {
+    "name": "Ayano Shimizu",
+    "rank_single": 389,
+    "country": "JPN",
+    "plays_hand": "U",
+    "points": 155
+  },
+  {
+    "name": "Gergana Topalova",
+    "rank_single": 390,
+    "country": "BUL",
+    "plays_hand": "U",
+    "points": 155
+  },
+  {
+    "name": "Naiktha Bains",
+    "rank_single": 391,
+    "country": "GBR",
+    "plays_hand": "U",
+    "points": 155
+  },
+  {
+    "name": "Eryn Cayetano",
+    "rank_single": 392,
+    "country": "USA",
+    "plays_hand": "U",
+    "points": 155
+  },
+  {
+    "name": "Kristina Dmitruk",
+    "rank_single": 393,
+    "country": "BLR",
+    "plays_hand": "U",
+    "points": 154
+  },
+  {
+    "name": "Valeriya Strakhova",
+    "rank_single": 394,
+    "country": "UKR",
+    "plays_hand": "U",
+    "points": 154
+  },
+  {
+    "name": "Victoria Hu",
+    "rank_single": 395,
+    "country": "USA",
+    "plays_hand": "U",
+    "points": 153
+  },
+  {
+    "name": "Sofia Shapatava",
+    "rank_single": 396,
+    "country": "GEO",
+    "plays_hand": "U",
+    "points": 153
+  },
+  {
+    "name": "Vittoria Paganetti",
+    "rank_single": 397,
+    "country": "ITA",
+    "plays_hand": "U",
+    "points": 152
+  },
+  {
+    "name": "Ylena In-Albon",
+    "rank_single": 398,
+    "country": "SUI",
+    "plays_hand": "U",
+    "points": 151
+  },
+  {
+    "name": "Astrid Lew Yan Foon",
+    "rank_single": 399,
+    "country": "FRA",
+    "plays_hand": "U",
+    "points": 150
+  },
+  {
+    "name": "Patricia Maria \u021aig",
+    "rank_single": 400,
+    "country": "ROU",
+    "plays_hand": "U",
+    "points": 149
+  }
+]

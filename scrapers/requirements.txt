@@ -1,0 +1,10 @@
+requests
+beautifulsoup4
+supabase==2.3.4
+httpx==0.24.1
+python-dotenv
+curl_cffi==0.5.10
+pandas
+numpy
+scikit-learn
+joblib

@@ -1,0 +1,12 @@
+node_modules/
+dist/
+release/
+.env
+__pycache__/
+*.pkl
+venv/
+.DS_Store
+.gemini/
+.agent/
+scrapers/__pycache__/
+scrapers/ai_engine/__pycache__/
