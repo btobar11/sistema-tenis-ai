@@ -144,7 +144,7 @@ def monitor_cycle(db, tracked_players):
             "winner_name": m['winner'], 
             "loser_name": m['loser'],
             "score": m['score'],
-            "detailed_stats": details, 
+            "stats_json": details, 
         }
         
         # Save to DB
