@@ -23,7 +23,7 @@ class ResultOracle:
         
         # Get pending predictions
         try:
-            pending = self.db.client.from_('prediction_ledger') \
+            pending = self.db.from_('prediction_ledger') \
                 .select('*, match:matches(id, winner_id, player_a_id, player_b_id, status)') \
                 .eq('result_status', 'pending') \
                 .execute()
@@ -69,7 +69,7 @@ class ResultOracle:
                 
                 # Update ledger
                 try:
-                    self.db.client.from_('prediction_ledger') \
+                    self.db.from_('prediction_ledger') \
                         .update({
                             'result_status': 'won' if is_won else 'lost',
                             'profit_loss': round(profit_loss, 2)

@@ -24,7 +24,7 @@ def get_daily_edge_picks(
 
     try:
         # Fetch active value alerts with high EV
-        r = db.client.from_('value_alerts') \
+        r = db.from_('value_alerts') \
             .select('*, match:matches(id, tournament, surface, date, player_a:player_a_id(id, name, country), player_b:player_b_id(id, name, country))') \
             .eq('status', 'active') \
             .gte('ev_percentage', min_ev) \
@@ -87,7 +87,7 @@ def get_daily_summary(user_id: str = Depends(get_current_user)):
         raise HTTPException(status_code=402, detail="Premium Subscription Required")
     
     try:
-        r = db.client.from_('value_alerts') \
+        r = db.from_('value_alerts') \
             .select('ev_percentage, kelly_stake') \
             .eq('status', 'active') \
             .execute()

@@ -22,7 +22,7 @@ def get_value_alerts(user_id: str = Depends(get_current_user)):
 
     # Return active alerts sorted by EV
     try:
-        r = db.client.from_('value_alerts') \
+        r = db.from_('value_alerts') \
             .select('*, match:matches(tournament, surface, player_a:player_a_id(name), player_b:player_b_id(name))') \
             .eq('status', 'active') \
             .order('ev_percentage', desc=True) \

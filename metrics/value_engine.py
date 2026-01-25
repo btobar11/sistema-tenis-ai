@@ -42,7 +42,7 @@ class ValueEngine:
         all_odds = []
         for book in bookmakers:
             try:
-                query = self.db.client.from_('market_odds') \
+                query = self.db.from_('market_odds') \
                     .select('*') \
                     .gte('extracted_at', one_hour_ago) \
                     .eq('bookmaker', book)
@@ -168,7 +168,7 @@ class ValueEngine:
         }
         
         try:
-            self.db.client.from_('value_alerts').insert(alert).execute()
+            self.db.from_('value_alerts').insert(alert).execute()
             
             # --- TR-01: Write to Prediction Ledger (Immutable) ---
             # We record this recommendation forever to track performance.
@@ -193,7 +193,7 @@ class ValueEngine:
             # Note: A real ledger needs robust match_id linking. 
             # For now we insert best-effort to start building history.
             try:
-                self.db.client.from_('prediction_ledger').insert(ledger_entry).execute()
+                self.db.from_('prediction_ledger').insert(ledger_entry).execute()
             except Exception as le:
                 print(f"Ledger Write Error: {le}")
                 
