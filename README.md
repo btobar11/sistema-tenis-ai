@@ -1,66 +1,65 @@
-# Sistema de Análisis de Tenis Profesional
+# 🎾 TENNIS INTELLIGENCE PLATFORM (SaaS + API)
 
-Este repositorio contiene la implementación completa del sistema de análisis de tenis, incluyendo la plataforma web pública, el backend en Supabase y el cliente de escritorio seguro.
+> **Visión**: Plataforma SaaS de inteligencia deportiva especializada exclusivamente en tenis. No es una casa de apuestas; es una máquina de análisis, pricing probabilístico y detección de ineficiencias de mercado.
 
-## Estructura del Proyecto
-
-*   `/web`: Plataforma Pública (Next.js 14, Tailwind, Supabase Auth).
-*   `/desktop`: Cliente de Escritorio (Electron, React, Vite).
-*   `/supabase`: (Conceptual) Esquema de Base de Datos y Funciones RPC.
-
-## 1. Configuración del Backend (Supabase)
-
-Para desplegar este sistema, necesitas un proyecto en Supabase con las siguientes tablas y reglas.
-
-### Tablas Principales
-*   **matches**: Almacena partidos (ATP/WTA).
-*   **players**: Información de jugadores.
-*   **analysis_results**: Resultados del motor de análisis (picks, risk).
-*   **profiles**: Datos de usuarios y estado de suscripción (`subscription_status`: 'free', 'trial', 'premium').
-
-### Variables de Entorno
-Crea un archivo `.env` en `/web` y `/desktop` con tus credenciales:
-
-```env
-NEXT_PUBLIC_SUPABASE_URL=tu_url_supabase
-NEXT_PUBLIC_SUPABASE_ANON_KEY=tu_anon_key
-```
-
-## 2. Web Pública (Marketing & Auth)
-
-La web maneja el registro y la gestión de cuentas.
-
-*   **Instalación**: `cd web && npm install`
-*   **Desarrollo**: `npm run dev`
-*   **Características**: Landing Page Dark Premium, Login/Registro, Dashboard de Licencia.
-
-## 3. Cliente de Escritorio (Software de Análisis)
-
-El software core para los usuarios Premium. Incluye protección de licencia.
-
-*   **Instalación**: `cd desktop && npm install`
-*   **Desarrollo**: `npm run dev` (Abre la ventana de Electron).
-*   **Construir Executable**: `npm run build` (Genera .exe en `/dist`).
-
-### Módulos del Cliente
-1.  **Dashboard**: Lista de partidos filtrable (Hard/Clay/Grass).
-2.  **Match Analysis**: Vista detallada con Checklist visual y Semáforo de Riesgo.
-3.  **Anti-FOMO**: Calculadora de riesgo para apuestas combinadas.
-4.  **Historial**: Bitácora automática de picks (Journal).
-
-## 4. Aspectos Legales (Importante)
-
-Se ha implementado el **Disclaimer Legal** obligatorio en:
-*   Web: Footer de Login y Registro.
-*   Desktop: Pantalla de Login y Footer del Dashboard.
-
-> *"Este software proporciona análisis estadísticos basados en datos históricos. No garantiza resultados futuros ni constituye asesoría financiera."*
-
-## Próximos Pasos (Roadmap)
-
-1.  **Carga de Datos**: Ejecutar scrapers para poblar la tabla `matches`.
-2.  **Backtesting**: Validar el modelo con datos de 2023-2024.
-3.  **Lanzamiento**: Desplegar Web en Vercel y distribuir el instalador Desktop.
+El sistema opera bajo un **Modelo Unificado B2B + B2C**: un solo core técnico, dos capas de acceso.
 
 ---
-© 2026 Sistema Tenis. Código Propietario.
+
+## 🏛️ Arquitectura General
+
+*   **Backend**: Python 3.11 + FastAPI (ASGI).
+*   **ML Engine**: XGBoost + scikit-learn (Calibración Platt).
+*   **Database**: PostgreSQL 15 (Supabase).
+*   **Frontend**: React 18 + TypeScript (Vite).
+*   **Ingesta**: AsyncIO scrapers + The-Odds-API (Pinnacle/Bet365).
+
+## 🔄 Pipeline de Datos (End-to-End)
+
+1.  **Ingesta (The Sensors)**: Monitoreo live de partidos ATP/Challenger y cuotas de mercado.
+2.  **Storage**: Normalización de entidades y esquemas `append-only` para auditoría financiera.
+3.  **Feature Engineering**: ELO dinámico por superficie, Fatiga V2 (sets/viajes), Momentum.
+4.  **Motor Predictivo (The Oracle)**: Modelos calibrados que emiten probabilidad real (0-1).
+5.  **Value Engine (The Edge)**: Cálculo de EV (`Prob * Cuota - 1`) y Criterio de Kelly.
+6.  **Trust Layer**: Ledger inmutable (`prediction_ledger`) que registra cada predicción para siempre.
+
+## 💼 Modelo Híbrido: B2C vs B2B
+
+La plataforma expone la misma inteligencia a dos audiencias:
+
+### 🧍 B2C (Usuario Individual)
+*   **Acceso**: Frontend Web Premium (`DailyDashboard`).
+*   **Modelo**: Suscripción Mensual (Stripe).
+*   **UX**: Insights explicados, filtros visuales, gráficas de rendimiento.
+*   **Datos**: Pre-digeridos y filtrados por valor.
+
+### 🏢 B2B (Enterprise / Fund)
+*   **Acceso**: API REST (`/api/v1`) vía `X-API-Key`.
+*   **Modelo**: Contrato Usage-Based (Billing por request).
+*   **UX**: Datos crudos (JSON), endpoints de alta frecuencia.
+*   **Datos**: Probabilidades sin redondear, series temporales completas.
+
+---
+
+## 🛠️ Estructura del Proyecto
+
+```bash
+/api            # FastAPI Backend (Routers, Middleware, Services)
+/scrapers       # Motores de Ingesta Async (Matches + Odds)
+/metrics        # Lógica de Negocio (ELO, Fatiga, Value Engine)
+/ml             # Training Pipelines & Inference
+/desktop        # Frontend Web (React/Vite)
+/database       # Esquemas SQL (Migrations)
+/scripts        # Utilidades (KeyGen, Backfill)
+```
+
+## 🔐 Seguridad & Confianza
+
+*   **Ledger Inmutable**: `prediction_ledger` blindado por DB Triggers (Write-Once).
+*   **Enterprise Auth**: Middleware de API Keys con Hashing SHA-256.
+*   **Audit Logs**: Tabla `usage_logs` para facturación y auditoría.
+
+---
+
+**Estado:** Producción (v2.1)
+**Stack:** Python • React • PostgreSQL • XGBoost

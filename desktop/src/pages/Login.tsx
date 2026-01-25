@@ -9,23 +9,41 @@ export default function Login() {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const navigate = useNavigate();
+    const [mode, setMode] = useState<'login' | 'signup'>('login');
 
-    async function handleLogin(e: React.FormEvent) {
+    async function handleAuth(e: React.FormEvent) {
         e.preventDefault();
         setLoading(true);
         setError(null);
 
-        const { error } = await supabase.auth.signInWithPassword({
-            email,
-            password,
-        });
-
-        if (error) {
-            setError(error.message);
+        try {
+            if (mode === 'signup') {
+                const { error } = await supabase.auth.signUp({
+                    email,
+                    password,
+                    options: {
+                        data: {
+                            subscription_tier: 'free'
+                        }
+                    }
+                });
+                if (error) throw error;
+                // Auto login might happen or require email confirmation depending on Supabase settings
+                // For now, let's assume auto-login or inform user.
+                alert("Cuenta creada! Si se requiere confirmación, revisa tu email. Si no, inicia sesión.");
+                setMode('login'); // Switch back to login to force sign in flow or just verify
+            } else {
+                const { error } = await supabase.auth.signInWithPassword({
+                    email,
+                    password,
+                });
+                if (error) throw error;
+                navigate('/');
+            }
+        } catch (err: any) {
+            setError(err.message);
+        } finally {
             setLoading(false);
-        } else {
-            // Auth listener in App.tsx will handle navigation
-            navigate('/');
         }
     }
 
@@ -37,11 +55,11 @@ export default function Login() {
                     <div className="w-12 h-12 bg-emerald-500 rounded-xl flex items-center justify-center mb-4 shadow-lg shadow-emerald-500/20">
                         <Activity className="w-7 h-7 text-white" />
                     </div>
-                    <h1 className="text-2xl font-bold text-white">EDGESET</h1>
+                    <h1 className="text-2xl font-bold text-white">EDGESET <span className="text-xs text-emerald-400 bg-emerald-950 px-2 py-0.5 rounded border border-emerald-900">v1.2 UNLOCKED</span></h1>
                     <p className="text-slate-400 text-sm mt-1">Where data wins the set</p>
                 </div>
 
-                <form onSubmit={handleLogin} className="space-y-4">
+                <form onSubmit={handleAuth} className="space-y-4">
                     <div>
                         <label className="block text-sm font-medium text-slate-300 mb-1.5">Email</label>
                         <div className="relative">
@@ -51,7 +69,7 @@ export default function Login() {
                                 required
                                 value={email}
                                 onChange={(e) => setEmail(e.target.value)}
-                                className="w-full bg-slate-950 border border-slate-800 rounded-xl py-2.5 pl-10 pr-4 text-white focus:outline-none focus:ring-2 focus:ring-emerald-500/50 transition-all placeholder:text-slate-600"
+                                className="w-full bg-slate-900 border border-slate-700 rounded-xl py-2.5 pl-10 pr-4 text-white focus:outline-none focus:ring-2 focus:ring-emerald-500/50 transition-all placeholder:text-slate-600"
                                 placeholder="usuario@ejemplo.com"
                             />
                         </div>
@@ -66,7 +84,7 @@ export default function Login() {
                                 required
                                 value={password}
                                 onChange={(e) => setPassword(e.target.value)}
-                                className="w-full bg-slate-950 border border-slate-800 rounded-xl py-2.5 pl-10 pr-4 text-white focus:outline-none focus:ring-2 focus:ring-emerald-500/50 transition-all placeholder:text-slate-600"
+                                className="w-full bg-slate-900 border border-slate-700 rounded-xl py-2.5 pl-10 pr-4 text-white focus:outline-none focus:ring-2 focus:ring-emerald-500/50 transition-all placeholder:text-slate-600"
                                 placeholder="••••••••"
                             />
                         </div>
@@ -87,7 +105,7 @@ export default function Login() {
                             <Loader2 className="w-5 h-5 animate-spin" />
                         ) : (
                             <>
-                                Iniciar Sesión
+                                {mode === 'login' ? 'Iniciar Sesión' : 'Registrarse'}
                                 <ArrowRight className="w-4 h-4" />
                             </>
                         )}
@@ -95,7 +113,12 @@ export default function Login() {
                 </form>
 
                 <div className="mt-6 text-center text-xs text-slate-500">
-                    ¿No tienes licencia? Adquiérela en <a href="#" className="text-emerald-400 hover:underline">sistematenis.com</a>
+                    <button
+                        onClick={() => { setError(null); setMode(mode === 'login' ? 'signup' : 'login'); }}
+                        className="text-emerald-400 hover:text-emerald-300 hover:underline transition-colors"
+                    >
+                        {mode === 'login' ? '¿No tienes cuenta? Regístrate aquí' : '¿Ya tienes cuenta? Inicia sesión'}
+                    </button>
                 </div>
 
                 <div className="mt-8 pt-4 border-t border-slate-800 text-[10px] text-slate-600 text-center leading-relaxed">

@@ -1,0 +1,16 @@
+directories:
+  output: dist-release
+  buildResources: build
+appId: com.edgeset.app
+productName: EdgeSet Tennis
+win:
+  target: nsis
+nsis:
+  oneClick: false
+  allowToChangeInstallationDirectory: true
+  createDesktopShortcut: true
+files:
+  - filter:
+      - dist/**/*
+      - dist-electron/**/*
+electronVersion: 40.0.0

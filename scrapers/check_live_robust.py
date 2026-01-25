@@ -1,28 +1,34 @@
-import requests
+from curl_cffi import requests
+from bs4 import BeautifulSoup
+import time
+import random
 
-def debug_live_tennis():
-    url = "https://live-tennis.eu/en/atp-live-ranking"
-    headers = {
-        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
-        "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8",
-        "Accept-Language": "en-US,en;q=0.9",
-        "Accept-Encoding": "gzip, deflate, br",
-        "Connection": "keep-alive",
-        "Referer": "https://www.google.com/",
-        "Upgrade-Insecure-Requests": "1"
-    }
-    
+def check_robust(url):
+    print(f"Checking {url} with impersonation...")
     try:
-        s = requests.Session()
-        r = s.get(url, headers=headers, timeout=10)
+        # Impersonate Chrome 110 to look like a real browser
+        r = requests.get(
+            url, 
+            impersonate="chrome110",
+            timeout=15
+        )
         print(f"Status: {r.status_code}")
+        
         if r.status_code == 200:
-            print("Successfully accessed!")
-            print(r.text[:500])
+            soup = BeautifulSoup(r.content, 'html.parser')
+            title = soup.title.string if soup.title else "No Title"
+            print(f"Title: {title}")
+            print("SUCCESS! We bypassed the protection.")
+            return True
         else:
-            print("Failed to access.")
+            print("Failed to bypass.")
+            return False
+            
     except Exception as e:
         print(f"Error: {e}")
+        return False
 
 if __name__ == "__main__":
-    debug_live_tennis()
+    check_robust("https://live-tennis.eu/en/atp-live-ranking")
+    time.sleep(random.uniform(2, 5))
+    check_robust("https://live-tennis.eu/en/wta-live-ranking")

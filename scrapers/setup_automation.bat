@@ -1,6 +1,6 @@
 @echo off
 REM Windows Task Scheduler Setup Script
-REM Creates automated tasks for tennis match scraping
+REM Creates automated tasks for tennis match scraping with proper descriptions
 
 echo ========================================
 echo Tennis Match Scraper - Task Scheduler Setup
@@ -8,23 +8,24 @@ echo ========================================
 echo.
 
 set SCRIPT_DIR=%~dp0
-set PYTHON_EXE=python
+REM Remove trailing backslash if present
+if "%SCRIPT_DIR:~-1%"=="\" set SCRIPT_DIR=%SCRIPT_DIR:~0,-1%
 
-echo Creating Task: Tennis Live Results Scraper
-schtasks /create /tn "Tennis Live Results Scraper" /tr "%SCRIPT_DIR%run_scraper.bat" /sc hourly /st 00:00 /f
+echo Creating Task: EDGESET Live Monitor
+schtasks /create /tn "EDGESET Live Monitor" /tr "\"%SCRIPT_DIR%\run_scraper.bat\"" /sc hourly /mo 1 /f /rl HIGHEST
 if %ERRORLEVEL% EQU 0 (
-    echo [OK] Live results scraper task created successfully
+    echo [OK] Live Monitor task created successfully
 ) else (
-    echo [ERROR] Failed to create live results task
+    echo [ERROR] Failed to create Live Monitor task with error %ERRORLEVEL%
 )
 
 echo.
-echo Creating Task: Tennis Upcoming Matches Scraper
-schtasks /create /tn "Tennis Upcoming Matches Scraper" /tr "%PYTHON_EXE% %SCRIPT_DIR%upcoming_scraper.py" /sc daily /st 06:00 /f
+echo Creating Task: EDGESET Upcoming Scraper
+schtasks /create /tn "EDGESET Upcoming Scraper" /tr "\"%SCRIPT_DIR%\run_upcoming.bat\"" /sc daily /st 06:00 /f /rl HIGHEST
 if %ERRORLEVEL% EQU 0 (
-    echo [OK] Upcoming matches scraper task created successfully
+    echo [OK] Upcoming Scraper task created successfully
 ) else (
-    echo [ERROR] Failed to create upcoming matches task
+    echo [ERROR] Failed to create Upcoming Scraper task with error %ERRORLEVEL%
 )
 
 echo.
@@ -33,10 +34,9 @@ echo Setup Complete!
 echo ========================================
 echo.
 echo Tasks created:
-echo 1. Tennis Live Results Scraper - Runs every hour
-echo 2. Tennis Upcoming Matches Scraper - Runs daily at 6:00 AM
+echo 1. EDGESET Live Monitor - Attempts to run every hour.
+echo 2. EDGESET Upcoming Scraper - Runs daily at 6:00 AM.
 echo.
 echo To view tasks: Open Task Scheduler (taskschd.msc)
-echo To run manually: Right-click task and select "Run"
 echo.
 pause

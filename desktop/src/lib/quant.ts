@@ -247,6 +247,39 @@ export function analyzeMatchDeep(
         ev: evRaw,
         classification: decision,
         portfolioSim: sim,
-        kellyStakePercent: calculatePortfolioKellyStake(probA, marketOddsA, 100) / 100
+        kellyStakePercent: calculatePortfolioKellyStake(probA, marketOddsA, 100) / 100,
+        metricsA: pA,
+        metricsB: pB,
+        source: 'Client-Quant v1'
     };
+}
+
+/**
+ * Adapter to convert Match object (with optional stats_json) to PlayerMetrics
+ * for the deep quant engine.
+ */
+import type { Match } from './api';
+
+export function analyzeMatch(match: Match) {
+    const stats = match.stats_json || {};
+
+    // Default metrics if not present
+    const defaultMetrics: PlayerMetrics = {
+        winrateSurface: 0.5, form: 0.5, regularity: 0.5, h2h: 0.5, setTrend: 0.5
+    };
+
+    const pA: PlayerMetrics = stats.pA || defaultMetrics;
+    const pB: PlayerMetrics = stats.pB || defaultMetrics;
+
+    const ctxA: MatchContext = {
+        homeAdvantage: false,
+        rankingDiff: (match.player_b.ranking - match.player_a.ranking),
+        injuryRisk: false,
+        tournamentLevel: 'ATP250',
+        timeToMatch: 24
+    };
+
+    const ctxB: MatchContext = { ...ctxA, rankingDiff: -ctxA.rankingDiff };
+
+    return analyzeMatchDeep(pA, ctxA, pB, ctxB, 1.90);
 }

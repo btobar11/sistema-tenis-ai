@@ -10,3 +10,11 @@ venv/
 .agent/
 scrapers/__pycache__/
 scrapers/ai_engine/__pycache__/
+
+# Large binaries
+*.exe
+dist-electron/
+desktop/dist-electron/
+desktop/release/
+*.zip
+*.msi

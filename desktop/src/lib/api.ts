@@ -24,6 +24,7 @@ export interface Match {
     winner_name?: string; // From scraper
     loser_name?: string;  // From scraper
     score?: string;       // From scraper (e.g., "6-4 6-2")
+    stats_json?: any;
 }
 
 export interface AnalysisPreview {
@@ -35,74 +36,89 @@ export interface AnalysisPreview {
 }
 
 export const api = {
-    async getMatchesToday() {
-        const { data, error } = await supabase
-            .from('matches')
-            .select(`
-                *,
-                player_a:player1_id(*),
-                player_b:player2_id(*)
-            `)
-            .order('date', { ascending: true })
-            .limit(50);
+    // -- API V2 (Python Backend) -- //
+    baseUrl: 'http://localhost:8000',
 
-        if (error) throw error;
-
-        // Transform to match expected interface
-        return (data || []).map((m: any) => ({
-            ...m,
-            tournament: m.tournament_name,
-            surface: m.surface.charAt(0).toUpperCase() + m.surface.slice(1), // hard -> Hard
-            player_a: {
-                ...m.player_a,
-                ranking: m.player_a?.rank_single || 999
-            },
-            player_b: {
-                ...m.player_b,
-                ranking: m.player_b?.rank_single || 999
-            },
-            score: m.score_full,
-            winner_name: m.winner_id ? (m.player_a.id === m.winner_id ? m.player_a.name : m.player_b.name) : null
-        })) as Match[];
+    async getHeaders() {
+        const { data: { session } } = await supabase.auth.getSession();
+        const headers: HeadersInit = {
+            'Content-Type': 'application/json'
+        };
+        if (session?.access_token) {
+            headers['Authorization'] = `Bearer ${session.access_token}`;
+        }
+        return headers;
     },
 
-    async getUpcomingMatches(days: number = 7) {
-        const now = new Date();
-        // Use UTC dates to match database timestamps
-        const startDate = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate()));
-        const endDate = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate() + days - 1, 23, 59, 59));
+    // -- PAYMENTS & SUBSCRIPTIONS -- //
 
-        const { data, error } = await supabase
-            .from('matches')
-            .select(`
-                *,
-                player_a:player1_id(*),
-                player_b:player2_id(*)
-            `)
-            .gte('date', startDate.toISOString())
-            .lte('date', endDate.toISOString())
-            .order('date', { ascending: true });
+    async createCheckoutSession(plan: 'pro' | 'elite') {
+        try {
+            const res = await fetch(`${this.baseUrl}/payments/create-checkout`, {
+                method: 'POST',
+                headers: await this.getHeaders(),
+                body: JSON.stringify({ plan })
+            });
+            if (!res.ok) throw new Error("Checkout creation failed");
+            return await res.json(); // { checkout_url: ... }
+        } catch (e) {
+            console.error("Payment Error:", e);
+            return null;
+        }
+    },
 
-        if (error) throw error;
+    async getSubscriptionStatus() {
+        try {
+            const res = await fetch(`${this.baseUrl}/payments/status`, {
+                headers: await this.getHeaders()
+            });
+            if (!res.ok) return { is_premium: false, plan: 'free' };
+            return await res.json();
+        } catch (e) {
+            console.error("Sub Status Error:", e);
+            return { is_premium: false, plan: 'free' };
+        }
+    },
 
-        return (data || []).map((m: any) => ({
-            ...m,
-            tournament: m.tournament_name,
-            surface: m.surface.charAt(0).toUpperCase() + m.surface.slice(1),
-            player_a: {
-                ...m.player_a,
-                ranking: m.player_a?.rank_single || 999
-            },
-            player_b: {
-                ...m.player_b,
-                ranking: m.player_b?.rank_single || 999
-            },
-            score: m.score_full,
-            winner_name: m.winner_id ? (m.player_a.id === m.winner_id ? m.player_a.name : m.player_b.name) : null
-        })) as Match[];
+    async getMatch(id: string): Promise<Match | null> {
+        try {
+            const res = await fetch(`${this.baseUrl}/matches/${id}`);
+            if (!res.ok) return null;
+            return await res.json();
+        } catch (e) {
+            console.error("API Error:", e);
+            return null;
+        }
+    },
+
+    async getMatchesToday() {
+        try {
+            // Fetch from Python API
+            const res = await fetch(`${this.baseUrl}/matches/?limit=50`);
+            if (!res.ok) throw new Error("Failed to fetch matches");
+            const data = await res.json();
+            return data as Match[];
+        } catch (e) {
+            console.error("API Error:", e);
+            return [];
+        }
+    },
+
+    async getUpcomingMatches(_days: number = 7) {
+        // Calculate date range for API query if needed, or just let API handle default
+        // For now, simplify to just fetching recent/upcoming
+        try {
+            const res = await fetch(`${this.baseUrl}/matches/?limit=100`);
+            if (!res.ok) throw new Error("Failed to fetch upcoming");
+            return await res.json() as Match[];
+        } catch (e) {
+            console.error("API Error:", e);
+            return [];
+        }
     },
 
     async getMatchAnalysis(matchId: string) {
+        // ... legacy fallback ...
         const { data, error } = await supabase
             .from('analysis_results')
             .select('*')
@@ -111,6 +127,43 @@ export const api = {
 
         if (error && error.code !== 'PGRST116') throw error;
         return data as AnalysisPreview;
+    },
+
+    async predictMatch(player1Id: string, player2Id: string) {
+        try {
+            const res = await fetch(`${this.baseUrl}/inference/predict`, {
+                method: 'POST',
+                headers: await this.getHeaders(),
+                body: JSON.stringify({ player1_id: player1Id, player2_id: player2Id })
+            });
+            if (!res.ok) throw new Error("Inference failed");
+            return await res.json();
+        } catch (e) {
+            console.error("API Error:", e);
+            return null;
+        }
+    },
+
+    async getPlayerEloHistory(playerId: string) {
+        try {
+            const res = await fetch(`${this.baseUrl}/players/${playerId}/elo-history`);
+            if (!res.ok) return [];
+            return await res.json();
+        } catch (e) {
+            console.error("API Error:", e);
+            return [];
+        }
+    },
+
+    async getPerformanceSummary() {
+        try {
+            const res = await fetch(`${this.baseUrl}/performance/summary`);
+            if (!res.ok) throw new Error("Performance API failed");
+            return await res.json();
+        } catch (e) {
+            console.error("API Error:", e);
+            return null;
+        }
     },
 
     async getRiskColor(level: string) {
@@ -281,5 +334,90 @@ export const api = {
             h2h: 0.5, // Calculated separately
             setTrend
         };
+    },
+
+    // -- BETTING JOURNAL -- //
+
+    async getUserBets() {
+        // Requires 'user_bets' table
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!user) return [];
+
+        const { data, error } = await supabase
+            .from('user_bets')
+            .select(`
+                *,
+                match:match_id (
+                    tournament_name,
+                    player1_id,
+                    player2_id,
+                    winner_id,
+                    player_a:player1_id(name),
+                    player_b:player2_id(name)
+                )
+            `)
+            .eq('user_id', user.id)
+            .order('created_at', { ascending: false });
+
+        if (error) {
+            console.error("Error fetching bets:", error);
+            return [];
+        }
+        return data || [];
+    },
+
+    async placeBet(matchId: string, selectionId: string, amount: number, odds: number, _possibleProfit: number) {
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!user) throw new Error("Not logged in");
+
+        const { error } = await supabase
+            .from('user_bets')
+            .insert({
+                user_id: user.id,
+                match_id: matchId,
+                selection_id: selectionId,
+                amount: amount,
+                odds: odds,
+                profit: 0, // Pending outcome
+                status: 'pending'
+            });
+
+        if (error) throw error;
+    },
+
+    // -- VALUE BETTING ENGINE (MOCK for Phase 2) -- //
+    async getValueBets() {
+        // In production, this would query the 'value_bets' table populated by metrics/value.py
+        // For MVP, we simulate the output to match the Python engine
+        const matches = await this.getMatchesToday();
+        return matches
+            .filter(() => Math.random() > 0.8) // Only top 20% are value
+            .slice(0, 3) // Top 3 Daily Edge
+            .map(m => ({
+                match: m,
+                bookmaker: "Pinnacle",
+                notes: "Discrepancy in Clay Court surface ELO vs Market Odds.",
+                wager_type: "WIN",
+                selection: m.winner_name || m.player_a.name,
+                odds: (1.8 + Math.random() * 1.5).toFixed(2),
+                ev: (Math.random() * 15 + 5).toFixed(1), // 5% to 20% EV (High Quality)
+                confidence: (75 + Math.random() * 15).toFixed(1), // 75-90% Conf
+                kelly_stake: (Math.random() * 3 + 1).toFixed(1) // 1-4% Stake
+            }));
+    },
+
+    async getValueAlerts() {
+        try {
+            const res = await fetch(`${this.baseUrl}/alerts/value`, {
+                headers: await this.getHeaders()
+            });
+            // If 402/403, we return empty or special error to show Paywall
+            if (res.status === 402 || res.status === 403) return "PREMIUM_REQUIRED";
+            if (!res.ok) throw new Error("Alerts failed");
+            return await res.json();
+        } catch (e) {
+            console.error("Alerts Error:", e);
+            return [];
+        }
     }
 };

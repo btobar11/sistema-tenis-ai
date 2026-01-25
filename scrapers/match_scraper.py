@@ -40,7 +40,16 @@ def scrape_match_details(match_url):
     stats = {}
     try:
         # print(f"Fetching details: {match_url}")
-        response = requests.get(match_url, impersonate="chrome110", headers=HEADERS)
+        # Retry logic
+        for attempt in range(3):
+            try:
+                response = requests.get(match_url, impersonate="chrome110", headers=HEADERS, timeout=10)
+                if response.status_code == 200:
+                    break
+            except Exception as e:
+                if attempt == 2: raise e
+                time.sleep(2)
+        
         if response.status_code != 200:
             return stats
             
@@ -82,7 +91,6 @@ def scrape_today_results(target_date=None):
     target_date: datetime object or None (defaults to today)
     Returns a list of match dicts.
     """
-    # Use explicit date to avoid timezone ambiguity or default page variations
     if target_date is None:
         target_date = datetime.now()
         
@@ -93,135 +101,217 @@ def scrape_today_results(target_date=None):
     
     matches = []
     
-    try:
-        response = requests.get(url, impersonate="chrome110", headers=HEADERS)
-        print(f"Status Code: {response.status_code}")
-        
-        soup = BeautifulSoup(response.content, 'html.parser')
-        
-        # Debug: Check title
-        print(f"Page Title: {soup.title.text if soup.title else 'No Title'}")
-        
-        # Main table usually has class 'result'
-        # table = soup.find('table', class_='result')
-        # Debug: Print all table classes
-        tables = soup.find_all('table')
-        print(f"Found {len(tables)} tables.")
-        for t in tables[:3]:
-            print(f"Table classes: {t.get('class')}")
+    # Retry logic for main page
+    response = None
+    for attempt in range(3):
+        try:
+            response = requests.get(url, impersonate="chrome110", headers=HEADERS, timeout=15)
+            if response.status_code == 200:
+                break
+        except Exception as e:
+            print(f"Connection error (attempt {attempt+1}): {e}")
+            if attempt == 2: raise e
+            time.sleep(3)
             
-        table = soup.find('table', class_='result')
-        if not table:
-            print("[ERROR] 'result' table not found.")
-            return []
-            
-        current_tournament = "Unknown"
+    if not response:
+        return []
+
+    print(f"Status Code: {response.status_code}")
+    
+    soup = BeautifulSoup(response.content, 'html.parser')
+    
+    # Debug: Check title
+    print(f"Page Title: {soup.title.text if soup.title else 'No Title'}")
+    
+    tables = soup.find_all('table')
+    print(f"Found {len(tables)} tables.")
+    
+    table = soup.find('table', class_='result')
+    if not table:
+        print("[ERROR] 'result' table not found.")
+        return []
         
-        rows = table.find_all('tr')
-        print(f"Found {len(rows)} rows in result table.")
-        
-        for row in rows:
-            # Check for Tournament Header (e.g., class 'head flags')
+    current_tournament = "Unknown"
+    
+    rows = table.find_all('tr')
+    print(f"Found {len(rows)} rows in result table.")
+    
+    pending_match = None
+    
+    for row in rows:
+        try:
+            # Check for Tournament Header
             if 'head' in row.get('class', []):
                 links = row.find_all('a')
                 if links:
                     current_tournament = clean_text(links[0].text)
+                pending_match = None
                 continue
                 
-            # Match Row
             cols = row.find_all('td')
-            if len(cols) < 4: continue
+            if len(cols) < 2: continue 
             
-            # Text check
             col_texts = [c.get_text().strip() for c in cols]
             
-            # Filter Doubles (contains /)
-            if '/' in col_texts[1]: # Assuming Col 1 is players
-                continue
-            
-            # Debug: Singles Match Found?
-            # print(f"Singles Row: {col_texts}")
-            
-            # Heuristic for columns:
-            # Col 0: Time
-            # Col 1: Players (e.g. "Player A - Player B")
-            # Col last or near last: Score?
-            
-            # Check if Col 0 is time (##:##)
-            if ":" not in col_texts[0]: 
-                 # Maybe date row or something else
-                 continue
-                 
-            players_cell = cols[1]
-            p_text = players_cell.get_text().strip()
-            if "-" not in p_text:
-                continue
-                
-            p1_name = p_text.split('-')[0].strip()
-            p2_name = p_text.split('-')[1].strip()
-            
-            # Winner logic:
-            # TennisExplorer bolds the winner in the Results table.
-            winner = p1_name # default
-            loser = p2_name
-            
-            # Check for bold tag <b> or <strong>
-            p1_bold = players_cell.find('b') or players_cell.find('strong')
-            # But wait, if text is "Name - Name", bold might be partial.
-            # Actually, TE usually bolds the winner's name string.
-            
-            # Score is often spread across columns? 
-            # Or in one column?
-            # From debug: ['0', '3', '6', '7'] -> These look like set scores in separate TDs.
-            # So we need to join cols 2 onwards?
-            score_parts = col_texts[2:-1] # Exclude last "info" col?
-            # Let's verify 'info' col logic
-            
-            detail_url = ""
+            # Check for "info" link (Row 1 indicator)
             info_links = row.find_all('a', href=True)
+            detail_url = None
             for l in info_links:
                 if "match-detail" in l['href']:
                     detail_url = "https://www.tennisexplorer.com" + l['href']
                     break
             
-            # Parse Score vs Odds
-            # Heuristic: Score usually consists of integers 0-7. Odds have dots (1.23).
-            # Also TE puts scores before odds.
+            # Determine Row 1 vs Row 2
+            is_row_1 = False
+            if detail_url:
+                is_row_1 = True
+            elif pending_match is None and ":" in col_texts[0]:
+                is_row_1 = True
+                
+            if is_row_1:
+                # Row 1 Processing
+                p_idx = 0
+                if ":" in col_texts[0]:
+                    p_idx = 1
+                
+                if len(col_texts) > p_idx and '/' in col_texts[p_idx]:
+                    pending_match = None
+                    continue
+
+                p1_cell = cols[p_idx]
+                p1_name = p1_cell.get_text().strip()
+                
+                p1_is_winner = bool(p1_cell.find('b') or p1_cell.find('strong'))
+                
+                scores_1 = []
+                # Scores start after sets col (col 2 or 3)
+                start_score = p_idx + 2
+                for x in col_texts[start_score:]:
+                    if not x: continue
+                    if '.' in x: break
+                    scores_1.append(x)
+                
+                pending_match = {
+                    "p1_name": p1_name,
+                    "p1_winner": p1_is_winner,
+                    "scores_1": scores_1,
+                    "detail_url": detail_url,
+                    "tournament": current_tournament,
+                    "date": today_str
+                }
+                
+            else:
+                # Row 2 Processing
+                if not pending_match:
+                    continue
+                
+                p_idx = 0
+                # Sanity check: doubles or empty
+                if '/' in col_texts[p_idx] or not col_texts[p_idx]:
+                    pending_match = None
+                    continue
+
+                p2_cell = cols[p_idx]
+                p2_name = p2_cell.get_text().strip()
+                
+                p2_is_winner = bool(p2_cell.find('b') or p2_cell.find('strong'))
+                
+                scores_2 = []
+                start_score = p_idx + 2
+                for x in col_texts[start_score:]:
+                    if not x: continue
+                    if '.' in x: break
+                    scores_2.append(x)
+                
+                # Resolve match
+                winner = pending_match['p1_name']
+                loser = p2_name
+                if p2_is_winner:
+                    winner = p2_name
+                    loser = pending_match['p1_name']
+                
+                # Combine scores
+                row1_scores = pending_match['scores_1']
+                final_scores = []
+                for s1, s2 in zip(row1_scores, scores_2):
+                     final_scores.append(f"{s1}-{s2}")
+                
+                score_str = " ".join(final_scores)
+                
+                match_data = {
+                    "date": pending_match['date'],
+                    "tournament": pending_match['tournament'],
+                    "winner": winner, 
+                    "loser": loser,
+                    "score": score_str,
+                    "detail_url": pending_match['detail_url'],
+                    "raw_text": f"{pending_match['p1_name']} vs {p2_name}" 
+                }
+                matches.append(match_data)
+                pending_match = None
+
+        except Exception as e:
+            # print(f"Row error: {e}")
+            pending_match = None
+            continue
             
-            cleaned_score_parts = []
-            for part in col_texts[2:-1]: # Check middle columns
-                if not part: continue
-                if "." in part: # Odds detected
-                    break
-                if part.isdigit() or "-" in part: # "6" or "7-6"
-                    cleaned_score_parts.append(part)
-            
-            score_text = " ".join(cleaned_score_parts)
-            
-            match_data = {
-                "date": today_str,
-                "tournament": current_tournament,
-                "winner": winner, 
-                "loser": loser,
-                "score": score_text,
-                "detail_url": detail_url,
-                "raw_text": str(col_texts[:8]) # Truncate for log
-            }
-            matches.append(match_data)
-            
-    except Exception as e:
-        print(f"Error scraping today results: {e}")
-        
     return matches
 
 if __name__ == "__main__":
-    # Test
+    import os
+    from dotenv import load_dotenv
+    load_dotenv()
+    from db_client import get_db_client, get_or_create_player
+    
     print("Testing extraction...")
     res = scrape_today_results()
     print(f"Found {len(res)} matches today.")
-    for m in res[:3]:
-        print(m)
-        if m['detail_url']:
-            print("  Fetching details...")
-            d = scrape_match_details(m['detail_url'])
-            print("  Details found keys:", d.keys())
+    
+    if not res:
+        print("No matches to save.")
+    else:
+        db = get_db_client()
+        saved = 0
+        
+        for m in res:
+            try:
+                # Resolve player IDs
+                winner_id = get_or_create_player(db, m['winner'])
+                loser_id = get_or_create_player(db, m['loser'])
+                
+                if not winner_id or not loser_id:
+                    print(f"  [SKIP] Could not resolve players: {m['winner']} vs {m['loser']}")
+                    continue
+                
+                # Insert or update match
+                match_record = {
+                    "date": m['date'] + "T00:00:00+00:00",
+                    "tournament_name": m['tournament'],
+                    "player1_id": winner_id,
+                    "player2_id": loser_id,
+                    "winner_id": winner_id,
+                    "score_full": m['score'],
+                    "surface": None  # Could extract from tournament if needed
+                }
+                
+                # Check if match exists (by date + players combo)
+                existing = db.from_('matches').select('id').eq('date', match_record['date']).eq('player1_id', winner_id).eq('player2_id', loser_id).limit(1).execute()
+                
+                if existing.data:
+                    # Update
+                    db.from_('matches').update({
+                        "winner_id": winner_id,
+                        "score_full": m['score']
+                    }).eq('id', existing.data[0]['id']).execute()
+                    print(f"  [UPD] {m['winner']} d. {m['loser']} {m['score']}")
+                else:
+                    # Insert
+                    db.from_('matches').insert(match_record).execute()
+                    print(f"  [NEW] {m['winner']} d. {m['loser']} {m['score']}")
+                
+                saved += 1
+            except Exception as e:
+                print(f"  [ERR] {m.get('raw_text', 'Unknown')}: {e}")
+        
+        print(f"\nSaved/Updated {saved} matches.")
+
