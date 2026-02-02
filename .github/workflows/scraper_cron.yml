@@ -2,31 +2,37 @@ name: Tennis AI Automation
 
 on:
   schedule:
-    - cron: '0 * * * *' # Runs at minute 0 of every hour
-  workflow_dispatch: # Allows manual trigger from GitHub UI
+    - cron: '0 * * * *' # Hourly
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   scrape-and-predict:
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     
     steps:
       - name: Checkout Code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
-          python-version: '3.9'
+          python-version: '3.11' # Upgrade to newer Python
+          cache: 'pip' # Cache dependencies
 
       - name: Install Dependencies
         run: |
-          cd scrapers
-          pip install -r requirements.txt
+          python -m pip install --upgrade pip
+          pip install -r scrapers/requirements.txt
 
       - name: Run Scraper & AI
         env:
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
-          SUPABASE_KEY: ${{ secrets.SUPABASE_KEY }}
+          SUPABASE_KEY: ${{ secrets.SUPABASE_KEY }} # Ensure this matches Service Role or Anon Key as needed
+          PYTHONPATH: .
         run: |
-          cd scrapers
-          python cron_job.py
+          python scrapers/cron_job.py
