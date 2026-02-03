@@ -11,20 +11,27 @@ interface Pick {
 
 export default function AntiFomo() {
     const navigate = useNavigate();
-    const [picks, setPicks] = useState<Pick[]>([]);
+    const [picks, setPicks] = useState<Pick[]>(() => {
+        const saved = localStorage.getItem('antifomo_picks');
+        return saved ? JSON.parse(saved) : [];
+    });
     const [description, setDescription] = useState('');
     const [odds, setOdds] = useState('');
     const [risk, setRisk] = useState<'low' | 'medium' | 'high'>('low');
 
-    const addPick = () => {
-        if (!description || !odds) return;
-        setPicks([...picks, { id: Date.now().toString(), description, odds: parseFloat(odds), risk }]);
-        setDescription('');
-        setOdds('');
+    const removePick = (id: string) => {
+        const newPicks = picks.filter(p => p.id !== id);
+        setPicks(newPicks);
+        localStorage.setItem('antifomo_picks', JSON.stringify(newPicks));
     };
 
-    const removePick = (id: string) => {
-        setPicks(picks.filter(p => p.id !== id));
+    const addPick = () => {
+        if (!description || !odds) return;
+        const newPicks = [...picks, { id: Date.now().toString(), description, odds: parseFloat(odds), risk }];
+        setPicks(newPicks);
+        localStorage.setItem('antifomo_picks', JSON.stringify(newPicks));
+        setDescription('');
+        setOdds('');
     };
 
     // SRS Formula: Base Risk + (Extra_Picks * 10) + (High Risk Items * 20)

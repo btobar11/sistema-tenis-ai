@@ -156,7 +156,17 @@ export default function Dashboard({ initialView }: { initialView?: 'dashboard' |
             case 'anti-fomo':
                 return <AntiFomo />;
             case 'checklist':
-                return <ValidationChecklist playerName="Demo" metrics={{ form: 80, surfaceWinRate: 70, regularity: 0.2, setTrend: 1 }} ev={0.15} />;
+                return (
+                    <div className="p-8 max-w-4xl mx-auto">
+                        <h2 className="text-2xl font-bold mb-6">Herramienta de Validación</h2>
+                        <ValidationChecklist
+                            playerName="Ejemplo: Carlos Alcaraz"
+                            metrics={{ form: 85, surfaceWinRate: 72, regularity: 0.15, setTrend: 1 }}
+                            ev={0.12}
+                        />
+                        <p className="mt-4 text-slate-500 text-sm">Esta es una vista de demostración para la herramienta de validación manual.</p>
+                    </div>
+                );
             default:
                 return <div>View not found</div>;
         }

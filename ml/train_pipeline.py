@@ -2,182 +2,169 @@ import os
 import sys
 import pandas as pd
 import numpy as np
-from datetime import datetime, timedelta
 import joblib
-from xgboost import XGBClassifier
-from sklearn.model_selection import train_test_split
-from sklearn.metrics import accuracy_score, classification_report, log_loss
-from sklearn.calibration import CalibratedClassifierCV, calibration_curve
+from xgboost import XGBRegressor
+from sklearn.metrics import mean_absolute_error, r2_score
 
-# Add root to system path
+# Add root
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from scrapers.db_client import get_db_client
+from ai_engine.score_inference import infer_p_serve
 
-MODEL_PATH = "ml/models/xgb_v1.joblib"
+MODEL_PATH = "ml/models/xgb_service_v1.joblib"
 os.makedirs("ml/models", exist_ok=True)
 
-class MLPipeline:
+class ServiceProbTrainingPipeline:
     def __init__(self):
         self.db = get_db_client()
-        if not self.db:
-            raise Exception("DB Client failed")
 
     def fetch_data(self):
-        print("1. Fetching Match History...")
-        endpoint = f"{self.db.url}/rest/v1/matches?select=*,player_a:player1_id(name,rank_single),player_b:player2_id(name,rank_single)&order=date.asc"
-        r = self.db._request_with_retry('get', endpoint)
-        if not r or r.status_code != 200:
-            raise Exception("Failed to fetch data")
+        print("1. Fetching Match Data (Score-Based)...")
+        cols = "id, date, surface, score_full, winner_id, player1_id, player2_id"
+        res = self.db.from_('matches').select(cols).execute()
+        matches_df = pd.DataFrame(res.data)
         
-        df = pd.DataFrame(r.json())
-        # Handle various date formats from different scrapers
-        df['date'] = pd.to_datetime(df['date'], errors='coerce')
-        # Drop rows with invalid dates if any
-        df = df.dropna(subset=['date']).sort_values('date')
-        print(f"   Loaded {len(df)} matches.")
-        return df
+        if matches_df.empty: return None
+        
+        # Fetch Players for Rank
+        print("   Fetching Players Ranks...")
+        p_res = self.db.from_('players').select('id, rank').execute()
+        
+        if not p_res.data:
+            print("   [WARN] No players returned. Using dummy ranks.")
+            matches_df['p1_rank'] = 999
+            matches_df['p2_rank'] = 999
+        else:
+            players_df = pd.DataFrame(p_res.data)
+            
+            # Ensure columns exist
+            if 'id' not in players_df.columns:
+                 # Should not happen if data is list of dicts
+                 print("   [ERR] Player data missing 'id'.")
+                 matches_df['p1_rank'] = 999
+                 matches_df['p2_rank'] = 999
+            else:
+                if 'rank' not in players_df.columns: players_df['rank'] = 999
+                
+                players_df['rank'] = pd.to_numeric(players_df['rank'], errors='coerce').fillna(999)
+                rank_map = players_df.set_index('id')['rank'].to_dict()
+                matches_df['p1_rank'] = matches_df['player1_id'].map(rank_map).fillna(999)
+                matches_df['p2_rank'] = matches_df['player2_id'].map(rank_map).fillna(999)
+        
+        # Date conversions
+        matches_df['date'] = pd.to_datetime(matches_df['date'], format='ISO8601').dt.tz_localize(None)
+        matches_df = matches_df.sort_values('date')
+        
+        return matches_df
 
-    def feature_engineering(self, df):
-        print("2. Feature Engineering (Rolling Window)...")
-        # Initialize containers for calculated features
-        # We must iterate chronologically to avoid leakage
+    def engineer_features(self, df):
+        print("2. Feature Engineering & Target Inference...")
         
-        # State trackers
-        elo_state = {} 
-        form_state = {} # {player_id: [last_5_results]}
-        
-        features = []
+        final_data = []
+        skipped_count = 0
         
         for idx, row in df.iterrows():
-            p1 = row['player1_id']
-            p2 = row['player2_id']
-            winner = row['winner_id']
-            date = row['date']
+            score = row.get('score_full')
+            if not score:
+                skipped_count += 1
+                continue
+                
+            try:
+                ps_w, ps_l = infer_p_serve(score)
+            except:
+                ps_w, ps_l = None, None
+                
+            if ps_w is None:
+                skipped_count += 1
+                continue
+                
+            surf = row.get('surface', 'HARD')
+            if not surf: surf = 'HARD'
+            surf_code = 1 if 'CLAY' in surf.upper() else (2 if 'GRASS' in surf.upper() else 0)
             
-            # --- Get Pre-Match Features (Snapshot) ---
+            weight = 1.0 if len(score) > 10 else 0.8
             
-            # ELO (Default 1500 if new)
-            elo1 = elo_state.get(p1, 1500)
-            elo2 = elo_state.get(p2, 1500)
+            # Ranks
+            p_won = row['winner_id']
+            p1_id = row['player1_id']
+            p2_id = row['player2_id']
             
-            # Form (Win % last 5)
-            # Calculate from list
-            f1_hist = form_state.get(p1, [])
-            f2_hist = form_state.get(p2, [])
+            r1 = row['p1_rank']
+            r2 = row['p2_rank']
             
-            form1 = sum(f1_hist)/len(f1_hist) if f1_hist else 0.5
-            form2 = sum(f2_hist)/len(f2_hist) if f2_hist else 0.5
+            # Winner Rank / Loser Rank logic
+            if p_won == p1_id:
+                winner_rank = r1
+                loser_rank = r2
+            else:
+                winner_rank = r2
+                loser_rank = r1
             
-            # Rank
-            # Usually we assume rank is in the row from scraper, if not found use 999
-            rank1 = 999 
-            rank2 = 999
-            # Try to parse rank if available in player_a object (joined)
-            if 'player_a' in row and isinstance(row['player_a'], dict):
-                rank1 = row['player_a'].get('rank_single') or 999
-            if 'player_b' in row and isinstance(row['player_b'], dict):
-                rank2 = row['player_b'].get('rank_single') or 999
+            # Log Rank Diff: log2(OppRank) - log2(MyRank)
+            # Higher is better for 'Me'
+            def get_log_diff(my_r, opp_r):
+                # Clamp ranks to 1-1000
+                mr = max(1, min(1000, my_r))
+                or_ = max(1, min(1000, opp_r))
+                return np.log2(or_) - np.log2(mr)
+                
+            diff_winner = get_log_diff(winner_rank, loser_rank)
+            diff_loser = get_log_diff(loser_rank, winner_rank)
             
-            # Target
-            # We predict if Player 1 wins.
-            label = 1 if winner == p1 else 0
-            
-            # Store Feature Row
-            features.append({
-                'elo_diff': elo1 - elo2,
-                'form_diff': form1 - form2,
-                'rank_diff': (rank2 - rank1), # Higher rank is lower number, so (20 - 10) = +10 diff for P1? No.
-                                              # If P1 is #10 and P2 is #50. P1 is better.
-                                              # Diff = 50 - 10 = 40. Positive Rank Diff means P1 is better.
-                'elo_p1': elo1,
-                'elo_p2': elo2,
-                'target': label
+            # Row 1: Winner
+            final_data.append({
+                'surface_code': surf_code,
+                'rank_diff': diff_winner,
+                'target': ps_w,
+                'weight': weight
             })
             
-            # --- Post-Match State Update (Learning) ---
+            # Row 2: Loser
+            final_data.append({
+                'surface_code': surf_code,
+                'rank_diff': diff_loser,
+                'target': ps_l,
+                'weight': weight
+            })
             
-            # ELO Update
-            expected1 = 1 / (1 + 10 ** ((elo2 - elo1) / 400))
-            score1 = 1 if label == 1 else 0
-            k = 32
-            
-            new_elo1 = elo1 + k * (score1 - expected1)
-            new_elo2 = elo2 + k * ((1-score1) - (1-expected1))
-            
-            elo_state[p1] = new_elo1
-            elo_state[p2] = new_elo2
-            
-            # Form Update
-            f1_hist.append(1 if label == 1 else 0)
-            f2_hist.append(1 if label == 0 else 0)
-            
-            # Keep only last 5
-            form_state[p1] = f1_hist[-5:]
-            form_state[p2] = f2_hist[-5:]
-            
-        feat_df = pd.DataFrame(features)
-        print(f"   Generated {len(feat_df)} training rows.")
-        return feat_df
+        print(f"   Generated {len(final_data)} training samples.")
+        return pd.DataFrame(final_data)
 
-    def train_model(self, df):
-        print("3. Training XGBoost Model with Probability Calibration (Platt Scaling)...")
-        if df.empty:
-            print("   No data to train.")
-            return
+    def train(self, df):
+        print("3. Training XGB Regressor (Rank-Based)...")
+        if df is None or df.empty: return
 
-        X = df.drop(columns=['target'])
-        y = df['target']
+        split_idx = int(len(df) * 0.8)
+        train_df = df.iloc[:split_idx]
+        test_df = df.iloc[split_idx:]
         
-        # Split: Train (60%), Calibration (20%), Test (20%)
-        # Or simpler: Cross-Validation Calibration (method='sigmoid' aka Platt)
-        # Using 5-fold CV for calibration uses all data more efficiently.
+        features = ['surface_code', 'rank_diff']
+        target = 'target'
         
-        X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+        # Check Feature Correlation
+        corr = df[['rank_diff', 'target']].corr().iloc[0,1]
+        print(f"   Correlation RankDiff vs P(Serve): {corr:.3f}")
         
-        base_model = XGBClassifier(
-            n_estimators=200, 
-            learning_rate=0.05, 
-            max_depth=6,
-            eval_metric='logloss'
+        model = XGBRegressor(
+            n_estimators=100,
+            learning_rate=0.05,
+            max_depth=3,
+            objective='reg:squarederror'
         )
         
-        # Fit base model first (needed if not using CV inside CalibratedClassifier, 
-        # but CalibratedClassifierCV(cv=5) handles it)
-        # Note: XGBoost early stopping requires eval set. Simplest way with Calibration is:
-        # 1. Fit Base
-        # 2. Calibrate on separate set OR use CalibratedClassifierCV(cv=5) which fits 5 models.
+        model.fit(train_df[features], train_df[target], sample_weight=train_df['weight'])
         
-        # Let's use CalibratedClassifierCV with prefit=False (Default) and cv=3
-        print("   Fitting Calibrated Classifier (CV=3)...")
-        calibrated_model = CalibratedClassifierCV(base_model, method='sigmoid', cv=3)
-        calibrated_model.fit(X_train, y_train)
+        preds = model.predict(test_df[features])
+        mae = mean_absolute_error(test_df[target], preds)
         
-        # Eval
-        preds = calibrated_model.predict(X_test)
-        probs = calibrated_model.predict_proba(X_test)[:, 1]
-        acc = accuracy_score(y_test, preds)
-        loss = log_loss(y_test, probs)
-        
-        print(f"   Calibrated Accuracy: {acc:.4f}")
-        print(f"   Calibrated Log Loss: {loss:.4f}")
-        
-        # Feature importance is tricky with Wrapper. We can inspect one of the estimators.
-        try:
-            base_est = calibrated_model.calibrated_classifiers_[0].estimator
-            print("   Feature Importance (from Fold 1):")
-            imps = dict(zip(X.columns, base_est.feature_importances_))
-            for k, v in sorted(imps.items(), key=lambda x: x[1], reverse=True):
-                print(f"     - {k}: {v:.4f}")
-        except:
-            pass
-            
-        # Save
-        joblib.dump(calibrated_model, MODEL_PATH)
-        print(f"   Model saved to {MODEL_PATH}")
+        print(f"   MAE: {mae:.4f}")
+        joblib.dump(model, MODEL_PATH)
+        print("   Model V1 (Score+Rank) Saved.")
 
 if __name__ == "__main__":
-    pipeline = MLPipeline()
-    raw_df = pipeline.fetch_data()
-    train_df = pipeline.feature_engineering(raw_df)
-    pipeline.train_model(train_df)
+    pipeline = ServiceProbTrainingPipeline()
+    raw = pipeline.fetch_data()
+    if raw is not None:
+        engineered = pipeline.engineer_features(raw)
+        pipeline.train(engineered)

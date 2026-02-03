@@ -1,6 +1,6 @@
 @echo off
 REM Automated Tennis Match Scraper
-REM Runs every hour to fetch latest matches
+REM Runs every 3 hours to fetch latest matches
 
 cd /d "%~dp0"
 

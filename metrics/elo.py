@@ -128,13 +128,15 @@ class EloEngine:
             return
 
         surfaces = ["OVERALL"]
-        match_surface = match.get('surface', 'HARD').upper()
+        match_surface = (match.get('surface') or 'HARD').upper()
         if match_surface in ['HARD', 'CLAY', 'GRASS', 'INDOOR']:
              surfaces.append(match_surface)
 
         for s in surfaces:
             # 1. Fetch current data
+            print(f"    [Details] Fetching ELO for P1: {p1} ({s})")
             d1 = self.get_player_elo_data(p1, s)
+            print(f"    [Details] Fetching ELO for P2: {p2} ({s})")
             d2 = self.get_player_elo_data(p2, s)
             
             r1, r2 = d1['rating'], d2['rating']

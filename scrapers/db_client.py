@@ -115,6 +115,100 @@ class SupabaseFluentClient:
         # Alias for from_
         return self.from_(table)
 
+    def _request_with_retry(self, method, endpoint, json=None, **kwargs):
+        # Shim to support raw DB calls from StatsEngine
+        try:
+            # Merge custom headers if present in kwargs
+            req_headers = self.headers.copy()
+            if 'headers' in kwargs:
+                req_headers.update(kwargs.pop('headers'))
+            
+            # Default timeout if not provided
+            if 'timeout' not in kwargs:
+                kwargs['timeout'] = 10
+
+            # print(f"  [DB] Doing {method} to ...{endpoint[-20:]}")
+
+            if method.lower() == 'get':
+                return http_requests.get(endpoint, headers=req_headers, **kwargs)
+            elif method.lower() == 'post':
+                return http_requests.post(endpoint, headers=req_headers, json=json, **kwargs)
+            elif method.lower() == 'patch':
+                return http_requests.patch(endpoint, headers=req_headers, json=json, **kwargs)
+        except Exception as e:
+            print(f"Request Error ({method}): {e}")
+            return None
+
+    def get_or_create_player(self, name):
+        """
+        Resolves a player name to an ID, creating the player if they don't exist.
+        """
+        try:
+            # Check if exists
+            r = self.table('players').select('id').eq('name', name).execute()
+            if r.data:
+                return r.data[0]['id']
+            
+            # Create if not exists
+            r = self.table('players').insert({"name": name}).execute()
+            if r.data:
+                return r.data[0]['id']
+        except Exception as e:
+            print(f"Sync Player Error ({name}): {e}")
+        return None
+
+    def insert_match(self, match_data):
+        """
+        Inserts a match into the database. 
+        Checks for duplicates based on date, winner, and loser.
+        Updates if exists, Inserts if new.
+        """
+        try:
+            # Basic duplicate check criteria
+            # We need date, winner_id, loser_id (or player1_id/player2_id depending on how it's stored)
+            # match_data expected keys: date, player1_id, player2_id, winner_id, score_full, etc.
+            
+            # Check existing
+            # Note: Dates in DB might be ISO strings. match_data['date'] should be formatted.
+            # match_scraper uses date + 'T00:00:00+00:00' if it's just YYYY-MM-DD
+            
+            check_date = match_data['date']
+            if len(check_date) == 10: # YYYY-MM-DD
+                 check_date = check_date # The DB likely stores it as date or timestamp
+                 # If timestamp, we might need range check, but let's assume 'date' column type for simplicity or exact match
+            
+            # We check if a match with same players and date exists
+            # We check both p1/p2 combinations just in case order is flipped in DB vs scraper
+            # but usually p1 is winner, p2 is loser in some schemas, or sorted.
+            
+            # Let's trust the input ids
+            p1 = match_data['player1_id']
+            p2 = match_data['player2_id']
+            
+            existing = self.table('matches')\
+                .select('id')\
+                .eq('date', check_date)\
+                .eq('player1_id', p1)\
+                .eq('player2_id', p2)\
+                .limit(1)\
+                .execute()
+                
+            if existing.data:
+                # Update
+                match_id = existing.data[0]['id']
+                # filter out ids from data to avoid primary key update errors if any
+                update_data = {k: v for k, v in match_data.items() if k not in ['id', 'player1_id', 'player2_id', 'date']}
+                self.table('matches').update(update_data).eq('id', match_id).execute()
+                return True
+            else:
+                # Insert
+                self.table('matches').insert(match_data).execute()
+                return True
+                
+        except Exception as e:
+            print(f"Insert Match Error: {e}")
+            return False
+
 class DatabaseClient:
     _instance = None
 

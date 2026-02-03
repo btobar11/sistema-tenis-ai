@@ -4,6 +4,11 @@ import json
 from datetime import datetime
 from dotenv import load_dotenv
 import requests as http_requests # Standard requests for API
+import sys
+import argparse
+# Add parent directory to path to allow importing 'metrics' and 'ai_engine'
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
 from match_scraper import scrape_today_results, scrape_match_details
 
 # Load env from parent or current dir
@@ -18,7 +23,18 @@ def get_tracked_players(db):
     if not db:
         # Mock for detailed testing if no DB
         return {"carlos alcaraz", "jannik sinner", "rafael nadal", "novak djokovic", "jeanne-grandinot d."} 
-    return db.get_tracked_players()
+    # Fetch players from DB
+    try:
+        # Assuming we just want all players in DB? Or a specific list?
+        # For now, let's fetch top 100 or all.
+        r = db._request_with_retry('get', f"{db.url}/rest/v1/players?select=name&limit=1000")
+        if r and r.status_code == 200:
+            players = r.json()
+            return {p['name'].lower() for p in players if p.get('name')}
+        return set()
+    except Exception as e:
+        print(f"Error fetching tracked players: {e}")
+        return set()
 
 def normalize_name(name):
     # TennisExplorer: "Sinner J." or "Alcaraz C."
@@ -102,10 +118,23 @@ def monitor_cycle(db, tracked_players):
             p1_id = "DRY_RUN_ID"
             p2_id = "DRY_RUN_ID"
 
+        # Try to infer surface from tournament name
+        surface = "HARD"
+        t_name_upper = m['tournament'].upper()
+        if "CLAY" in t_name_upper: surface = "CLAY"
+        elif "GRASS" in t_name_upper: surface = "GRASS"
+        elif "INDOOR" in t_name_upper: surface = "INDOOR" # Generic indoor -> INDOOR_HARD in ELO?
+        
         # Prepare DB Payload
+        # Ensure date format is timid enough for DB (ISO with TZ)
+        match_date = m['date']
+        if len(match_date) == 10: # YYYY-MM-DD
+             match_date += "T00:00:00+00:00"
+
         db_match = {
-            "date": m['date'], 
+            "date": match_date, 
             "tournament_name": m['tournament'],
+            "surface": surface,
             "player1_id": p1_id, 
             "player2_id": p2_id,
             "winner_id": p1_id, # Scraper returns 'winner' name
@@ -115,6 +144,7 @@ def monitor_cycle(db, tracked_players):
         
         # Save to DB
         if db:
+            # We assume db_client has insert_match method
             success = db.insert_match(db_match)
             if success:
                 print(f"     [SAVED] {db_match['winner_id']} vs {db_match['player2_id']}")
@@ -173,4 +203,15 @@ def run_continuous_monitor(interval_seconds=600):
         time.sleep(interval_seconds)
 
 if __name__ == "__main__":
-    run_continuous_monitor()
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--once", action="store_true", help="Run a single monitor cycle and exit")
+    args = parser.parse_args()
+
+    if args.once:
+        print(f"[{datetime.now()}] Running in ONCE mode.")
+        db = get_db_client()
+        tracked = get_tracked_players(db)
+        monitor_cycle(db, tracked)
+        print("Single cycle completed.")
+    else:
+        run_continuous_monitor()

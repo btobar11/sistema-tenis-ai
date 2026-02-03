@@ -1,0 +1,46 @@
+name: ATP Tour Scraper (Industrial)
+
+on:
+  schedule:
+    - cron: '0 8 * * *' # Run daily at 8am UTC
+  workflow_dispatch: # Allow manual trigger
+
+jobs:
+  scrape-atp:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+          cache: 'pip'
+
+      - name: Install Dependencies
+        run: |
+          pip install -r scrapers/requirements.txt
+          pip install scrapy playwright playwright-stealth fake-useragent
+
+      - name: Install Playwright Browsers
+        run: playwright install chromium
+
+      - name: Run ATP Scraper
+        env:
+          ROTATING_PROXY_URL: '${{ secrets.ROTATING_PROXY_URL }}'
+          SUPABASE_URL: '${{ secrets.SUPABASE_URL }}'
+          SUPABASE_KEY: '${{ secrets.SUPABASE_KEY }}'
+        run: |
+          cd scrapers/advanced
+          python run.py
+      
+      - name: Upload Artifacts (Logs/Reports)
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: scraper-logs
+          path: scrapers/advanced/*.log
+          retention-days: 3

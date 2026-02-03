@@ -3,15 +3,26 @@
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --font-sans: var(--font-inter);
+  --font-mono: var(--font-jetbrains-mono);
+
+  /* Edgeset Identity Tokens */
+  --color-edgeset-navy: #0F1E3A;
+  --color-edgeset-blue: #1F3A68;
+  --color-edgeset-green: #2FA84F;
+  --color-edgeset-green-soft: #6EDC8A;
+  --color-edgeset-black: #0B0F14;
+  --color-edgeset-gray-900: #121826;
+  --color-edgeset-gray-700: #2A3347;
+  --color-edgeset-gray-400: #9AA4B2;
+  --color-edgeset-white: #FFFFFF;
 }
 
 :root {
-  --background: #020617;
-  /* Slate 950 */
-  --foreground: #f8fafc;
-  /* Slate 50 */
+  --background: #0B0F14;
+  /* edgeset-black */
+  --foreground: #FFFFFF;
+  /* edgeset-white */
 }
 
 body {

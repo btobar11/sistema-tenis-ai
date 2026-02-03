@@ -2,9 +2,9 @@ import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
 import { type Match, api } from '../lib/api';
-import { analyzeMatch } from '../lib/quant';
+// import { analyzeMatch } from '../lib/quant'; // REMOVED
 import { ArrowLeft, TrendingUp, ShieldCheck, Calculator, Activity } from 'lucide-react';
-import ValidationChecklist from '../components/ValidationChecklist';
+// import ValidationChecklist from '../components/ValidationChecklist'; // REMOVED
 
 interface MatchAnalysisProps {
     matchId?: string;
@@ -33,6 +33,8 @@ export default function MatchAnalysis({ matchId, onBack }: MatchAnalysisProps = 
         }
     }
 
+    const [analysis, setAnalysis] = useState<any>(null);
+
     useEffect(() => {
         if (finalId) {
             loadMatch(finalId);
@@ -42,8 +44,12 @@ export default function MatchAnalysis({ matchId, onBack }: MatchAnalysisProps = 
     async function loadMatch(matchId: string) {
         setLoading(true);
         try {
-            const data = await api.getMatch(matchId);
-            setMatch(data);
+            const [matchData, analysisData] = await Promise.all([
+                api.getMatch(matchId),
+                api.getMatchAnalysis(matchId)
+            ]);
+            setMatch(matchData);
+            setAnalysis(analysisData);
         } catch (e) {
             console.error(e);
             navigate('/');
@@ -51,8 +57,6 @@ export default function MatchAnalysis({ matchId, onBack }: MatchAnalysisProps = 
             setLoading(false);
         }
     }
-
-    const liveAnalysis = match ? analyzeMatch(match) : null;
 
     if (loading) {
         return (
@@ -120,24 +124,24 @@ export default function MatchAnalysis({ matchId, onBack }: MatchAnalysisProps = 
                             <Activity size={120} />
                         </div>
                         <h3 className="text-slate-400 font-medium mb-2 uppercase text-xs tracking-wider flex justify-between">
-                            <span>Pick Sugerido (Modelo Quant)</span>
-                            {liveAnalysis?.source && <span className="text-[10px] bg-slate-800 px-2 py-0.5 rounded text-emerald-400 border border-emerald-500/20">{liveAnalysis.source}</span>}
+                            <span>Pick Sugerido (Certificado)</span>
+                            {analysis && <span className="text-[10px] bg-slate-800 px-2 py-0.5 rounded text-emerald-400 border border-emerald-500/20">WORM SNAPSHOT</span>}
                         </h3>
                         <div className="text-4xl font-bold text-white mb-4 line-clamp-1 blur-sm select-none">
-                            {!isPremium ? "Hidden Pick ????" : (liveAnalysis ? (liveAnalysis.probA > 0.5 ? match?.player_a.name : match?.player_b.name) : "Calculando...")}
+                            {!isPremium ? "Hidden Pick ????" : (analysis ? analysis.suggested_pick : "Pendiente de Análisis...")}
                         </div>
                         <div className="flex gap-4 opacity-50 pointer-events-none filter blur-sm">
                             <StatBadge
-                                label="Prob. Implícita"
-                                value="76.4%"
+                                label="Confianza"
+                                value={analysis ? `${analysis.confidence_percent}%` : "0%"}
                                 icon={<ShieldCheck size={16} />}
                                 color="blue"
                             />
                             <StatBadge
-                                label="Value (EV)"
-                                value="+12.5%"
+                                label="Riesgo"
+                                value={analysis ? analysis.risk_level.toUpperCase() : "-"}
                                 icon={<TrendingUp size={16} />}
-                                color="emerald"
+                                color={analysis?.risk_level === 'low' ? 'emerald' : analysis?.risk_level === 'medium' ? 'amber' : 'red'}
                             />
                             <StatBadge
                                 label="Kelly Stake"
@@ -146,34 +150,13 @@ export default function MatchAnalysis({ matchId, onBack }: MatchAnalysisProps = 
                                 color="amber"
                             />
                         </div>
-                        {isPremium && (
-                            <div className="mt-6 text-xs text-slate-500">
-                                Base Score A: {liveAnalysis?.scores.A.toFixed(3)} | Base Score B: {liveAnalysis?.scores.B.toFixed(3)}
-                            </div>
-                        )}
-                    </div>
 
-                    {/* Validation Checklist */}
-                    {liveAnalysis && (
-                        <div className="bg-slate-900 border border-slate-800 rounded-3xl p-8">
-                            <h3 className="text-lg font-bold mb-6 flex items-center gap-2">
-                                <ShieldCheck className="w-5 h-5 text-emerald-400" />
-                                Validation Checklist
-                            </h3>
-                            <div className="grid md:grid-cols-2 gap-6">
-                                <ValidationChecklist
-                                    playerName={match.player_a.name}
-                                    metrics={liveAnalysis.metricsA}
-                                    ev={liveAnalysis.ev}
-                                />
-                                <ValidationChecklist
-                                    playerName={match.player_b.name}
-                                    metrics={liveAnalysis.metricsB}
-                                    ev={-liveAnalysis.ev}
-                                />
-                            </div>
-                        </div>
-                    )}
+                        {/* 
+                           REMOVED BASE SCORES DISPLAY 
+                           (Snapshot doesn't currently return raw scores, only final decision)
+                        */}
+
+                    </div>
                 </div>
 
                 {/* Sidebar Info */}
@@ -183,11 +166,11 @@ export default function MatchAnalysis({ matchId, onBack }: MatchAnalysisProps = 
                         <ul className="space-y-3 text-sm text-slate-400">
                             <li className="flex justify-between">
                                 <span>Ronda</span>
-                                <span className="text-white">{match.round || 'N/A'}</span>
+                                <span>{match.round || 'N/A'}</span>
                             </li>
                             <li className="flex justify-between">
                                 <span>Superficie</span>
-                                <span className="text-white">{match.surface}</span>
+                                <span>{match.surface}</span>
                             </li>
                         </ul>
                     </div>

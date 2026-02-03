@@ -1,7 +1,7 @@
 import { createClient } from '@/utils/supabase/server'
 import { redirect } from 'next/navigation'
 import Link from 'next/link'
-import { Zap, TrendingUp, Target, ArrowRight, AlertTriangle, Lock, LogOut, Activity } from 'lucide-react'
+import { Zap, Target, ArrowRight, AlertTriangle, Lock, LogOut, Activity } from 'lucide-react'
 
 // API base URL - should be configured via env in production
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'
@@ -16,6 +16,10 @@ interface Pick {
     bookmaker: string
     player_home: string
     player_away: string
+    confidence?: {
+        score: number
+        label: string
+    }
     match: {
         id: string
         tournament: string
@@ -26,7 +30,12 @@ interface Pick {
     }
 }
 
-async function fetchDailyPicks(token: string): Promise<Pick[]> {
+interface PicksResponse {
+    picks: Pick[]
+    disclaimer?: string
+}
+
+async function fetchDailyPicks(token: string): Promise<PicksResponse> {
     try {
         const res = await fetch(`${API_URL}/daily-edge/picks?min_ev=3.0`, {
             headers: {
@@ -38,16 +47,19 @@ async function fetchDailyPicks(token: string): Promise<Pick[]> {
 
         if (!res.ok) {
             if (res.status === 402) {
-                return []  // Premium required
+                return { picks: [] }  // Premium required handled in UI
             }
             throw new Error('Failed to fetch picks')
         }
 
         const data = await res.json()
-        return data.picks || []
+        return {
+            picks: data.picks || [],
+            disclaimer: data.disclaimer
+        }
     } catch (error) {
         console.error('Error fetching daily picks:', error)
-        return []
+        return { picks: [] }
     }
 }
 
@@ -74,8 +86,11 @@ export default async function DailyEdgePage() {
     const isPremium = tier === 'premium' || tier === 'trial'
 
     let picks: Pick[] = []
+    let disclaimer = ''
     if (isPremium && token) {
-        picks = await fetchDailyPicks(token)
+        const res = await fetchDailyPicks(token)
+        picks = res.picks
+        disclaimer = res.disclaimer || "Quantitative signal. Not financial advice."
     }
 
     return (
@@ -108,7 +123,7 @@ export default async function DailyEdgePage() {
                     </div>
                     <div>
                         <h1 className="text-3xl font-bold">Daily Edge</h1>
-                        <p className="text-slate-400">Value picks identified by our AI engine</p>
+                        <p className="text-slate-400">Quantitative mispricings & positive expected value signals</p>
                     </div>
                 </div>
 
@@ -134,10 +149,10 @@ export default async function DailyEdgePage() {
                     /* No Picks */
                     <div className="text-center py-20 bg-slate-900/50 rounded-3xl border border-slate-800">
                         <AlertTriangle className="w-12 h-12 text-amber-500 mx-auto mb-4" />
-                        <h2 className="text-2xl font-bold mb-4">No Value Picks Today</h2>
+                        <h2 className="text-2xl font-bold mb-4">No Signal Detected</h2>
                         <p className="text-slate-400 max-w-md mx-auto">
-                            Our engine hasn't identified any picks meeting the EV threshold right now.
-                            Check back later as new odds are scraped.
+                            Our models have not identified any opportunities exceeding the 5% edge threshold today.
+                            <br /><span className="text-sm opacity-60 mt-2 block">We force discipline, not action.</span>
                         </p>
                     </div>
                 ) : (
@@ -179,26 +194,33 @@ export default async function DailyEdgePage() {
                                             </td>
                                             <td className="px-6 py-4 text-center">
                                                 <span className={`px-3 py-1 rounded-lg text-sm font-bold ${pick.ev_percentage >= 10
-                                                        ? 'bg-emerald-500/20 text-emerald-400'
-                                                        : pick.ev_percentage >= 5
-                                                            ? 'bg-amber-500/20 text-amber-400'
-                                                            : 'bg-slate-700 text-slate-300'
+                                                    ? 'bg-emerald-500/20 text-emerald-400'
+                                                    : pick.ev_percentage >= 5
+                                                        ? 'bg-amber-500/20 text-amber-400'
+                                                        : 'bg-slate-700 text-slate-300'
                                                     }`}>
                                                     +{pick.ev_percentage?.toFixed(1)}%
                                                 </span>
                                             </td>
-                                            <td className="px-6 py-4 text-center text-slate-300">
-                                                {pick.kelly_stake?.toFixed(1)}%
+                                            <td className="px-6 py-4 text-center group relative">
+                                                <span className="text-slate-300 border-b border-dotted border-slate-600 cursor-help">
+                                                    {pick.kelly_stake?.toFixed(1)}%
+                                                </span>
+                                                <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-48 p-2 bg-slate-950 border border-slate-700 rounded shadow-xl text-xs text-slate-400 hidden group-hover:block z-10 pointer-events-none">
+                                                    Quarter Kelly, capped at 2% bankroll
+                                                </div>
                                             </td>
                                             <td className="px-6 py-4 text-center">
                                                 <div className="flex items-center justify-center gap-2">
-                                                    <div className="w-16 h-2 bg-slate-800 rounded-full overflow-hidden">
+                                                    <div className="w-16 h-2 bg-slate-800 rounded-full overflow-hidden" title={`Confidence Score: ${pick.confidence?.score || 'N/A'}`}>
                                                         <div
-                                                            className="h-full bg-emerald-500 rounded-full"
-                                                            style={{ width: `${(pick.model_probability || 0) * 100}%` }}
+                                                            className={`h-full rounded-full ${pick.confidence?.label === 'High' ? 'bg-emerald-500' :
+                                                                    pick.confidence?.label === 'Medium' ? 'bg-blue-500' : 'bg-slate-500'
+                                                                }`}
+                                                            style={{ width: `${(pick.confidence?.score || 0) * 100}%` }}
                                                         />
                                                     </div>
-                                                    <span className="text-sm text-slate-400">
+                                                    <span className="text-sm font-mono text-slate-500" title="Model Probability">
                                                         {((pick.model_probability || 0) * 100).toFixed(0)}%
                                                     </span>
                                                 </div>
@@ -211,12 +233,14 @@ export default async function DailyEdgePage() {
                     </div>
                 )}
 
-                {/* Disclaimer */}
-                <div className="mt-8 p-4 rounded-xl bg-slate-900/50 border border-slate-800 text-center">
-                    <p className="text-xs text-slate-500">
-                        ⚠️ <strong>Disclaimer:</strong> Past performance does not guarantee future results.
-                        Betting involves risk. Please gamble responsibly.
+                {/* Footer / Disclaimer */}
+                <div className="mt-16 border-t border-edgeset-gray-700 pt-8 flex flex-col items-center text-center">
+                    <p className="text-xs text-edgeset-gray-400 font-mono mb-4">
+                        {disclaimer}
                     </p>
+                    <Link href="/performance" className="text-sm text-edgeset-green hover:underline flex items-center gap-1">
+                        View Historical Validation Report <ArrowRight className="w-3 h-3" />
+                    </Link>
                 </div>
             </main>
         </div>

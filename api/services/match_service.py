@@ -19,8 +19,9 @@ class MatchService:
                 yesterday = (datetime.now() - timedelta(days=1)).strftime('%Y-%m-%d')
                 date_from = yesterday
             if not date_to:
-                tomorrow = (datetime.now() + timedelta(days=1)).strftime('%Y-%m-%d')
-                date_to = tomorrow + "T23:59:59"
+                # Extend window to 7 days to capture all upcoming matches
+                future_limit = (datetime.now() + timedelta(days=7)).strftime('%Y-%m-%d')
+                date_to = future_limit + "T23:59:59"
             
             # Base query
             query = self.db.from_('matches').select('*, player_a:player1_id(name,rank_single), player_b:player2_id(name,rank_single)')
@@ -95,3 +96,49 @@ class MatchService:
         except Exception as e:
             print(f"[API Error] get_match_details: {e}")
             return None
+
+    def get_value_bets(self):
+        """
+        Returns matches that have value_bet data in their prediction column.
+        """
+        try:
+            # Fetch upcoming matches with predictions
+            today = datetime.now().strftime('%Y-%m-%d')
+            query = self.db.from_('matches') \
+                .select('*, player_a:player1_id(name), player_b:player2_id(name)') \
+                .gte('date', today) \
+                .not_.is_('prediction', 'null') \
+                .order('date', desc=False)
+            
+            response = query.execute()
+            matches = response.data if response.data else []
+            
+            value_bets = []
+            for m in matches:
+                pred = m.get('prediction', {})
+                if not pred or 'value_bet' not in pred:
+                    continue
+                
+                vb = pred['value_bet']
+                value_bets.append({
+                    "match_id": m['id'],
+                    "selection": vb['selection'],
+                    "odds": vb['odds'],
+                    "bookmaker": vb['bookmaker'],
+                    "ev": vb['ev'],
+                    "ev_percentage": round(vb['ev'] * 100, 1),
+                    "confidence": pred.get('confidence', 0),
+                    "kelly_stake": 0, # TODO: Calculate Kelly
+                    "match": {
+                        "id": m['id'],
+                        "player_a": {"name": m['player_a']['name']},
+                        "player_b": {"name": m['player_b']['name']},
+                        "tournament": m['tournament_name'],
+                        "date": m['date']
+                    }
+                })
+            
+            return value_bets
+        except Exception as e:
+            print(f"[API Error] get_value_bets: {e}")
+            return []

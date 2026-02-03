@@ -12,7 +12,8 @@ REM Remove trailing backslash if present
 if "%SCRIPT_DIR:~-1%"=="\" set SCRIPT_DIR=%SCRIPT_DIR:~0,-1%
 
 echo Creating Task: EDGESET Live Monitor
-schtasks /create /tn "EDGESET Live Monitor" /tr "\"%SCRIPT_DIR%\run_scraper.bat\"" /sc hourly /mo 1 /f /rl HIGHEST
+schtasks /delete /tn "EDGESET Live Monitor" /f >nul 2>&1
+schtasks /create /tn "EDGESET Live Monitor" /tr "\"%SCRIPT_DIR%\run_scraper.bat\"" /sc hourly /mo 3 /f /rl HIGHEST
 if %ERRORLEVEL% EQU 0 (
     echo [OK] Live Monitor task created successfully
 ) else (
@@ -34,7 +35,7 @@ echo Setup Complete!
 echo ========================================
 echo.
 echo Tasks created:
-echo 1. EDGESET Live Monitor - Attempts to run every hour.
+echo 1. EDGESET Live Monitor - Attempts to run every 3 hours.
 echo 2. EDGESET Upcoming Scraper - Runs daily at 6:00 AM.
 echo.
 echo To view tasks: Open Task Scheduler (taskschd.msc)

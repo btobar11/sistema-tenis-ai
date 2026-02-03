@@ -8,7 +8,9 @@ export default function DailyDashboard() {
     const [valueBets, setValueBets] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
     const [filter, setFilter] = useState<'all' | 'live' | 'finished' | 'high_confidence' | 'value_bets'>('all');
+    const [selectedTournament, setSelectedTournament] = useState<string>('');
     const [isLocked, setIsLocked] = useState(false);
+    const [debugError, setDebugError] = useState('');
 
     useEffect(() => {
         loadData();
@@ -17,48 +19,69 @@ export default function DailyDashboard() {
     async function loadData() {
         setLoading(true);
         try {
-            // CALL REAL API
+            console.log("Fetching matches...");
             const matchesData = await api.getMatchesToday();
-            const alertsData = await api.getValueAlerts();
+            console.log("Matches:", matchesData);
+            setMatches(matchesData);
 
-            // Handle Premium Wall
+            if (matchesData.length === 0) {
+                setDebugError("API returned 0 matches. Check console/DB.");
+            }
+
+            const alertsData: any = await api.getValueAlerts();
+
             // Handle Premium Wall
             let finalBets: any[] = [];
-
             if (alertsData === "PREMIUM_REQUIRED") {
                 setIsLocked(true);
-                // We could show a "Locked" placeholder or empty
                 finalBets = [];
             } else {
                 setIsLocked(false);
                 finalBets = Array.isArray(alertsData) ? alertsData : [];
             }
-
-            // Mock AI predictions for demo match list if not in DB yet
-            const enriched = matchesData.map((m: any) => ({
-                ...m,
-                prediction: m.prediction || {
-                    winner_id: Math.random() > 0.5 ? m.player_a.id : m.player_b.id,
-                    confidence: 0.55 + Math.random() * 0.40, // 55-95%
-                    generated: true
-                }
-            }));
-            setMatches(enriched);
             setValueBets(finalBets);
-        } catch (e) {
+        } catch (e: any) {
             console.error(e);
+            setDebugError("Error fetching: " + (e.message || JSON.stringify(e)));
         } finally {
             setLoading(false);
         }
     }
 
     const filteredMatches = matches.filter(m => {
+        if (selectedTournament && m.tournament !== selectedTournament) return false;
         if (filter === 'live') return m.status === 'live';
         if (filter === 'finished') return m.winner_name;
         if (filter === 'high_confidence') return (m as any).prediction?.confidence > 0.8;
-        if (filter === 'value_bets') return false; // Handled separately
+        if (filter === 'value_bets') return false;
         return true;
     });
+
+    // Get unique tournaments for filter dropdown
+    const availableTournaments = Array.from(new Set(matches.map(m => m.tournament))).sort();
+
+    // Grouping Logic
+    const getCategory = (m: Match) => {
+        const t = m.tournament.toUpperCase();
+        if (t.includes('WTA') || t.includes('WOMEN')) return 'WTA';
+        if (t.includes('ATP') || t.includes('MEN')) return 'ATP';
+        if (t.includes('CHALLENGER')) return 'CHALLENGER';
+        return 'ITF / OTHER';
+    };
+
+    const groupedMatches = filteredMatches.reduce((acc, match) => {
+        const cat = getCategory(match);
+        if (!acc[cat]) acc[cat] = {};
+
+        const tourn = match.tournament;
+        if (!acc[cat][tourn]) acc[cat][tourn] = [];
+
+        acc[cat][tourn].push(match);
+        return acc;
+    }, {} as Record<string, Record<string, Match[]>>);
+
+    // Sort categories order
+    const categoryOrder = ['ATP', 'WTA', 'CHALLENGER', 'ITF / OTHER'];
 
     return (
         <div className="min-h-screen bg-slate-950 text-white p-8">
@@ -71,7 +94,6 @@ export default function DailyDashboard() {
                     </p>
                 </div>
 
-                {/* Stats / KPIs */}
                 <div className="flex gap-4">
                     <div className="bg-slate-900 border border-slate-800 rounded-2xl p-4 flex items-center gap-3">
                         <div className="p-2 bg-emerald-500/10 rounded-lg text-emerald-500"><Brain size={20} /></div>
@@ -100,7 +122,6 @@ export default function DailyDashboard() {
                         </h2>
                     </div>
 
-                    {/* Premium Lock Banner */}
                     {isLocked && (
                         <div className="bg-slate-900/50 border border-orange-500/30 rounded-3xl p-8 text-center relative overflow-hidden">
                             <div className="absolute inset-0 bg-gradient-to-b from-orange-500/5 to-transparent pointer-events-none" />
@@ -119,18 +140,15 @@ export default function DailyDashboard() {
                                     <div className="absolute top-0 right-0 bg-orange-500 text-slate-950 font-black px-4 py-1.5 rounded-bl-2xl text-sm uppercase tracking-wider flex items-center gap-1">
                                         <Brain size={14} /> {bet.confidence || 85}%
                                     </div>
-
                                     <div className="flex justify-between items-start mb-4 mt-2">
                                         <div className="text-xs font-bold text-slate-500 uppercase tracking-widest">{bet.match?.tournament || 'ATP Tour'}</div>
                                     </div>
-
                                     <div className="text-2xl font-black text-white mb-1 truncate">{bet.selection}</div>
                                     <div className="text-sm text-slate-400 mb-6 flex items-center gap-2">
                                         {bet.match ? (
                                             <span>vs {bet.selection === bet.match.player_a.name ? bet.match.player_b.name : bet.match.player_a.name}</span>
                                         ) : <span>Match Info Unavailable</span>}
                                     </div>
-
                                     <div className="bg-slate-950/50 rounded-xl p-4 border border-slate-800 flex justify-between items-end mb-4">
                                         <div>
                                             <div className="text-xs text-slate-500 uppercase font-bold mb-1">Bookmaker Odds</div>
@@ -138,10 +156,9 @@ export default function DailyDashboard() {
                                         </div>
                                         <div className="text-right">
                                             <div className="text-3xl font-black text-emerald-400">+{bet.ev_percentage || bet.ev}%</div>
-                                            <div className="text-[10px] text-emerald-500/80 font-bold uppercase tracking-wider">Expected Value</div>
+                                            <div className="text--[10px] text-emerald-500/80 font-bold uppercase tracking-wider">Expected Value</div>
                                         </div>
                                     </div>
-
                                     <div className="flex items-center justify-between text-xs text-slate-500 font-medium">
                                         <div className="flex items-center gap-1">Suggested Stake: <span className="text-white font-bold">{bet.kelly_fraction ? (bet.kelly_fraction * 100).toFixed(1) : bet.kelly_stake}%</span> (Kelly)</div>
                                     </div>
@@ -153,36 +170,105 @@ export default function DailyDashboard() {
             )}
 
             {/* Filters */}
-            <div className="flex gap-2 mb-8 overflow-x-auto pb-2">
-                {['all', 'live', 'finished'].map((f) => (
-                    <button
-                        key={f}
-                        onClick={() => setFilter(f as any)}
-                        className={`px-4 py-2 rounded-full text-sm font-bold capitalize transition-all ${filter === f
-                            ? 'bg-white text-slate-950'
-                            : 'bg-slate-900 text-slate-400 border border-slate-800 hover:border-slate-600'
-                            }`}
+            <div className="flex flex-col md:flex-row gap-4 mb-8">
+                <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-none">
+                    {['all', 'live', 'finished'].map((f) => (
+                        <button
+                            key={f}
+                            onClick={() => setFilter(f as any)}
+                            className={`px-4 py-2 rounded-full text-sm font-bold capitalize transition-all whitespace-nowrap ${filter === f
+                                ? 'bg-white text-slate-950'
+                                : 'bg-slate-900 text-slate-400 border border-slate-800 hover:border-slate-600'
+                                }`}
+                        >
+                            {f}
+                        </button>
+                    ))}
+                </div>
+
+                {/* Tournament Filter Dropdown */}
+                <div className="relative group min-w-[200px]">
+                    <select
+                        className="w-full bg-slate-900 text-white border border-slate-800 rounded-xl px-4 py-2 appearance-none focus:outline-none focus:border-emerald-500 cursor-pointer text-sm font-bold truncate pr-8"
+                        onChange={(e) => setSelectedTournament(e.target.value)}
+                        value={selectedTournament}
                     >
-                        {f}
-                    </button>
-                ))}
+                        <option value="">All Tournaments</option>
+                        {availableTournaments.map(t => (
+                            <option key={t} value={t}>{t}</option>
+                        ))}
+                    </select>
+                    <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-slate-500">
+                        <ArrowRight size={14} className="rotate-90" />
+                    </div>
+                </div>
             </div>
 
-            {/* Matches Grid */}
-            {loading ? (
-                <div className="text-center py-20 text-slate-500 animate-pulse">Loading Live Intelligence...</div>
-            ) : (
-                <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
-                    {filteredMatches.map((m: any) => (
-                        <MatchCard key={m.id} match={m} />
-                    ))}
-                    {filteredMatches.length === 0 && (
-                        <div className="col-span-full text-center py-12 text-slate-500 border-2 border-dashed border-slate-800 rounded-xl">
-                            No matches found for this filter.
-                        </div>
-                    )}
+            {/* Matches Grid - GROUPED */}
+            {/* Debug Info */}
+            {debugError && (
+                <div className="bg-red-900/50 text-red-200 p-4 rounded mb-4 border border-red-500">
+                    <p className="font-bold">⚠️ DEBUG INFO:</p>
+                    <pre>{debugError}</pre>
                 </div>
             )}
+
+            {loading ? (
+                <div className="text-center py-20 text-slate-500 animate-pulse">Loading Live Intelligence...</div>
+            ) : filteredMatches.length === 0 ? (
+                <div className="col-span-full text-center py-12 text-slate-500 border-2 border-dashed border-slate-800 rounded-xl">
+                    No matches found for this filter.
+                </div>
+            ) : (
+                <div className="space-y-12">
+                    {categoryOrder.map(cat => {
+                        const tournaments = groupedMatches[cat];
+                        if (!tournaments) return null;
+
+                        // Sort Tournaments by Priority or Alphabetical? 
+                        // Let's sort keys alphabetically for stability
+                        const sortedTournNames = Object.keys(tournaments).sort();
+
+                        return (
+                            <div key={cat} className="animate-fade-in">
+                                <div className="flex items-center gap-4 mb-6">
+                                    <h2 className="text-4xl font-black text-slate-800 select-none">{cat}</h2>
+                                    <div className="h-1 flex-1 bg-slate-900 rounded-full"></div>
+                                </div>
+
+                                <div className="space-y-8">
+                                    {sortedTournNames.map((tournName) => {
+                                        // Sort matches within tournament by TIME
+                                        const matchesInTourn = tournaments[tournName].sort((a, b) =>
+                                            new Date(a.date).getTime() - new Date(b.date).getTime()
+                                        );
+
+                                        return (
+                                            <div key={tournName}>
+                                                <h3 className="text-emerald-500 font-bold uppercase tracking-widest text-sm mb-4 flex items-center gap-2">
+                                                    <Trophy size={14} /> {tournName}
+                                                </h3>
+                                                <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
+                                                    {matchesInTourn.map(m => (
+                                                        <MatchCard key={m.id} match={m} />
+                                                    ))}
+                                                </div>
+                                            </div>
+                                        )
+                                    })}
+                                </div>
+                            </div>
+                        )
+                    })}
+                </div>
+            )}
+
+            {/* Legal Disclaimer Footer */}
+            <div className="mt-12 pt-8 border-t border-slate-800 text-center text-[10px] text-slate-600">
+                <p>EDGESET Tennis Intelligence v1.2. Los rendimientos pasados no garantizan resultados futuros.</p>
+                <p>Esta herramienta es estrictamente para fines informativos y de entretenimiento. No constituye asesoramiento financiero ni recomendación de inversión.</p>
+                <p>El juego puede ser adictivo. Juegue con responsabilidad. Prohibido para menores de 18 años.</p>
+            </div>
         </div>
     );
 }
@@ -193,17 +279,47 @@ function MatchCard({ match }: { match: any }) {
     const confidence = match.prediction?.confidence || 0;
     const isHighConf = confidence > 0.8;
 
+    // Result Verification Logic
+    const isFinished = match.status === 'finished' || !!match.winner_name;
+    const winnerName = match.winner_name;
+    let predictionResult: 'correct' | 'incorrect' | null = null;
+
+    if (isFinished && match.prediction && winnerName) {
+        // Approximate check: does the winner name match the predicted side?
+        const predictedSideName = match.prediction.winner_id === match.player_a.id ? match.player_a.name : match.player_b.name;
+        if (winnerName.toLowerCase().includes(predictedSideName.toLowerCase()) || predictedSideName.toLowerCase().includes(winnerName.toLowerCase())) {
+            predictionResult = 'correct';
+        } else {
+            predictionResult = 'incorrect';
+        }
+    }
+
     return (
-        <div className="bg-slate-900 border border-slate-800 rounded-3xl p-5 hover:border-emerald-500/30 transition-all group relative overflow-hidden">
+        <div className={`
+            bg-slate-900 border border-slate-800 rounded-3xl p-5 transition-all group relative overflow-hidden
+            ${isFinished ? 'opacity-75 hover:opacity-100' : 'hover:border-emerald-500/30'}
+        `}>
             {/* High Confidence Badge */}
-            {isHighConf && (
+            {!isFinished && isHighConf && (
                 <div className="absolute top-0 right-0 bg-emerald-500 text-slate-950 text-xs font-black px-3 py-1 rounded-bl-xl uppercase tracking-wider flex items-center gap-1">
                     <Brain size={12} /> AI Pick
                 </div>
             )}
 
+            {/* Prediction Result Badge (Finished) */}
+            {isFinished && predictionResult && (
+                <div className={`absolute top-0 right-0 px-3 py-1 text-xs font-black uppercase tracking-wider rounded-bl-xl flex items-center gap-1
+                    ${predictionResult === 'correct' ? 'bg-emerald-500 text-slate-950' : 'bg-red-500 text-white'}
+                `}>
+                    {predictionResult === 'correct' ? 'AI Check ✓' : 'AI Miss ✕'}
+                </div>
+            )}
+
             <div className="flex justify-between items-start mb-6">
                 <div className="text-xs font-bold text-slate-500 uppercase tracking-widest">{match.tournament}</div>
+                <div className="text-xs font-bold text-emerald-500 uppercase tracking-widest">
+                    {new Date(match.date).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} • {new Date(match.date).toLocaleDateString([], { month: 'short', day: 'numeric' })}
+                </div>
                 <div className="text-xs font-bold text-slate-500 uppercase tracking-widest">{match.surface}</div>
             </div>
 

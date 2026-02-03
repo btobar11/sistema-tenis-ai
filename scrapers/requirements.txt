@@ -4,3 +4,7 @@ supabase==2.3.0
 pandas==2.2.0
 python-dotenv==1.0.1
 curl_cffi==0.7.4
+scrapy
+playwright
+playwright-stealth
+fake-useragent

@@ -25,6 +25,13 @@ def get_matches(
     matches = service.get_matches(date_from=date_from, limit=limit)
     return matches
 
+@router.get("/value-bets", summary="Get value bet opportunities")
+def get_value_bets():
+    """
+    Returns high EV betting opportunities based on AI VS Market.
+    """
+    return service.get_value_bets()
+
 @router.get("/{match_id}", summary="Get detailed match info")
 def get_match_detail(match_id: str):
     match = service.get_match_details(match_id)
