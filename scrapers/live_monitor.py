@@ -138,6 +138,8 @@ def monitor_cycle(db, tracked_players):
             "player1_id": p1_id, 
             "player2_id": p2_id,
             "winner_id": p1_id, # Scraper returns 'winner' name
+            "winner_name": m['winner'], # Explicitly save name for frontend
+            "status": "finished", # Live monitor usually processes finished matches from results page
             "score_full": m['score'],
             "stats_json": details, 
         }
