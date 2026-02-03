@@ -88,7 +88,17 @@ export default function DailyDashboard() {
             {/* Header */}
             <div className="flex flex-col md:flex-row justify-between items-center mb-10 gap-6">
                 <div>
-                    <h1 className="text-3xl font-black tracking-tight mb-2">Daily Dashboard</h1>
+                    <div className="flex items-center gap-4">
+                        <h1 className="text-3xl font-black tracking-tight mb-2">Daily Dashboard</h1>
+                        <button
+                            onClick={loadData}
+                            disabled={loading}
+                            className={`p-2 rounded-full border border-slate-700 bg-slate-800 text-slate-400 hover:text-white hover:bg-slate-700 transition-all ${loading ? 'animate-spin opacity-50' : ''}`}
+                            title="Refresh Data"
+                        >
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8" /><path d="M21 3v5h-5" /><path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16" /><path d="M3 21v-5h5" /></svg>
+                        </button>
+                    </div>
                     <p className="text-slate-400 flex items-center gap-2">
                         <Calendar size={16} /> {new Date().toLocaleDateString(undefined, { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}
                     </p>

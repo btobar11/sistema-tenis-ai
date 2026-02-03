@@ -47,7 +47,7 @@ export default function MatchComparison() {
         };
     }
 
-    const prediction = null as MatchPrediction | null; // Live prediction disabled in Desktop
+    const prediction = liveMatchPrediction; // Use fetched prediction if available
 
     // ... existing logic ...
 
@@ -59,13 +59,14 @@ export default function MatchComparison() {
 
     const [statsA, setStatsA] = useState<any>(null);
     const [statsB, setStatsB] = useState<any>(null);
+    const [liveMatchPrediction, setLiveMatchPrediction] = useState<MatchPrediction | null>(null);
 
     async function loadComparison() {
         // 1. Get H2H
         const history = await api.getHeadToHead(playerA.id, playerB.id);
         setH2h(history);
 
-        // 2. Get Player Stats (Real ELO & Form)
+        // 2. Get Player Stats
         const histA = await api.getPlayerHistory(playerA.id);
         const histB = await api.getPlayerHistory(playerB.id);
 
@@ -78,11 +79,38 @@ export default function MatchComparison() {
         setStatsA({ ...sA, elo: eloA, h2h: history.filter((m: any) => m.winner_id === playerA.id).length });
         setStatsB({ ...sB, elo: eloB, h2h: history.filter((m: any) => m.winner_id === playerB.id).length });
 
-        // 3. Live AI Inference (DISABLED IN DESKTOP)
-        // setPrediction(null);
-        // api.predictMatch throws error now.
-        // In "Visualización Institucional", we only show stats if manual match.
-        // For actual predictions, user must go to specific Match ID view.
+        // 3. Try to find a REAL match scheduled for today/future between these two
+        // This connects the Dashboard click to the "Prediction"
+        try {
+            const { data: matches } = await supabase
+                .from('matches')
+                .select('*')
+                .or(`and(player1_id.eq.${playerA.id},player2_id.eq.${playerB.id}),and(player1_id.eq.${playerB.id},player2_id.eq.${playerA.id})`)
+                .gte('date', new Date().toISOString().split('T')[0]) // From today onwards
+                .order('date', { ascending: true })
+                .limit(1);
+
+            if (matches && matches.length > 0) {
+                const m = matches[0];
+                console.log("Found real match context:", m);
+                // If the match has a prediction stored in 'stats_json' or a separate column?
+                // The scraper stores 'prediction' in JSON? OR we assume live_monitor added `prediction` column?
+                // Let's check api.ts or just look at the object.
+                // Assuming `prediction` column exists or is inside `stats_json`.
+                // For now, we'll try to use the `prediction` field if it exists on the match object from api.getMatchesToday()
+                // api.ts getMatchesToday uses a join. Here we are doing raw select.
+                // Let's just use the dashboard approach if possible, but we don't have the context.
+
+                // Inspect 'm' for prediction data
+                if ((m as any).prediction) {
+                    setLiveMatchPrediction((m as any).prediction);
+                } else if ((m as any).stats_json && (m as any).stats_json.prediction) {
+                    setLiveMatchPrediction((m as any).stats_json.prediction);
+                }
+            }
+        } catch (e) {
+            console.error("Error finding live match context:", e);
+        }
     }
 
     async function getRealElo(playerId: string) {
