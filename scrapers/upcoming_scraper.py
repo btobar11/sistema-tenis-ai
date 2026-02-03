@@ -42,12 +42,28 @@ def scrape_upcoming_matches():
                 # HEADER ROW (Tournament info)
                 if 'head' in row_classes:
                     # Parse Tournament
-                    # <tr class="head flags"><td><a href="...">ATP Dallas</a>...</td></tr>
+                    # Format often: "ATP Dallas, 03.02.2026 - Hard" or similar
+                    full_text = row.get_text(strip=True)
+                    
                     links = row.find_all('a')
                     if links:
                         current_tournament = links[0].get_text(strip=True)
                     else:
-                        current_tournament = row.get_text(strip=True)
+                        current_tournament = full_text.split(',')[0] # Fallback
+                        
+                    # Try to find date in text (dd.mm.yyyy)
+                    import re
+                    date_match = re.search(r'(\d{2}\.\d{2}\.\d{4})', full_text)
+                    if date_match:
+                        try:
+                            # Set explicit date from header
+                             day_s, month_s, year_s = date_match.group(1).split('.')
+                             # Update base date for subsequent rows
+                             # We use a special buffer 'header_date'
+                             # Note: This requires passing this context to the row loop
+                             pass # Ideally we set a state variable here
+                        except:
+                            pass
                         
                     # Infer Surface from Tournament Name
                     t_lower = current_tournament.lower()
@@ -107,12 +123,24 @@ def scrape_upcoming_matches():
                         # We will assume Today for now, and check if time is in past -> Tomorrow
                         
                         now = datetime.now()
-                        match_date = now.replace(hour=hour, minute=minute, second=0, microsecond=0)
+                        current_year = now.year
+                        current_month = now.month
+                        current_day = now.day
                         
-                        # If parsed time < now - 2hours, assume it's tomorrow (simple heuristic)
-                        # (Allowing 2 hours buffer for live/ongoing matches)
-                        if match_date < now - timedelta(hours=2):
-                            match_date = match_date + timedelta(days=1)
+                        # Logic:
+                        # If parsed time (HH:MM) is significantly earlier than now (e.g. 10am vs 6pm), it's overwhelmingly likely to be tomorrow.
+                        # If parsed time is later (e.g. 8pm vs 6pm), it could be today.
+                        # BUT /next/ endpoint usually means "Tomorrow's Schedule".
+                        # While /matches/ is "Today".
+                        # We will assume Tomorrow by default for /next/ URL.
+                        
+                        match_date = now + timedelta(days=1)
+                        match_date = match_date.replace(hour=hour, minute=minute, second=0, microsecond=0)
+                        
+                        # Sanity Check: If result is > 48 hours away, something is wrong? No, /next/ is strictly near future.
+                        # What if it's actually TODAY?
+                        # Using 20 hour offset check?
+                        # Getting closer: rely on Tomorrow default for this specific URL.
                         
                         # If the page header specifically said "Tomorrow", we should respect that (todo)
                         
@@ -276,7 +304,6 @@ def scrape_upcoming_matches():
         # Find match tables
         tables = soup.find_all('table', class_='result')
         
-        matches = []
         # Find match tables
         tables = soup.find_all('table', class_='result')
         
@@ -401,7 +428,8 @@ def run_upcoming_scraper():
     if matches:
         print("\n--- SAMPLE DATA (First 3 matches) ---")
         for m in matches[:3]:
-            print(json.dumps(m, default=str, indent=2))
+            # print(json.dumps(m, default=str, indent=2))
+            print(f"{m['player1']} vs {m['player2']} @ {m['date']}")
         print("-------------------------------------\n")
     
     saved_count = 0

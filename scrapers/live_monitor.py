@@ -105,7 +105,7 @@ def monitor_cycle(db, tracked_players):
         details = {}
         if m['detail_url']:
              details = scrape_match_details(m['detail_url'])
-             time.sleep(0.5) 
+             time.sleep(2.0) # Increased delay to be safer without proxies 
         
         # Resolve IDs
         if db:
