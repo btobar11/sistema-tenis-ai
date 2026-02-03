@@ -1,0 +1,43 @@
+name: Tennis AI - Model Retraining
+
+on:
+  schedule:
+    - cron: '0 0 * * 0' # Every Sunday at Midnight
+  workflow_dispatch:
+
+jobs:
+  train-model:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write # Needed to push the new model
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+
+      - name: Install Dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r scrapers/requirements.txt
+
+      - name: Run Training Pipeline
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_KEY: ${{ secrets.SUPABASE_KEY }}
+          PYTHONPATH: .
+        run: |
+          python ml/train_pipeline.py
+
+      - name: Commit & Push New Model
+        run: |
+          git config --global user.name "Tennis AI Bot"
+          git config --global user.email "bot@tennis-ai.com"
+          git add ml/models/*.joblib
+          # Only commit if there are changes
+          git diff --staged --quiet || (git commit -m "chore(ai): Retrained XGBoost Model [skip ci]" && git push)

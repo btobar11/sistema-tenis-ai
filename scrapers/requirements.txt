@@ -8,3 +8,7 @@ scrapy
 playwright
 playwright-stealth
 fake-useragent
+xgboost
+scikit-learn
+joblib
+numpy
