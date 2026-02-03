@@ -126,136 +126,142 @@ def scrape_today_results(target_date=None):
     tables = soup.find_all('table')
     print(f"Found {len(tables)} tables.")
     
-    table = soup.find('table', class_='result')
-    if not table:
-        print("[ERROR] 'result' table not found.")
+    tables = soup.find_all('table', class_='result')
+    print(f"Found {len(tables)} result tables.")
+    
+    if not tables:
+        print("[ERROR] No 'result' tables found.")
         return []
         
-    current_tournament = "Unknown"
+    all_matches = []
     
-    rows = table.find_all('tr')
-    print(f"Found {len(rows)} rows in result table.")
-    
-    pending_match = None
-    
-    for row in rows:
-        try:
-            # Check for Tournament Header
-            if 'head' in row.get('class', []):
-                links = row.find_all('a')
-                if links:
-                    current_tournament = clean_text(links[0].text)
+    for table in tables:
+        # Debug table context (optional)
+        # print(f"Processing table with {len(table.find_all('tr'))} rows...")
+        
+        current_tournament = "Unknown"
+        pending_match = None
+        
+        rows = table.find_all('tr')
+
+        for row in rows:
+            try:
+                # Check for Tournament Header
+                if 'head' in row.get('class', []):
+                    links = row.find_all('a')
+                    if links:
+                        current_tournament = clean_text(links[0].text)
+                    pending_match = None
+                    continue
+                    
+                cols = row.find_all('td')
+                if len(cols) < 2: continue 
+                
+                col_texts = [c.get_text().strip() for c in cols]
+                
+                # Check for "info" link (Row 1 indicator)
+                info_links = row.find_all('a', href=True)
+                detail_url = None
+                for l in info_links:
+                    if "match-detail" in l['href']:
+                        detail_url = "https://www.tennisexplorer.com" + l['href']
+                        break
+                
+                # Determine Row 1 vs Row 2
+                is_row_1 = False
+                if detail_url:
+                    is_row_1 = True
+                elif pending_match is None and ":" in col_texts[0]:
+                    is_row_1 = True
+                    
+                if is_row_1:
+                    # Row 1 Processing
+                    p_idx = 0
+                    if ":" in col_texts[0]:
+                        p_idx = 1
+                    
+                    if len(col_texts) > p_idx and '/' in col_texts[p_idx]:
+                        pending_match = None
+                        continue
+
+                    p1_cell = cols[p_idx]
+                    p1_name = p1_cell.get_text().strip()
+                    
+                    p1_is_winner = bool(p1_cell.find('b') or p1_cell.find('strong'))
+                    
+                    scores_1 = []
+                    # Scores start after sets col (col 2 or 3)
+                    start_score = p_idx + 2
+                    for x in col_texts[start_score:]:
+                        if not x: continue
+                        if '.' in x: break
+                        scores_1.append(x)
+                    
+                    pending_match = {
+                        "p1_name": p1_name,
+                        "p1_winner": p1_is_winner,
+                        "scores_1": scores_1,
+                        "detail_url": detail_url,
+                        "tournament": current_tournament,
+                        "date": today_str
+                    }
+                    
+                else:
+                    # Row 2 Processing
+                    if not pending_match:
+                        continue
+                    
+                    p_idx = 0
+                    # Sanity check: doubles or empty
+                    if '/' in col_texts[p_idx] or not col_texts[p_idx]:
+                        pending_match = None
+                        continue
+
+                    p2_cell = cols[p_idx]
+                    p2_name = p2_cell.get_text().strip()
+                    
+                    p2_is_winner = bool(p2_cell.find('b') or p2_cell.find('strong'))
+                    
+                    scores_2 = []
+                    start_score = p_idx + 2
+                    for x in col_texts[start_score:]:
+                        if not x: continue
+                        if '.' in x: break
+                        scores_2.append(x)
+                    
+                    # Resolve match
+                    winner = pending_match['p1_name']
+                    loser = p2_name
+                    if p2_is_winner:
+                        winner = p2_name
+                        loser = pending_match['p1_name']
+                    
+                    # Combine scores
+                    row1_scores = pending_match['scores_1']
+                    final_scores = []
+                    for s1, s2 in zip(row1_scores, scores_2):
+                         final_scores.append(f"{s1}-{s2}")
+                    
+                    score_str = " ".join(final_scores)
+                    
+                    match_data = {
+                        "date": pending_match['date'],
+                        "tournament": pending_match['tournament'],
+                        "winner": winner, 
+                        "loser": loser,
+                        "score": score_str,
+                        "detail_url": pending_match['detail_url'],
+                        "raw_text": f"{pending_match['p1_name']} vs {p2_name}" 
+                    }
+                    all_matches.append(match_data)
+                    pending_match = None
+
+            except Exception as e:
+                # print(f"Row error: {e}")
                 pending_match = None
                 continue
-                
-            cols = row.find_all('td')
-            if len(cols) < 2: continue 
             
-            col_texts = [c.get_text().strip() for c in cols]
-            
-            # Check for "info" link (Row 1 indicator)
-            info_links = row.find_all('a', href=True)
-            detail_url = None
-            for l in info_links:
-                if "match-detail" in l['href']:
-                    detail_url = "https://www.tennisexplorer.com" + l['href']
-                    break
-            
-            # Determine Row 1 vs Row 2
-            is_row_1 = False
-            if detail_url:
-                is_row_1 = True
-            elif pending_match is None and ":" in col_texts[0]:
-                is_row_1 = True
-                
-            if is_row_1:
-                # Row 1 Processing
-                p_idx = 0
-                if ":" in col_texts[0]:
-                    p_idx = 1
-                
-                if len(col_texts) > p_idx and '/' in col_texts[p_idx]:
-                    pending_match = None
-                    continue
-
-                p1_cell = cols[p_idx]
-                p1_name = p1_cell.get_text().strip()
-                
-                p1_is_winner = bool(p1_cell.find('b') or p1_cell.find('strong'))
-                
-                scores_1 = []
-                # Scores start after sets col (col 2 or 3)
-                start_score = p_idx + 2
-                for x in col_texts[start_score:]:
-                    if not x: continue
-                    if '.' in x: break
-                    scores_1.append(x)
-                
-                pending_match = {
-                    "p1_name": p1_name,
-                    "p1_winner": p1_is_winner,
-                    "scores_1": scores_1,
-                    "detail_url": detail_url,
-                    "tournament": current_tournament,
-                    "date": today_str
-                }
-                
-            else:
-                # Row 2 Processing
-                if not pending_match:
-                    continue
-                
-                p_idx = 0
-                # Sanity check: doubles or empty
-                if '/' in col_texts[p_idx] or not col_texts[p_idx]:
-                    pending_match = None
-                    continue
-
-                p2_cell = cols[p_idx]
-                p2_name = p2_cell.get_text().strip()
-                
-                p2_is_winner = bool(p2_cell.find('b') or p2_cell.find('strong'))
-                
-                scores_2 = []
-                start_score = p_idx + 2
-                for x in col_texts[start_score:]:
-                    if not x: continue
-                    if '.' in x: break
-                    scores_2.append(x)
-                
-                # Resolve match
-                winner = pending_match['p1_name']
-                loser = p2_name
-                if p2_is_winner:
-                    winner = p2_name
-                    loser = pending_match['p1_name']
-                
-                # Combine scores
-                row1_scores = pending_match['scores_1']
-                final_scores = []
-                for s1, s2 in zip(row1_scores, scores_2):
-                     final_scores.append(f"{s1}-{s2}")
-                
-                score_str = " ".join(final_scores)
-                
-                match_data = {
-                    "date": pending_match['date'],
-                    "tournament": pending_match['tournament'],
-                    "winner": winner, 
-                    "loser": loser,
-                    "score": score_str,
-                    "detail_url": pending_match['detail_url'],
-                    "raw_text": f"{pending_match['p1_name']} vs {p2_name}" 
-                }
-                matches.append(match_data)
-                pending_match = None
-
-        except Exception as e:
-            # print(f"Row error: {e}")
-            pending_match = None
-            continue
-            
-    return matches
+    return all_matches
 
 if __name__ == "__main__":
     import os
