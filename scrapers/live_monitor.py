@@ -101,34 +101,60 @@ def monitor_cycle(db, tracked_players):
     for m in matches:
         print(f"  -> Processing: {m['winner']} vs {m['loser']}")
         
-        # Fetch details if available
-        details = {}
-        if m['detail_url']:
-             details = scrape_match_details(m['detail_url'])
-             time.sleep(2.0) # Increased delay to be safer without proxies 
-        
-        # Resolve IDs
+        p1_id = None
+        p2_id = None
+
         if db:
             p1_id = db.get_or_create_player(m['winner'])
             p2_id = db.get_or_create_player(m['loser'])
             
             if not p1_id or not p2_id:
                 continue
+                
+            # Optimization: Check if match already exists and is finished
+            try:
+                # Basic date string for query
+                base_date = m['date'][:10]
+                # Check for exact P1/P2 match as per insert_match logic 
+                # (Note: This assumes P1=Winner convention or consistency with DB)
+                existing = db.table('matches')\
+                    .select('id, status')\
+                    .eq('player1_id', p1_id)\
+                    .eq('player2_id', p2_id)\
+                    .gte('date', base_date)\
+                    .lte('date', base_date + "T23:59:59")\
+                    .limit(1)\
+                    .execute()
+                
+                if existing.data and existing.data[0].get('status') == 'finished':
+                     print(f"     [SKIP] Already finished in DB (ID: {existing.data[0]['id']})")
+                     continue
+            except Exception as check_e:
+                print(f"     [WARN] Check existing failed: {check_e}")
+
         else:
             p1_id = "DRY_RUN_ID"
             p2_id = "DRY_RUN_ID"
-
+        
+        # Fetch details if available (and not skipped)
+        details = {}
+        if m['detail_url']:
+             details = scrape_match_details(m['detail_url'])
+             time.sleep(2.0) # Delay to respect rate limits
+        
+        # Resolve IDs (Redundant if db check passed, but safe)
+        # We already have p1_id, p2_id if db is present
+            
         # Try to infer surface from tournament name
         surface = "HARD"
         t_name_upper = m['tournament'].upper()
         if "CLAY" in t_name_upper: surface = "CLAY"
         elif "GRASS" in t_name_upper: surface = "GRASS"
-        elif "INDOOR" in t_name_upper: surface = "INDOOR" # Generic indoor -> INDOOR_HARD in ELO?
+        elif "INDOOR" in t_name_upper: surface = "INDOOR" 
         
         # Prepare DB Payload
-        # Ensure date format is timid enough for DB (ISO with TZ)
         match_date = m['date']
-        if len(match_date) == 10: # YYYY-MM-DD
+        if len(match_date) == 10: 
              match_date += "T00:00:00+00:00"
 
         db_match = {
@@ -137,47 +163,45 @@ def monitor_cycle(db, tracked_players):
             "surface": surface,
             "player1_id": p1_id, 
             "player2_id": p2_id,
-            "winner_id": p1_id, # Scraper returns 'winner' name
-            "winner_name": m['winner'], # Explicitly save name for frontend
-            "status": "finished", # Live monitor usually processes finished matches from results page
+            "winner_id": p1_id, 
+            "winner_name": m['winner'], 
+            "status": "finished", 
             "score_full": m['score'],
             "stats_json": details, 
         }
         
         # Save to DB
         if db:
-            # We assume db_client has insert_match method
             success = db.insert_match(db_match)
             if success:
-                print(f"     [SAVED] {db_match['winner_id']} vs {db_match['player2_id']}")
+                print(f"     [SAVED] {db_match['winner_name']} vs {m['loser']}")
                 new_matches_count += 1
                 
                 # Update ELO Immediately
                 if elo_engine:
                     print(f"     [ELO] Updating ratings...")
-                    # We pass the match dict. Ensure it has what process_match needs.
-                    # process_match needs: player1_id, player2_id, winner_id
                     elo_engine.process_match(db_match)
         else:
             print(f"     [DRY RUN] Would save: {db_match['score']}")
     
-        print(f"  Cycle finished. {new_matches_count} new matches saved.")
-        
-        if new_matches_count > 0:
-            # Trigger Prediction Engine only if new data arrived
-            print("  [AI] Triggering Prediction Engine...")
-            try:
-                import sys
-                current_dir = os.path.dirname(os.path.abspath(__file__))
-                parent_dir = os.path.dirname(current_dir)
-                if parent_dir not in sys.path:
-                    sys.path.insert(0, parent_dir)
-                    
-                from ai_engine.predict import predict_upcoming_matches
-                predict_upcoming_matches()
+    # Moved OUTSIDE the loop
+    print(f"  Cycle finished. {new_matches_count} new matches saved.")
+    
+    if new_matches_count > 0:
+        # Trigger Prediction Engine only if new data arrived
+        print("  [AI] Triggering Prediction Engine...")
+        try:
+            import sys
+            current_dir = os.path.dirname(os.path.abspath(__file__))
+            parent_dir = os.path.dirname(current_dir)
+            if parent_dir not in sys.path:
+                sys.path.insert(0, parent_dir)
                 
-            except Exception as e:
-                print(f"  [AI Error] Could not run prediction: {e}")
+            from ai_engine.predict import predict_upcoming_matches
+            predict_upcoming_matches()
+            
+        except Exception as e:
+            print(f"  [AI Error] Could not run prediction: {e}")
     else:
         print("  Cycle finished. No new matches found.")
 
