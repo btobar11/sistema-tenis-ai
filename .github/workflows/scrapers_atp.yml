@@ -36,6 +36,14 @@ jobs:
         run: |
           cd scrapers/advanced
           python run.py
+
+      - name: Run Player Enrichment
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_KEY: ${{ secrets.SUPABASE_KEY }}
+          PYTHONPATH: .
+        run: |
+          python scrapers/player_enrichment.py
       
       - name: Upload Artifacts (Logs/Reports)
         uses: actions/upload-artifact@v4
