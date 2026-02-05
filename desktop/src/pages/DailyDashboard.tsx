@@ -11,21 +11,31 @@ export default function DailyDashboard() {
     const [selectedTournament, setSelectedTournament] = useState<string>('');
     const [isLocked, setIsLocked] = useState(false);
     const [debugError, setDebugError] = useState('');
+    const [currentDate, setCurrentDate] = useState(new Date());
 
     useEffect(() => {
-        loadData();
-    }, []);
+        loadData(currentDate);
+    }, [currentDate]);
 
-    async function loadData() {
+    async function loadData(dateObj: Date) {
         setLoading(true);
         try {
-            console.log("Fetching matches...");
-            const matchesData = await api.getMatchesToday();
+            // Force "YYYY-MM-DD" based on Local Time
+            // This ensures that "Feb 4th" on the dashboard queries for "2026-02-04"
+            const offset = dateObj.getTimezoneOffset();
+            const localDate = new Date(dateObj.getTime() - (offset * 60 * 1000));
+            const dateStr = localDate.toISOString().split('T')[0];
+
+            console.log(`Fetching matches for ${dateStr}...`);
+            const matchesData = await api.getMatchesByDate(dateStr);
             console.log("Matches:", matchesData);
             setMatches(matchesData);
 
             if (matchesData.length === 0) {
-                setDebugError("API returned 0 matches. Check console/DB.");
+                // Clean UI for "0 matches", don't show red error box unless it's a code error
+                setDebugError("");
+            } else {
+                setDebugError("");
             }
 
             const alertsData: any = await api.getValueAlerts();
@@ -51,18 +61,31 @@ export default function DailyDashboard() {
     const filteredMatches = matches.filter(m => {
         if (selectedTournament && m.tournament !== selectedTournament) return false;
         if (filter === 'live') return m.status === 'live';
-        if (filter === 'finished') return m.winner_name;
+        if (filter === 'finished') return m.winner_name || m.status === 'finished';
         if (filter === 'high_confidence') return (m as any).prediction?.confidence > 0.8;
         if (filter === 'value_bets') return false;
         return true;
     });
 
     // Get unique tournaments for filter dropdown
-    const availableTournaments = Array.from(new Set(matches.map(m => m.tournament))).sort();
+    const availableTournaments = Array.from(new Set(matches.map(m => m.tournament || 'Unknown Tournament'))).sort();
+
+    // Priority Helper
+    const getTournamentCode = (t: string) => {
+        if (!t) return 7;
+        const up = t.toUpperCase();
+        if (up.includes('GRAND SLAM') || up.includes('OPEN')) return 1; // Highest
+        if (up.includes('MASTER') || up.includes('1000')) return 2;
+        if (up.includes('500')) return 3;
+        if (up.includes('250')) return 4;
+        if (up.includes('CHALLENGER')) return 5;
+        if (up.includes('ITF')) return 6;
+        return 7;
+    };
 
     // Grouping Logic
     const getCategory = (m: Match) => {
-        const t = m.tournament.toUpperCase();
+        const t = (m.tournament || '').toUpperCase();
         if (t.includes('WTA') || t.includes('WOMEN')) return 'WTA';
         if (t.includes('ATP') || t.includes('MEN')) return 'ATP';
         if (t.includes('CHALLENGER')) return 'CHALLENGER';
@@ -73,7 +96,7 @@ export default function DailyDashboard() {
         const cat = getCategory(match);
         if (!acc[cat]) acc[cat] = {};
 
-        const tourn = match.tournament;
+        const tourn = match.tournament || 'Unknown Tournament';
         if (!acc[cat][tourn]) acc[cat][tourn] = [];
 
         acc[cat][tourn].push(match);
@@ -83,55 +106,63 @@ export default function DailyDashboard() {
     // Sort categories order
     const categoryOrder = ['ATP', 'WTA', 'CHALLENGER', 'ITF / OTHER'];
 
+    const changeDate = (days: number) => {
+        const newDate = new Date(currentDate);
+        newDate.setDate(newDate.getDate() + days);
+        setCurrentDate(newDate);
+    }
+
     return (
-        <div className="min-h-screen bg-slate-950 text-white p-8">
-            {/* Header */}
-            <div className="flex flex-col md:flex-row justify-between items-center mb-10 gap-6">
+        <div className="min-h-screen bg-slate-950 text-white p-6 md:p-8">
+            {/* Header / Week Calendar Strip */}
+            <div className="flex flex-col md:flex-row justify-between items-center mb-8 gap-6">
                 <div>
-                    <div className="flex items-center gap-4">
-                        <h1 className="text-3xl font-black tracking-tight mb-2">Daily Dashboard</h1>
-                        <button
-                            onClick={loadData}
-                            disabled={loading}
-                            className={`p-2 rounded-full border border-slate-700 bg-slate-800 text-slate-400 hover:text-white hover:bg-slate-700 transition-all ${loading ? 'animate-spin opacity-50' : ''}`}
-                            title="Refresh Data"
-                        >
-                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8" /><path d="M21 3v5h-5" /><path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16" /><path d="M3 21v-5h5" /></svg>
+                    <h1 className="text-3xl font-black tracking-tight mb-4 flex items-center gap-2">
+                        <Calendar className="text-emerald-500" />
+                        Tennis Intelligence
+                    </h1>
+
+                    {/* Date Navigator */}
+                    <div className="flex items-center gap-2 bg-slate-900 p-2 rounded-2xl border border-slate-800">
+                        <button onClick={() => changeDate(-1)} className="p-2 hover:bg-slate-800 rounded-lg text-slate-400 hover:text-white transition-colors">
+                            <ArrowRight className="rotate-180" size={20} />
+                        </button>
+                        <div className="flex flex-col items-center px-4 min-w-[140px]">
+                            <span className="text-emerald-500 font-bold uppercase text-xs tracking-widest">
+                                {currentDate.toDateString() === new Date().toDateString() ? 'TODAY' : currentDate.toLocaleDateString([], { weekday: 'short' })}
+                            </span>
+                            <span className="text-xl font-bold font-mono">
+                                {currentDate.toLocaleDateString([], { month: 'short', day: 'numeric' })}
+                            </span>
+                        </div>
+                        <button onClick={() => changeDate(1)} className="p-2 hover:bg-slate-800 rounded-lg text-slate-400 hover:text-white transition-colors">
+                            <ArrowRight size={20} />
                         </button>
                     </div>
-                    <p className="text-slate-400 flex items-center gap-2">
-                        <Calendar size={16} /> {new Date().toLocaleDateString(undefined, { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}
-                    </p>
                 </div>
 
                 <div className="flex gap-4">
-                    <div className="bg-slate-900 border border-slate-800 rounded-2xl p-4 flex items-center gap-3">
-                        <div className="p-2 bg-emerald-500/10 rounded-lg text-emerald-500"><Brain size={20} /></div>
-                        <div>
-                            <div className="text-xs text-slate-500 uppercase font-bold">AI Picks</div>
-                            <div className="text-xl font-bold">{matches.length}</div>
-                        </div>
-                    </div>
-                    <div className="bg-slate-900 border border-slate-800 rounded-2xl p-4 flex items-center gap-3">
-                        <div className="p-2 bg-blue-500/10 rounded-lg text-blue-500"><Trophy size={20} /></div>
-                        <div>
-                            <div className="text-xs text-slate-500 uppercase font-bold">Matches</div>
-                            <div className="text-xl font-bold">{matches.length}</div>
-                        </div>
-                    </div>
+                    <button
+                        onClick={() => loadData(currentDate)}
+                        disabled={loading}
+                        className={`p-3 rounded-full border border-slate-700 bg-slate-800 text-slate-400 hover:text-white hover:bg-slate-700 transition-all ${loading ? 'animate-spin opacity-50' : ''}`}
+                    >
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8" /><path d="M21 3v5h-5" /><path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16" /><path d="M3 21v-5h5" /></svg>
+                    </button>
                 </div>
             </div>
 
-            {/* Daily Edge Section (Premium) */}
-            {(filter === 'all') && (
+            {/* Daily Edge Section (Only if Today or Future) */}
+            {(filter === 'all' && currentDate >= new Date(new Date().setHours(0, 0, 0, 0))) && (
                 <div className="mb-12">
-                    <div className="flex items-center gap-2 mb-6">
+                    <div className="flex items-center gap-2 mb-6 cursor-pointer" onClick={() => setFilter('value_bets')}>
                         <Flame className="text-orange-500" />
                         <h2 className="text-xl font-bold bg-gradient-to-r from-orange-400 to-red-500 bg-clip-text text-transparent">
-                            Daily Edge <span className="text-slate-500 text-sm font-medium ml-2">(High EV Opportunities)</span>
+                            Daily Edge <span className="text-slate-500 text-sm font-medium ml-2">(High EV)</span>
                         </h2>
                     </div>
 
+                    {/* Premium/Lock State */}
                     {isLocked && (
                         <div className="bg-slate-900/50 border border-orange-500/30 rounded-3xl p-8 text-center relative overflow-hidden">
                             <div className="absolute inset-0 bg-gradient-to-b from-orange-500/5 to-transparent pointer-events-none" />
@@ -143,6 +174,7 @@ export default function DailyDashboard() {
                         </div>
                     )}
 
+                    {/* Value Bets Grid */}
                     {!isLocked && valueBets.length > 0 && (
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                             {valueBets.map((bet: any, i: number) => (
@@ -203,19 +235,18 @@ export default function DailyDashboard() {
                         onChange={(e) => setSelectedTournament(e.target.value)}
                         value={selectedTournament}
                     >
-                        <option value="">All Tournaments</option>
+                        <option value="">All Tournaments ({matches.length})</option>
                         {availableTournaments.map(t => (
                             <option key={t} value={t}>{t}</option>
                         ))}
                     </select>
-                    <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-slate-500">
-                        <ArrowRight size={14} className="rotate-90" />
-                    </div>
                 </div>
             </div>
 
             {/* Matches Grid - GROUPED */}
-            {/* Debug Info */}
+            {/* Debug Info Panel - Temporary for Diagnosis */}
+
+
             {debugError && (
                 <div className="bg-red-900/50 text-red-200 p-4 rounded mb-4 border border-red-500">
                     <p className="font-bold">⚠️ DEBUG INFO:</p>
@@ -224,10 +255,10 @@ export default function DailyDashboard() {
             )}
 
             {loading ? (
-                <div className="text-center py-20 text-slate-500 animate-pulse">Loading Live Intelligence...</div>
+                <div className="text-center py-20 text-slate-500 animate-pulse">Fetching Tennis Intelligence...</div>
             ) : filteredMatches.length === 0 ? (
                 <div className="col-span-full text-center py-12 text-slate-500 border-2 border-dashed border-slate-800 rounded-xl">
-                    No matches found for this filter.
+                    No matches found for {currentDate.toLocaleDateString()}.
                 </div>
             ) : (
                 <div className="space-y-12">
@@ -235,9 +266,10 @@ export default function DailyDashboard() {
                         const tournaments = groupedMatches[cat];
                         if (!tournaments) return null;
 
-                        // Sort Tournaments by Priority or Alphabetical? 
-                        // Let's sort keys alphabetically for stability
-                        const sortedTournNames = Object.keys(tournaments).sort();
+                        // Sort Tournaments by Priority
+                        const sortedTournNames = Object.keys(tournaments).sort((a, b) => {
+                            return getTournamentCode(a) - getTournamentCode(b);
+                        });
 
                         return (
                             <div key={cat} className="animate-fade-in">
@@ -273,11 +305,10 @@ export default function DailyDashboard() {
                 </div>
             )}
 
-            {/* Legal Disclaimer Footer */}
+            {/* Footer */}
             <div className="mt-12 pt-8 border-t border-slate-800 text-center text-[10px] text-slate-600">
-                <p>EDGESET Tennis Intelligence v1.2. Los rendimientos pasados no garantizan resultados futuros.</p>
-                <p>Esta herramienta es estrictamente para fines informativos y de entretenimiento. No constituye asesoramiento financiero ni recomendación de inversión.</p>
-                <p>El juego puede ser adictivo. Juegue con responsabilidad. Prohibido para menores de 18 años.</p>
+                <p>EDGESET Tennis Intelligence v2.0</p>
+                <p>Automated Real-time Data</p>
             </div>
         </div>
     );
@@ -285,18 +316,25 @@ export default function DailyDashboard() {
 
 function MatchCard({ match }: { match: any }) {
 
+    // 1. Prediction Data
     const p1Win = match.prediction?.winner_id === match.player_a.id;
     const confidence = match.prediction?.confidence || 0;
-    const isHighConf = confidence > 0.8;
+    const isHighConf = confidence > 0.75;
+    const riskLevel = match.prediction?.risk_level || 'medium';
 
-    // Result Verification Logic
+    // 2. Match Status & Result
     const isFinished = match.status === 'finished' || !!match.winner_name;
-    const winnerName = match.winner_name;
-    let predictionResult: 'correct' | 'incorrect' | null = null;
+    const isLive = match.status === 'live';
+    const showScore = isFinished || isLive;
 
+    const winnerName = match.winner_name;
+    const stats = match.stats_json;
+
+    // Result Check logic
+    let predictionResult: 'correct' | 'incorrect' | null = null;
     if (isFinished && match.prediction && winnerName) {
-        // Approximate check: does the winner name match the predicted side?
         const predictedSideName = match.prediction.winner_id === match.player_a.id ? match.player_a.name : match.player_b.name;
+        // Loose string matching
         if (winnerName.toLowerCase().includes(predictedSideName.toLowerCase()) || predictedSideName.toLowerCase().includes(winnerName.toLowerCase())) {
             predictionResult = 'correct';
         } else {
@@ -304,84 +342,188 @@ function MatchCard({ match }: { match: any }) {
         }
     }
 
+    // Risk Color Helper
+    const getRiskColors = (level: string) => {
+        if (level === 'low') return 'bg-emerald-500 text-slate-950 border-emerald-500';
+        if (level === 'medium') return 'bg-amber-500 text-slate-950 border-amber-500';
+        return 'bg-rose-500 text-white border-rose-500';
+    };
+
     return (
         <div className={`
-            bg-slate-900 border border-slate-800 rounded-3xl p-5 transition-all group relative overflow-hidden
-            ${isFinished ? 'opacity-75 hover:opacity-100' : 'hover:border-emerald-500/30'}
+            bg-slate-900 border border-slate-800 rounded-3xl p-5 transition-all group relative overflow-hidden flex flex-col justify-between h-full
+            ${isFinished ? 'hover:border-slate-600' : 'hover:border-emerald-500/30'}
         `}>
-            {/* High Confidence Badge */}
-            {!isFinished && isHighConf && (
-                <div className="absolute top-0 right-0 bg-emerald-500 text-slate-950 text-xs font-black px-3 py-1 rounded-bl-xl uppercase tracking-wider flex items-center gap-1">
-                    <Brain size={12} /> AI Pick
-                </div>
-            )}
-
-            {/* Prediction Result Badge (Finished) */}
-            {isFinished && predictionResult && (
-                <div className={`absolute top-0 right-0 px-3 py-1 text-xs font-black uppercase tracking-wider rounded-bl-xl flex items-center gap-1
-                    ${predictionResult === 'correct' ? 'bg-emerald-500 text-slate-950' : 'bg-red-500 text-white'}
-                `}>
-                    {predictionResult === 'correct' ? 'AI Check ✓' : 'AI Miss ✕'}
-                </div>
-            )}
-
+            {/* --- TOP HEADER: Tournament & Time --- */}
             <div className="flex justify-between items-start mb-6">
-                <div className="text-xs font-bold text-slate-500 uppercase tracking-widest">{match.tournament}</div>
-                <div className="text-xs font-bold text-emerald-500 uppercase tracking-widest">
-                    {new Date(match.date).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} • {new Date(match.date).toLocaleDateString([], { month: 'short', day: 'numeric' })}
+                <div>
+                    <div className="text-xs font-black text-slate-400 uppercase tracking-widest mb-1">{match.tournament}</div>
+                    <div className="flex items-center gap-2">
+                        <div className={`text-[10px] px-2 py-0.5 rounded font-bold uppercase tracking-wider ${match.surface === 'Hard' ? 'bg-blue-500/10 text-blue-400' : match.surface === 'Clay' ? 'bg-orange-500/10 text-orange-400' : 'bg-green-500/10 text-green-400'}`}>
+                            {match.surface}
+                        </div>
+                        <div className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">
+                            {new Date(match.date).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                        </div>
+                    </div>
                 </div>
-                <div className="text-xs font-bold text-slate-500 uppercase tracking-widest">{match.surface}</div>
+
+                {/* Status Badges */}
+                {isFinished ? (
+                    predictionResult ? (
+                        <div className={`px-3 py-1 text-xs font-black uppercase tracking-wider rounded-lg flex items-center gap-1 border ${predictionResult === 'correct' ? 'bg-emerald-500/10 text-emerald-500 border-emerald-500/20' : 'bg-red-500/10 text-red-500 border-red-500/20'
+                            }`}>
+                            {predictionResult === 'correct' ? '✅ AI HIT' : '❌ AI MISS'}
+                        </div>
+                    ) : (
+                        <div className="px-3 py-1 bg-slate-800 text-slate-400 text-xs font-bold uppercase tracking-wider rounded-lg">
+                            Finished
+                        </div>
+                    )
+                ) : isLive ? (
+                    <div className="px-3 py-1 bg-rose-500 text-white text-xs font-black uppercase tracking-wider rounded-lg animate-pulse shadow-[0_0_15px_-3px_rgba(244,63,94,0.6)]">
+                        LIVE SCORE
+                    </div>
+                ) : (
+                    // Scheduled / AI Status
+                    isHighConf && (
+                        <div className="px-3 py-1 bg-emerald-500 text-slate-950 text-xs font-black uppercase tracking-wider rounded-lg flex items-center gap-1 shadow-[0_0_15px_-3px_rgba(16,185,129,0.4)]">
+                            <Brain size={12} /> AI PICK
+                        </div>
+                    )
+                )}
             </div>
 
-            <div className="space-y-4 mb-6">
+            {/* --- PLAYERS SECTION --- */}
+            <div className="space-y-3 mb-6 flex-1">
                 {/* Player A */}
                 <PlayerRow
                     player={match.player_a}
-                    isWinner={match.winner_name === match.player_a.name}
+                    isWinner={winnerName === match.player_a.name}
                     isPredicted={p1Win}
-                    score={match.score} // Parser needs refinement to split sets
+                    showScore={showScore} // Changed prop name for clarity
+                    score={match.score}
+                    winProb={match.prediction ? (p1Win ? confidence : 1 - confidence) : 0.5}
                 />
+
+                {/* VS Divider (styled) */}
+                <div className="relative flex items-center justify-center my-2">
+                    <div className="absolute inset-0 flex items-center" aria-hidden="true">
+                        {!showScore && <div className="w-full border-t border-slate-800/50"></div>}
+                    </div>
+                    {!showScore && <span className="relative bg-slate-900 px-2 text-[10px] font-bold text-slate-600">VS</span>}
+                </div>
+
                 {/* Player B */}
                 <PlayerRow
                     player={match.player_b}
-                    isWinner={match.winner_name === match.player_b.name}
-                    isPredicted={!p1Win}
+                    isWinner={winnerName === match.player_b.name}
+                    isPredicted={!p1Win} // If p1Win is false, and prediction exists, then p2 is predicted
+                    showScore={showScore}
                     score={match.score}
+                    winProb={match.prediction ? (!p1Win ? confidence : 1 - confidence) : 0.5}
                 />
             </div>
 
-            {/* AI Insight Footer */}
-            <div className={`mt-4 pt-4 border-t border-slate-800/50 flex justify-between items-center ${isHighConf ? 'opacity-100' : 'opacity-50 group-hover:opacity-100'} transition-opacity`}>
-                <div className="flex items-center gap-2">
-                    <div className={`w-8 h-8 rounded-full flex items-center justify-center font-bold text-xs ${isHighConf ? 'bg-emerald-500 text-slate-950' : 'bg-slate-800 text-slate-400'}`}>
-                        {Math.round(confidence * 100)}%
+            {/* --- METRICS / STATS FOOTER --- */}
+            {isFinished && stats ? (
+                // FINISHED: Show Stats (Aces, DF, BP)
+                <div className="mt-4 pt-4 border-t border-slate-800/50 grid grid-cols-3 gap-2 text-center relative group-hover:opacity-100 transition-opacity">
+                    <div>
+                        <div className="text-[10px] text-slate-500 uppercase font-bold tracking-wider">Aces</div>
+                        <div className="text-sm font-bold text-slate-300">
+                            <span className="text-emerald-500">{stats.p1_aces || '-'}</span> / <span className="text-blue-500">{stats.p2_aces || '-'}</span>
+                        </div>
                     </div>
-                    <span className="text-xs text-slate-400 font-medium">Confidence</span>
+                    <div>
+                        <div className="text-[10px] text-slate-500 uppercase font-bold tracking-wider">Breaks</div>
+                        <div className="text-sm font-bold text-slate-300">
+                            {stats.p1_break_points_converted || '-'} / {stats.p2_break_points_converted || '-'}
+                        </div>
+                    </div>
+                    <div>
+                        <div className="text-[10px] text-slate-500 uppercase font-bold tracking-wider">Points</div>
+                        <div className="text-sm font-bold text-slate-300">
+                            {stats.p1_total_points_won || '-'} / {stats.p2_total_points_won || '-'}
+                        </div>
+                    </div>
                 </div>
-                <Link to={`/match/${match.player_a.id}/${match.player_b.id}`} className="text-emerald-500 hover:text-emerald-400 p-2 rounded-full hover:bg-emerald-500/10 transition-colors">
-                    <ArrowRight size={18} />
-                </Link>
-            </div>
+            ) : match.prediction ? (
+                // PREDICTION: Show AI Metrics (Prob, Risk, Model)
+                <div className="mt-4 pt-4 border-t border-slate-800/50">
+                    <div className="flex justify-between items-center mb-3">
+                        <div className="flex items-center gap-2">
+                            <div className={`text-[10px] font-black uppercase px-2 py-0.5 rounded border ${getRiskColors(riskLevel)}`}>
+                                {riskLevel} RISK
+                            </div>
+                            <div className="text-[10px] text-slate-500 font-medium">Model {match.prediction.model_version}</div>
+                        </div>
+                        <div className="text-right">
+                            <div className="text-[10px] text-emerald-500 font-bold uppercase tracking-wider">Win Prob</div>
+                            <div className="text-lg font-black text-white leading-none">{(confidence * 100).toFixed(1)}%</div>
+                        </div>
+                    </div>
+                    {/* Probability Bar */}
+                    <div className="h-1.5 w-full bg-slate-800 rounded-full overflow-hidden flex">
+                        <div
+                            className={`h-full ${p1Win ? 'bg-emerald-500' : 'bg-slate-700'} transition-all duration-1000`}
+                            style={{ width: `${(p1Win ? confidence : 1 - confidence) * 100}%` }}
+                        />
+                        <div
+                            className={`h-full ${!p1Win ? 'bg-blue-500' : 'bg-slate-700'} transition-all duration-1000`}
+                            style={{ width: `${(!p1Win ? confidence : 1 - confidence) * 100}%` }}
+                        />
+                    </div>
+                    <Link to={`/match/${match.player_a.id}/${match.player_b.id}`} className="mt-3 block w-full text-center py-2 rounded-xl bg-slate-800 text-xs font-bold text-slate-300 hover:bg-slate-700 hover:text-white transition-colors">
+                        View Full Analysis
+                    </Link>
+                </div>
+            ) : (
+                // NO DATA
+                <div className="mt-4 pt-4 border-t border-slate-800/50 text-center">
+                    <span className="text-xs text-slate-500 italic">No AI Analysis available yet</span>
+                </div>
+            )}
         </div>
     );
 }
 
-function PlayerRow({ player, isWinner, isPredicted }: any) {
+function PlayerRow({ player, isWinner, isPredicted, showScore, score, winProb }: any) {
     return (
-        <div className={`flex justify-between items-center p-3 rounded-xl ${isPredicted ? 'bg-emerald-500/5 border border-emerald-500/20' : 'bg-slate-950 border border-slate-800'}`}>
+        <div className={`flex justify-between items-center p-3 rounded-xl transition-all ${isPredicted && !showScore ? 'bg-emerald-500/5 border border-emerald-500/20'
+            : isWinner ? 'bg-gradient-to-r from-emerald-500/10 to-transparent border border-emerald-500/20'
+                : 'bg-slate-950 border border-slate-800'
+            }`}>
             <div className="flex items-center gap-3">
-                <div className="w-8 h-8 rounded-full bg-slate-800 flex items-center justify-center text-xs font-bold text-slate-500">
+                <div className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold border ${isWinner ? 'border-emerald-500 text-emerald-400 bg-emerald-500/10' : 'border-slate-700 bg-slate-800 text-slate-500'}`}>
                     {player.name[0]}
                 </div>
                 <div>
-                    <div className={`font-bold text-sm ${isWinner ? 'text-emerald-400' : 'text-white'}`}>
-                        {player.name}
-                        {isPredicted && <span className="ml-2 text-[10px] bg-emerald-500 text-slate-950 px-1.5 py-0.5 rounded font-black uppercase">PICK</span>}
+                    <div className="flex items-center gap-2">
+                        <div className={`font-bold text-sm ${isWinner ? 'text-emerald-400' : 'text-slate-200'}`}>
+                            {player.name}
+                        </div>
+                        {isPredicted && !showScore && <Brain size={12} className="text-emerald-500" />}
+                        {isWinner && <Trophy size={12} className="text-emerald-500" />}
                     </div>
-                    <div className="text-[10px] text-slate-500 font-medium">#{player.ranking || 'NR'}</div>
+                    {!showScore && (
+                        <div className="text-[10px] text-slate-500 font-medium flex items-center gap-2">
+                            <span>#{player.ranking || 'NR'}</span>
+                            <span className="text-slate-600">•</span>
+                            <span className={`${winProb > 0.6 ? 'text-emerald-500' : 'text-slate-500'}`}>{(winProb * 100).toFixed(0)}% Win Prob</span>
+                        </div>
+                    )}
                 </div>
             </div>
-            {/* Score handling would go here, simplified for now */}
+
+            {/* Score Display (Simple) */}
+            <div className="text-right">
+                {showScore && score ? (
+                    <div className={`font-mono font-bold text-sm ${isWinner ? 'text-white' : 'text-slate-400'}`}>
+                        {score}
+                    </div>
+                ) : null}
+            </div>
         </div>
     )
 }

@@ -172,22 +172,21 @@ class SupabaseFluentClient:
             # Note: Dates in DB might be ISO strings. match_data['date'] should be formatted.
             # match_scraper uses date + 'T00:00:00+00:00' if it's just YYYY-MM-DD
             
-            check_date = match_data['date']
-            if len(check_date) == 10: # YYYY-MM-DD
-                 check_date = check_date # The DB likely stores it as date or timestamp
-                 # If timestamp, we might need range check, but let's assume 'date' column type for simplicity or exact match
-            
-            # We check if a match with same players and date exists
-            # We check both p1/p2 combinations just in case order is flipped in DB vs scraper
-            # but usually p1 is winner, p2 is loser in some schemas, or sorted.
-            
-            # Let's trust the input ids
-            p1 = match_data['player1_id']
-            p2 = match_data['player2_id']
-            
+            # Robust Date Check: Ignore time, check full day range
+            try:
+                # Handle ISO string "YYYY-MM-DDTHH:MM:SS..."
+                date_str = match_data['date'].split('T')[0]
+                day_start = f"{date_str}T00:00:00"
+                day_end = f"{date_str}T23:59:59"
+            except:
+                # Fallback if format is weird
+                day_start = match_data['date']
+                day_end = match_data['date']
+
             existing = self.table('matches')\
                 .select('id')\
-                .eq('date', check_date)\
+                .gte('date', day_start)\
+                .lte('date', day_end)\
                 .eq('player1_id', p1)\
                 .eq('player2_id', p2)\
                 .limit(1)\
@@ -196,7 +195,7 @@ class SupabaseFluentClient:
             if existing.data:
                 # Update
                 match_id = existing.data[0]['id']
-                # filter out ids from data to avoid primary key update errors if any
+                # filter out ids and date from data to avoid issues
                 update_data = {k: v for k, v in match_data.items() if k not in ['id', 'player1_id', 'player2_id', 'date']}
                 self.table('matches').update(update_data).eq('id', match_id).execute()
                 return True

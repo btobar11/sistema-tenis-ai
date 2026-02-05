@@ -9,6 +9,18 @@ nsis:
   oneClick: false
   allowToChangeInstallationDirectory: true
   createDesktopShortcut: true
+  installerLanguages:
+    - English
+    - Spanish
+    - Portuguese
+    - German
+    - Italian
+    - French
+    - SimpChinese
+    - Japanese
+    - Arabic
+    - Korean
+    - Russian
 files:
   - filter:
       - dist/**/*

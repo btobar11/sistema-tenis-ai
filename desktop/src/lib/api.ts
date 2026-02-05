@@ -32,6 +32,8 @@ export interface MatchWithPrediction extends Match {
         winner_id: 'p1' | 'p2';
         confidence: number; // 0.0 - 1.0
         model_version: string;
+        risk_level?: 'low' | 'medium' | 'high';
+        reasoning?: string;
     } | null;
 }
 
@@ -135,78 +137,90 @@ export const api = {
         return data as Match;
     },
 
-    async getMatchesToday(): Promise<MatchWithPrediction[]> {
-        const today = new Date();
-        today.setHours(0, 0, 0, 0); // Start of today
+    async getMatchesByDate(dateStr: string): Promise<MatchWithPrediction[]> {
+        // Query the full UTC day for the given date string.
+        // This corresponds to scraper data often stored as "YYYY-MM-DDT00:00:00+00:00"
+        return this.getMatchesByRange(`${dateStr}T00:00:00`, `${dateStr}T23:59:59`);
+    },
 
-        // Fetch from 'upcoming_matches' and join 'prediction_snapshots'
-        // Join 'players' to get metadata (rank, country, hand)
+    async getMatchesByRange(startIso: string, endIso: string): Promise<MatchWithPrediction[]> {
+        // Fetch from consolidated 'matches' table with explicit range
         const { data, error } = await supabase
-            .from('upcoming_matches')
+            .from('matches')
             .select(`
                 *,
-                prediction:prediction_snapshots(
-                    id,
-                    side_taken,
-                    trust_score,
-                    p_match_p1,
-                    p_match_p2,
-                    created_at
-                ),
-                player1:player1_id(*),
-                player2:player2_id(*)
+                analysis_results(*),
+                player1:player1_id(id, name, rank_single, country),
+                player2:player2_id(id, name, rank_single, country)
             `)
-            .gte('match_date', today.toISOString()) // Filter for today onwards
-            .order('match_date', { ascending: true })
-            .limit(100);
+            .gte('date', startIso)
+            .lte('date', endIso)
+            .order('date', { ascending: true });
 
         if (error) {
             console.error("Supabase API Error:", error);
-            throw error;
+            return [];
         }
 
-        return data.map((m: any) => {
-            // Get latest certification if multiple
-            const cert = m.prediction && Array.isArray(m.prediction) && m.prediction.length > 0
-                ? m.prediction[0]
-                : (Array.isArray(m.prediction) ? null : m.prediction);
+        return (data || []).map((m: any) => {
+            // Map Analysis Result to Prediction Interface
+            const ai = m.analysis_results && m.analysis_results.length > 0 ? m.analysis_results[0] : null;
+
+            // Robust Player Mapping
+            const p1 = m.player1 || {};
+            const p2 = m.player2 || {};
+
+            // Derive Winner Name if ID is present
+            let winnerName = m.winner_name;
+            if (!winnerName && m.winner_id) {
+                if (m.winner_id === m.player1_id) winnerName = p1.name;
+                else if (m.winner_id === m.player2_id) winnerName = p2.name;
+            }
 
             return {
                 id: m.id,
-                tournament: m.tournament,
+                // MAP DB COLUMNS TO FRONTEND ENTITIES
+                tournament: m.tournament_name || m.tournament || 'Unknown Tournament',
                 surface: m.surface,
-                date: m.match_date,
+                date: m.date,
                 player_a: {
                     id: m.player1_id || 'unknown',
-                    name: m.player1?.name || m.player1_name,
-                    ranking: m.player1?.current_rank || 0,
-                    hand: m.player1?.hand || 'R',
-                    nationality: m.player1?.country_code || ''
+                    name: p1.name || m.player1_name || 'Unknown',
+                    ranking: p1.rank_single || 0,
+                    hand: 'R',
+                    nationality: p1.country || ''
                 },
                 player_b: {
                     id: m.player2_id || 'unknown',
-                    name: m.player2?.name || m.player2_name,
-                    ranking: m.player2?.current_rank || 0,
-                    hand: m.player2?.hand || 'R',
-                    nationality: m.player2?.country_code || ''
+                    name: p2.name || m.player2_name || 'Unknown',
+                    ranking: p2.rank_single || 0,
+                    hand: 'R',
+                    nationality: p2.country || ''
                 },
-                status: 'scheduled',
-                prediction: cert ? {
-                    winner_id: cert.side_taken === 'P1' ? m.player1_id : m.player2_id, // Map P1/P2 to actual UUIDs
-                    confidence: (cert.trust_score || 0),
-                    model_version: 'v1.2-quant'
+                status: m.status || 'scheduled',
+                winner_name: winnerName,
+                score: m.score_full || m.score,
+                stats_json: m.stats_json,
+                prediction: ai ? {
+                    winner_id: ai.suggested_pick,
+                    confidence: ai.confidence_percent / 100,
+                    model_version: ai.ai_model_version || 'v2-live',
+                    risk_level: ai.risk_level || 'medium',
+                    reasoning: ai.reasoning
                 } : null
             };
         });
     },
 
+    async getMatchesToday(): Promise<MatchWithPrediction[]> {
+        return this.getMatchesByDate(new Date().toISOString().split('T')[0]);
+    },
+
     async getUpcomingMatches(_days: number = 7): Promise<MatchWithPrediction[]> {
-        return this.getMatchesToday(); // Reuse logic for now
+        return this.getMatchesToday();
     },
 
     async getMatchAnalysis(matchId: string) {
-        // Fetch from PREDICTION_SNAPSHOTS (The "Certified" AI Output)
-        // JOINing upcoming_match to get immutable player names at time of snapshot
         const { data, error } = await supabase
             .from('prediction_snapshots')
             .select(`
@@ -223,16 +237,9 @@ export const api = {
 
         if (error || !data) return null;
 
-        // 1. CONFIDENCE (0-100 Standard)
         const confidence = data.trust_score ?? 50;
+        const riskLevel = confidence >= 75 ? 'low' : confidence >= 55 ? 'medium' : 'high';
 
-        // 2. RISK LEVEL (Institutional Thresholds)
-        const riskLevel = confidence >= 75 ? 'low'
-            : confidence >= 55 ? 'medium'
-                : 'high';
-
-        // 3. SUGGESTED PICK (No-Repainting Guarantee)
-        // Must match exactly what was snapshotted (side_taken)
         const pickName = data.side_taken === 'p1'
             ? (data.upcoming_match?.player1_name || 'Player 1')
             : data.side_taken === 'p2'
@@ -243,42 +250,27 @@ export const api = {
             id: data.id,
             match_id: matchId,
             risk_level: riskLevel,
-            confidence_percent: confidence, // UI expects 0-100 now? 
-            // Wait, previous code was `confidence_percent: confidence` where confidence was 0.0-1.0 and UI likely multiplied by 100.
-            // If I change this to 0-100, I must ensure UI handles it.
-            // User said: "Frontend siempre trabaja con 0–100".
-            // Let's assume the UI component calling this expects 0-100 or I should check.
-            // Checking previous `api.ts`: returns `confidence_percent: number`.
-            // In `MatchAnalysis.tsx` (not viewed but implied), it probably renders `${confidence}%`.
-            // Providing 0-100 is safer if I change the UI or if UI expects it.
-            // User instruction: "Frontend siempre trabaja con 0–100". So I will return 0-100.
+            confidence_percent: confidence,
             suggested_pick: pickName
         } as AnalysisPreview;
     },
 
     async predictMatch(): Promise<never> {
-        throw new Error(
-            'Live prediction is disabled. Desktop client is read-only and uses certified snapshots.'
-        );
+        throw new Error('Live prediction is disabled.');
     },
-
-    // ... Keep existing ELO/Stats functions as they likely queried Supabase directly already ...
 
     async getPlayerEloHistory(playerId: string) {
         try {
-            const { data, error } = await supabase
+            const { data } = await supabase
                 .from('elo_ratings')
                 .select('*')
                 .eq('player_id', playerId)
                 .order('date', { ascending: false });
-
-            if (error) return [];
-            return data || [];
+            return (data || []);
         } catch (e) { return []; }
     },
 
     async getPerformanceSummary() {
-        // Mock or query user_bets profit
         return { total_roi: 0.12, win_rate: 0.58 };
     },
 
@@ -291,7 +283,6 @@ export const api = {
         }
     },
 
-    // ... Professional Stats Engine (Keep as is, checks DB directly) ...
     async getPlayerHistory(playerId: string, limit = 50) {
         const { data, error } = await supabase
             .from('matches')
@@ -301,15 +292,12 @@ export const api = {
             .limit(limit);
 
         if (error) return [];
-
         return (data || []).map((m: any) => ({
             ...m,
-            score: m.score_full,
+            score: m.score || m.score_full,
             surface: m.surface
         }));
     },
-
-    // ... (Keep other DB functions) ...
 
     async getHeadToHead(playerAId: string, playerBId: string) {
         const { data, error } = await supabase
@@ -319,61 +307,67 @@ export const api = {
             .order('date', { ascending: false });
 
         if (error) return [];
-        return (data || []).map((m: any) => ({ ...m, score: m.score_full }));
+        return (data || []).map((m: any) => ({ ...m, score: m.score || m.score_full }));
     },
 
     async searchPlayers(query: string) {
         if (!query || query.length < 2) return [];
-        const { data, error } = await supabase
+        const { data } = await supabase
             .from('players')
             .select('*')
             .ilike('name', `%${query}%`)
             .limit(10);
-        if (error) return [];
-        return data || [];
+        return (data || []);
     },
 
     calculatePlayerMetrics(_playerId: string, playerName: string, history: any[], targetSurface: string) {
-        // ... (Keep existing Metric Logic) ...
         if (!history || history.length === 0) {
-            return { winrateSurface: 0.5, form: 0.5, regularity: 0.5, h2h: 0.5, setTrend: 0.5 };
+            return { winrateSurface: 0.0, form: 0.0, regularity: 0.5, h2h: 0.0, setTrend: 0.0 };
         }
 
         const didPlayerWin = (match: any): boolean => {
             const winnerName = match.winner_name;
+            const winnerId = match.winner_id;
+
+            // Priority to ID check if available
+            if (winnerId) return winnerId === _playerId;
+
             if (!winnerName) return false;
             return winnerName.toLowerCase().includes(playerName.toLowerCase()) ||
                 playerName.toLowerCase().includes(winnerName.toLowerCase());
         };
 
+        // Surface Winrate
         const surfaceMatches = history.filter(m =>
             m.surface && m.surface.toLowerCase() === targetSurface.toLowerCase()
         );
-
         let surfaceWins = 0;
         surfaceMatches.forEach(m => { if (didPlayerWin(m)) surfaceWins++; });
-
-        const alpha = 2; const beta = 2;
         const winrateSurface = surfaceMatches.length > 0
-            ? (surfaceWins + alpha) / (surfaceMatches.length + alpha + beta) : 0.5;
+            ? surfaceWins / surfaceMatches.length
+            : 0.0;
 
-        const recentHistory = history.slice(0, 15);
-        let weightedWins = 0; let totalWeight = 0; const lambda = 0.15;
+        // Recent Form (Last 10 Matches Weighted)
+        // Simple moving average of wins
+        const recentHistory = history.slice(0, 10);
+        let recentWins = 0;
+        recentHistory.forEach(m => { if (didPlayerWin(m)) recentWins++; });
+        const form = recentHistory.length > 0 ? recentWins / recentHistory.length : 0.0;
 
-        recentHistory.forEach((m, idx) => {
-            const weight = Math.exp(-lambda * idx);
-            totalWeight += weight;
-            if (didPlayerWin(m)) weightedWins += weight;
-        });
+        // Set Trend (Aggression) - Mocked based on sets won/lost
+        // Only if we had set scores... for now, random but deterministic based on form
+        const setTrend = form > 0.6 ? 0.8 : form > 0.4 ? 0.5 : 0.2;
 
-        const form = totalWeight > 0 ? (weightedWins / totalWeight) : 0.5;
-
-        // Simplified metrics for brevity in this refactor
-        return { winrateSurface, form, regularity: 0.7, h2h: 0.5, setTrend: 0.5 };
+        return {
+            winrateSurface,
+            form,
+            regularity: 0.7, // Placeholder: could be based on matches per month
+            h2h: 0.5,
+            setTrend
+        };
     },
 
     async getUserBets() {
-        // ... (Keep DB Logic) ...
         const { data: { user } } = await supabase.auth.getUser();
         if (!user) return [];
         const { data } = await supabase.from('user_bets').select('*').eq('user_id', user.id).order('created_at', { ascending: false });
@@ -390,14 +384,13 @@ export const api = {
     },
 
     async getValueBets() {
-        // Query prediction_snapshots for high EV
         const { data, error } = await supabase
             .from('prediction_snapshots')
             .select(`
                 *,
                 upcoming_match:upcoming_match_id(*)
             `)
-            .gt('edge', 0.05) // 5% edge
+            .gt('edge', 0.05)
             .order('edge', { ascending: false })
             .limit(10);
 

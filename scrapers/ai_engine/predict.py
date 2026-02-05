@@ -59,13 +59,26 @@ def predict_upcoming_matches():
     model = artifact['model']
     le_surface = artifact['surface_encoder']
     
-    # 1. Fetch Scheduled Matches
-    url = f"{SUPABASE_URL}/rest/v1/matches?status=eq.scheduled&select=*"
+    # 1. Fetch Scheduled Matches (Filter by Date >= Today)
+    url = f"{SUPABASE_URL}/rest/v1/matches"
+    today_iso = datetime.now().strftime("%Y-%m-%d") # API expects YYYY-MM-DD for simpler comparison or ISO
+    params = {
+        "date": f"gte.{today_iso}", 
+        "select": "*"
+    }
     try:
-        resp = requests.get(url, headers=HEADERS)
-        matches = resp.json() if resp.status_code == 200 else []
+        resp = requests.get(url, headers=HEADERS, params=params)
+        if resp.status_code == 200:
+            matches = resp.json()
+            if not matches:
+                print(f"[DEBUG] Fetch successful but 0 matches found.")
+                print(f"[DEBUG] Query URL: {url}")
+        else:
+            print(f"[ERROR] Fetch failed. Status: {resp.status_code}")
+            print(f"[ERROR] Body: {resp.text}")
+            matches = []
     except Exception as e:
-        print(f"Error fetching matches: {e}")
+        print(f"[ERROR] Exception fetching matches: {e}")
         return
 
     print(f"Found {len(matches)} matches to predict.")

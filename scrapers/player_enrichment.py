@@ -100,6 +100,15 @@ def scrape_player_details(profile_url):
                              pass
                 if "Sex:" in txt:
                      details['hand'] = "R" # Placeholder/Check actual text
+                if "Current/Highest rank" in txt and "singles:" in txt:
+                    # Format: "Current/Highest rank - singles: 5. / 1."
+                    try:
+                        rank_part = txt.split('singles:')[1].strip() # "5. / 1."
+                        current_rank = rank_part.split('.')[0].strip() # "5"
+                        if current_rank.isdigit():
+                            details['rank_single'] = int(current_rank)
+                    except:
+                        pass
         
     except Exception as e:
         print(f"Details scrape failed: {e}")

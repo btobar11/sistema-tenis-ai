@@ -155,7 +155,8 @@ def predict_upcoming_matches():
         # Fetch matches where prediction is NULL
         # And date >= today
         today = datetime.now().strftime("%Y-%m-%d")
-        endpoint = f"{db.url}/rest/v1/matches?date=gte.{today}&select=id,player1_id,player2_id,prediction&prediction=is.null"
+        # Optimization: Limit to 20 matches per run to prevent timeout (cron runs every 15 mins)
+        endpoint = f"{db.url}/rest/v1/matches?date=gte.{today}&select=id,player1_id,player2_id,prediction&prediction=is.null&limit=20"
         
         r = db._request_with_retry('get', endpoint)
         if not r or r.status_code != 200:

@@ -1,267 +1,198 @@
+
+# Rewritten ValueBetEngine
 import sys
 import os
 import requests
-import re
-from datetime import datetime, timedelta
+import json
+from datetime import datetime
 from dotenv import load_dotenv
 
-# Ensure root path is in sys.path
 current_dir = os.path.dirname(os.path.abspath(__file__))
 parent_dir = os.path.dirname(current_dir)
 if parent_dir not in sys.path:
     sys.path.insert(0, parent_dir)
 
-load_dotenv() # Load .env to get key
-
+load_dotenv()
 from scrapers.db_client import get_db_client
 
-# free tier of the-odds-api allows 500 requests/month
-ODDS_API_KEY = os.getenv("ODDS_API_KEY") 
-# We need to handle multiple keys or specific ones. For now, let's target the active one.
-# In production we might iterate over 'tennis_atp_...' keys.
-SPORT_KEY = "tennis_atp_aus_open_singles"
-ODDS_API_URL = f"https://api.the-odds-api.com/v4/sports/{SPORT_KEY}/odds"
+ODDS_API_KEY = os.getenv("ODDS_API_KEY")
 
 class ValueBetEngine:
     def __init__(self, db_client=None):
         self.db = db_client if db_client else get_db_client()
+        self.players_map = {}
 
-    def normalize_name(self, name):
-        """
-        Normalize name for comparison.
-        "Novak Djokovic" -> "novak djokovic"
-        "Djokovic N." -> "djokovic"
-        """
-        name = name.lower().strip()
-        # Remove dots
-        name = name.replace('.', '')
-        return name
-
-    def fuzzy_match(self, db_name, api_name):
-        """
-        Returns True if names likely match.
-        """
-        n1 = self.normalize_name(db_name)
-        n2 = self.normalize_name(api_name)
-        
-        # Check strict substring (e.g. "djokovic" in "novak djokovic")
-        if n1 in n2 or n2 in n1:
-            return True
-            
-        # Check token intersection (e.g. "alcaraz" and "carlos alcaraz")
-        t1 = set(n1.split(' '))
-        t2 = set(n2.split(' '))
-        if t1.intersection(t2):
-            return True
-            
-        return False
+    def get_player_name(self, p_id):
+        if not self.players_map:
+            # Cache all players for speed
+            try:
+                r = self.db._request_with_retry('get', f"{self.db.url}/rest/v1/players?select=id,name")
+                if r and r.json():
+                    self.players_map = {p['id']: p['name'] for p in r.json()}
+            except:
+                pass
+        return self.players_map.get(p_id, "Unknown")
 
     def fetch_active_tennis_sports(self):
-        """
-        Fetches list of active tennis sports/tournaments.
-        """
         if not ODDS_API_KEY: return []
         try:
             url = "https://api.the-odds-api.com/v4/sports"
             params = {'apiKey': ODDS_API_KEY}
             r = requests.get(url, params=params)
             if r.status_code == 200:
-                all_sports = r.json()
-                # Filter for tennis keys (atp or wta)
-                tennis_sports = [
-                    s['key'] for s in all_sports 
-                    if 'tennis' in s['key'] and s['active']
-                ]
-                print(f"  [Odds] Active Tennis Markets: {tennis_sports}")
-                return tennis_sports
-            return []
+                all = r.json()
+                return [s['key'] for s in all if 'tennis' in s['key'] and s['active']]
         except Exception as e:
-            print(f"  [Odds] Error fetching sports: {e}")
-            return []
+            print(f"[Odds] Error: {e}")
+        return []
 
     def fetch_live_odds(self):
-        """
-        Fetches odds for ALL active tennis tournaments.
-        """
         if not ODDS_API_KEY:
-            print("  [Value] No Odds API Key found in env.")
+            print("[Value] Missing ODDS_API_KEY")
             return []
         
-        active_sports = self.fetch_active_tennis_sports()
-        if not active_sports:
-            print("  [Odds] No active tennis tournaments found.")
-            return []
-            
+        sports = self.fetch_active_tennis_sports()
         all_events = []
-        
-        for sport_key in active_sports:
+        for s in sports:
             try:
-                # Sleep briefly to avoid rate limit spikes if many tournaments
-                # time.sleep(0.5) 
-                
-                url = f"https://api.the-odds-api.com/v4/sports/{sport_key}/odds"
-                print(f"  [Odds] Fetching: {sport_key}")
-                params = {
-                    'apiKey': ODDS_API_KEY,
-                    'regions': 'eu,us', 
-                    'markets': 'h2h',
-                    'oddsFormat': 'decimal'
-                }
+                url = f"https://api.the-odds-api.com/v4/sports/{s}/odds"
+                params = {'apiKey': ODDS_API_KEY, 'regions': 'eu,us', 'markets': 'h2h', 'oddsFormat': 'decimal'}
                 r = requests.get(url, params=params)
-                
-                # Check quota
-                remaining = r.headers.get('x-requests-remaining', '?')
-                # print(f"    Remaining Requests: {remaining}")
-                
                 if r.status_code == 200:
-                    data = r.json()
-                    print(f"    Found {len(data)} events.")
-                    all_events.extend(data)
-                else:
-                    print(f"    API Error for {sport_key}: {r.text}")
-                    
-            except Exception as e:
-                print(f"    Connection error for {sport_key}: {e}")
-                
+                    events = r.json()
+                    print(f"  [Odds] {s}: Found {len(events)} events.")
+                    all_events.extend(events)
+            except:
+                pass
         return all_events
+        
+    def normalize(self, name):
+        return name.lower().replace('.', '').strip()
 
-    def calculate_ev(self, ai_prob, bookmaker_odds):
-        """
-        EV = (Probability * Odds) - 1
-        """
-        return (ai_prob * bookmaker_odds) - 1
+    def fuzzy_match(self, db_name, api_name):
+        n1 = self.normalize(db_name)
+        n2 = self.normalize(api_name)
+        if n1 in n2 or n2 in n1: return True
+        t1 = set(n1.split())
+        t2 = set(n2.split())
+        if t1.intersection(t2): return True
+        return False
 
     def process_value_bets(self):
-        print("Starting Value Bet Analysis (Real Odds)...")
+        print("Starting Value Bet Analysis...")
         
-        # 1. Fetch AI Predictions (Future matches only)
+        # 1. Get recent Predictions from analysis_results
+        # Join with matches to get Match Info? Or Matches -> JOIN analysis_results?
+        # Let's get Matches JOIN analysis_results because we need match date/players
+        
         today = datetime.now().strftime("%Y-%m-%d")
-        # Fetch ID, Players, Date, Prediction
-        # Also need player names joined? DB client makes this tricky with join syntax in one go if not defined.
-        # But we can select logic.
         
-        # Let's fetch matches with predictions
-        print("  [DB] Fetching analyzed matches...")
-        endpoint = f"{self.db.url}/rest/v1/matches?date=gte.{today}&select=*,prediction,player_a:player1_id(name),player_b:player2_id(name)"
-        r = self.db._request_with_retry('get', endpoint)
-        matches = r.json() if r and r.status_code == 200 else []
+        # We need matches that have a prediction
+        # Query: matches?select=*,analysis_results(*)&status=eq.scheduled
         
-        if not matches:
-            print("  No matches found in DB to analyze.")
+        endpoint = f"{self.db.url}/rest/v1/matches"
+        params = {
+            "date": f"gte.{today}",
+            "select": "*,analysis_results(*)"
+        }
+        
+        try:
+            r = self.db._request_with_retry('get', endpoint, params=params)
+            matches = r.json() if r and r.status_code == 200 else []
+        except Exception as e:
+            print(f"[Value] DB Error: {e}")
             return
 
-        print(f"  Found {len(matches)} matches to check.")
+        matches_with_preds = [m for m in matches if m.get('analysis_results')]
+        print(f"  Found {len(matches_with_preds)} scheduled matches with predictions.")
+        
+        if not matches_with_preds:
+            return
 
-        # 2. Fetch Real Odds
+        # 2. Fetch Odds
         odds_events = self.fetch_live_odds()
         if not odds_events:
-            print("  No odds data available.")
+            print("  No odds data found.")
             return
-
-        value_updates = 0
-
-        for m in matches:
-            if not m.get('prediction'): continue
             
-            # Get Names from the JOINED columns (assuming db_client supported it or we manual fetch)
-            # The query select was 'player_a:player1_id(name)'. JSON result key will be 'player_a'.
-            p1_name = m.get('player_a', {}).get('name', '')
-            p2_name = m.get('player_b', {}).get('name', '')
+        updates = 0
+        
+        for m in matches_with_preds:
+            # m['analysis_results'] is likely a list (one-to-many) or dict (one-to-one) depending on schema
+            # Assuming list, take latest
+            preds = m['analysis_results']
+            if isinstance(preds, list):
+                if not preds: continue
+                pred = preds[0] # Take first/latest
+            else:
+                pred = preds
+                
+            p1_name = self.get_player_name(m['player1_id'])
+            p2_name = self.get_player_name(m['player2_id'])
             
-            if not p1_name: continue # Skip if bad data
-
-            # Locate in Odds Data
-            found_event = None
-            for event in odds_events:
-                # Event names: "Novak Djokovic vs. Casper Ruud" or arrays
-                # The API returns 'home_team', 'away_team' usually
-                # But tennis is individual.
-                home = event.get('home_team')
-                away = event.get('away_team')
+            # Find in Odds
+            found = None
+            for ev in odds_events:
+                home = ev.get('home_team')
+                away = ev.get('away_team')
                 
-                # Check match
-                # p1 vs home AND p2 vs away 
-                # OR p1 vs away AND p2 vs home
-                # Use fuzzy match
-                
-                match_direct = self.fuzzy_match(p1_name, home) and self.fuzzy_match(p2_name, away)
-                match_reverse = self.fuzzy_match(p1_name, away) and self.fuzzy_match(p2_name, home)
-                
-                if match_direct or match_reverse:
-                    found_event = event
+                # Check direct
+                if (self.fuzzy_match(p1_name, home) and self.fuzzy_match(p2_name, away)) or \
+                   (self.fuzzy_match(p1_name, away) and self.fuzzy_match(p2_name, home)):
+                    found = ev
                     break
             
-            if not found_event:
-                # print(f"  [No Odds] Could not find odds for {p1_name} vs {p2_name}")
-                continue
-
-            # Process Bookmakers to find best odds
-            rec_bet = None
-            max_ev = -1
-            
-            ai_winner_id = m['prediction']['winner_id']
-            ai_conf = m['prediction']['confidence']
-            is_p1_winner = (ai_winner_id == m['player1_id'])
-            
-            # Determine which name matches the AI winner in the API event
-            # (Does p1_name match home or away?)
-            winner_in_api = None # 'home' or 'away'
-            
-            # Need to re-verify fuzzy match to know side
-            if self.fuzzy_match(p1_name, found_event['home_team']):
-                winner_in_api = 'home' if is_p1_winner else 'away'
-            else:
-                # p1 is away
-                winner_in_api = 'away' if is_p1_winner else 'home'
-
-            for bookmaker in found_event.get('bookmakers', []):
-                # We prioritize reputable ones or just max? Let's take MAX for now.
-                for market in bookmaker.get('markets', []):
-                    if market['key'] == 'h2h':
-                        for outcome in market['outcomes']:
-                            # outcome['name'] matches home_team or away_team
-                            
-                            # Check if outcome is our winner
-                            # outcome['name'] vs found_event['home_team']
-                             
-                            is_target = False
-                            if winner_in_api == 'home' and outcome['name'] == found_event['home_team']:
-                                is_target = True
-                            elif winner_in_api == 'away' and outcome['name'] == found_event['away_team']:
-                                is_target = True
-                                
-                            if is_target:
-                                odds = outcome['price']
-                                ev = self.calculate_ev(ai_conf, odds)
-                                
-                                # Is this the best EV so far?
-                                if ev > max_ev and ev > 0.0:
-                                    max_ev = ev
-                                    rec_bet = {
-                                        "selection": p1_name if is_p1_winner else p2_name,
-                                        "odds": odds,
-                                        "bookmaker": bookmaker['title'],
-                                        "ev": ev,
-                                        "timestamp": datetime.now().isoformat()
-                                    }
-
-            if rec_bet and max_ev > 0.01: # 1% threshold
-                print(f"  [VALUE FOUND] {rec_bet['selection']} @ {rec_bet['odds']} ({rec_bet['bookmaker']}) | EV: {round(max_ev*100, 1)}%")
+            if found:
+                # Calculate EV
+                ai_pick_id = pred.get('suggested_pick')
+                ai_conf = pred.get('confidence_percent', 50) / 100.0
                 
-                # Update DB prediction JSON with value data
-                current_pred = m['prediction']
-                current_pred['value_bet'] = rec_bet # Inject
+                is_p1_pick = (ai_pick_id == m['player1_id'])
+                pick_name = p1_name if is_p1_pick else p2_name
                 
-                # Patch DB
-                self.db.from_('matches').update({
-                    "prediction": current_pred
-                }).eq('id', m['id']).execute()
+                # Determine side in API
+                # Basic check: if p1 matches home, then home is p1
+                p1_is_home = self.fuzzy_match(p1_name, found['home_team'])
                 
-                value_updates += 1
+                target_outcome_name = found['home_team'] if (is_p1_pick and p1_is_home) or (not is_p1_pick and not p1_is_home) else found['away_team']
+                
+                best_ev = -1
+                best_bet = None
+                
+                for bookie in found.get('bookmakers', []):
+                    for market in bookie.get('markets', []):
+                        if market['key'] == 'h2h':
+                            for out in market['outcomes']:
+                                if out['name'] == target_outcome_name:
+                                    decimal_odds = out['price']
+                                    ev = (ai_conf * decimal_odds) - 1
+                                    
+                                    if ev > 0 and ev > best_ev:
+                                        best_ev = ev
+                                        best_bet = {
+                                            "bookmaker": bookie['title'],
+                                            "odds": decimal_odds,
+                                            "ev": round(ev, 3),
+                                            "pick": pick_name
+                                        }
+                
+                if best_bet:
+                    print(f"  [VALUE] {pick_name} vs {p2_name if is_p1_pick else p1_name} | {best_bet['bookmaker']} @ {best_bet['odds']} (EV: {best_bet['ev']})")
+                    
+                    # Update analysis_results with value bet
+                    # We need to PATCH analysis_results
+                    try:
+                        patch_url = f"{self.db.url}/rest/v1/analysis_results"
+                        self.db._request_with_retry('patch', patch_url, 
+                            params={'id': f"eq.{pred['id']}"},
+                            json={"value_bet_data": best_bet}
+                        )
+                        updates += 1
+                    except Exception as e:
+                        print(f"Error saving value bet: {e}")
 
-        print(f"Analysis complete. Updated {value_updates} matches with value data.")
+        print(f"Value Analysis Done. {updates} value bets recorded.")
 
 if __name__ == "__main__":
-    load_dotenv()
     engine = ValueBetEngine()
     engine.process_value_bets()

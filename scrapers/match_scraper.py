@@ -300,18 +300,34 @@ if __name__ == "__main__":
                     "surface": None  # Could extract from tournament if needed
                 }
                 
-                # Check if match exists (by date + players combo)
-                existing = db.from_('matches').select('id').eq('date', match_record['date']).eq('player1_id', winner_id).eq('player2_id', loser_id).limit(1).execute()
+                # Check if match exists (by date range + players combo)
+                # We check for matches on the same DAY (ignoring time)
+                day_start = m['date'] + "T00:00:00"
+                day_end = m['date'] + "T23:59:59"
+                
+                # We need to construct the query carefully.
+                # Note: supabase-py usage: .gte('date', day_start).lte('date', day_end)
+                existing = db.from_('matches').select('id') \
+                    .eq('player1_id', winner_id) \
+                    .eq('player2_id', loser_id) \
+                    .gte('date', day_start) \
+                    .lte('date', day_end) \
+                    .limit(1).execute()
                 
                 if existing.data:
                     # Update
                     db.from_('matches').update({
                         "winner_id": winner_id,
-                        "score_full": m['score']
+                        "score_full": m['score'],
+                        "status": "finished",
+                        "winner_name": m['winner'] # Ensure winner name is updated
                     }).eq('id', existing.data[0]['id']).execute()
                     print(f"  [UPD] {m['winner']} d. {m['loser']} {m['score']}")
                 else:
                     # Insert
+                    # Ensure status is set
+                    match_record['status'] = 'finished'
+                    match_record['winner_name'] = m['winner']
                     db.from_('matches').insert(match_record).execute()
                     print(f"  [NEW] {m['winner']} d. {m['loser']} {m['score']}")
                 
