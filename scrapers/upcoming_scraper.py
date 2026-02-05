@@ -1,466 +1,210 @@
 """
 Upcoming Matches Scraper
-Fetches scheduled matches for the next 7 days from tennis calendars
+Fetches scheduled matches for the next 7 days from tennis calendars.
 """
 import os
 import time
 import json
+import re
 from datetime import datetime, timedelta
 from dotenv import load_dotenv
-import requests as http_requests
 from curl_cffi import requests as cffi_requests
 from bs4 import BeautifulSoup
-from db_client import get_db_client
+try:
+    from db_client import get_db_client
+except ImportError:
+    from scrapers.db_client import get_db_client
 
 load_dotenv()
 
-def scrape_upcoming_matches():
-    """Scrape upcoming matches from tennis calendar"""
-    url = "https://www.tennisexplorer.com/next/"
+def scrape_date(date_obj):
+    """Scrape matches for a specific date"""
+    date_str = date_obj.strftime("%Y-%m-%d")
+    y, m, d = date_str.split('-')
+    url = f"https://www.tennisexplorer.com/matches/?type=upcoming&year={y}&month={m}&day={d}"
     print(f"Fetching {url}...")
     
+    matches = []
     try:
-        response = cffi_requests.get(url, impersonate="chrome110", timeout=10)
+        response = cffi_requests.get(url, impersonate="chrome110", timeout=20)
+        print(f"  Status: {response.status_code}")
         soup = BeautifulSoup(response.content, 'html.parser')
+        print(f"  Title: {soup.title.string if soup.title else 'No Title'}")
         
-        matches = []
-        # Find match tables
+        print(f"  Response Size: {len(response.content)} bytes")
+        
         tables = soup.find_all('table', class_='result')
+        print(f"  Found {len(tables)} result tables.")
         
         for table in tables:
             rows = table.find_all('tr')
+            current_tournament = "Unknown"
+            current_surface = "HARD"
             
-            current_tournament = "Unknown Tournament"
-            current_surface = "HARD" # Default
-            
-            buffer_player = None
-            buffer_time = None
+            # Two-row match parsing: P1 has time, P2 follows
+            pending_player = None
+            pending_time = None
             
             for row in rows:
                 row_classes = row.get('class', [])
+                cells = row.find_all('td')
                 
-                # HEADER ROW (Tournament info)
+                # Header row - extract tournament info
                 if 'head' in row_classes:
-                    # Parse Tournament
-                    # Format often: "ATP Dallas, 03.02.2026 - Hard" or similar
                     full_text = row.get_text(strip=True)
-                    
+                    if 'doubles' in full_text.lower() or 'juniors' in full_text.lower():
+                        current_tournament = "SKIP"
+                        continue
+                        
                     links = row.find_all('a')
-                    if links:
-                        current_tournament = links[0].get_text(strip=True)
-                    else:
-                        current_tournament = full_text.split(',')[0] # Fallback
-                        
-                    # Try to find date in text (dd.mm.yyyy)
-                    import re
-                    date_match = re.search(r'(\d{2}\.\d{2}\.\d{4})', full_text)
-                    if date_match:
-                        try:
-                            # Set explicit date from header
-                             day_s, month_s, year_s = date_match.group(1).split('.')
-                             # Update base date for subsequent rows
-                             # We use a special buffer 'header_date'
-                             # Note: This requires passing this context to the row loop
-                             pass # Ideally we set a state variable here
-                        except:
-                            pass
-                        
-                    # Infer Surface from Tournament Name
+                    current_tournament = full_text.split(',')[0]
+                    
+                    for link in links:
+                        link_text = link.get_text(strip=True)
+                        if link_text and 'h2h' not in link_text.lower():
+                            current_tournament = link_text
+                            break
+                    
+                    # Infer Surface
                     t_lower = current_tournament.lower()
                     if 'clay' in t_lower: current_surface = 'CLAY'
                     elif 'grass' in t_lower: current_surface = 'GRASS'
-                    elif 'hard' in t_lower: current_surface = 'HARD'
-                    elif 'indoor' in t_lower: current_surface = 'HARD' # Indoor Hard usually
-                    else: current_surface = 'HARD' # Default
+                    else: current_surface = 'HARD'
                     
-                    # Reset buffer
-                    buffer_player = None
+                    pending_player = None  # Reset on new tournament
+                    continue
+                    
+                if current_tournament == "SKIP":
                     continue
                 
-                # MATCH ROW
-                try:
-                    cells = row.find_all('td')
-                    if len(cells) < 4:
-                        continue
-                        
-                    # Extract basics
-                    t_text = cells[0].get_text(strip=True) # Time
-                    p_name = cells[1].get_text(strip=True) # Player Name
-                    
-                    # Check for scores to exclude finished/live
-                    c2 = cells[2].get_text(strip=True)
-                    c3 = cells[3].get_text(strip=True)
-                    has_score = (c2.isdigit() or c3.isdigit())
-                    
-                    if has_score:
-                        buffer_player = None 
-                        continue
-                        
-                    if not p_name:
-                        continue
-
-                    if buffer_player:
-                        # We have a P1 waiting, this must be P2
-                        p1 = buffer_player
-                        p2 = p_name
-                        match_time_str = buffer_time if buffer_time else t_text
-                        
-                        # Date Parsing Logic
-                        # 1. Parsing Time (HH:MM)
-                        hour = 12
-                        minute = 0
-                        try:
-                            if ':' in match_time_str:
-                                parts = match_time_str.split(':')
-                                hour = int(parts[0])
-                                minute = int(parts[1])
-                        except:
-                            pass
-                        
-                        # 2. Determining Day
-                        # TennisExplorer usually groups by day in headers, or lists sequential.
-                        # For /next/, it starts with Today's upcoming.
-                        # We will assume Today for now, and check if time is in past -> Tomorrow
-                        
-                        now = datetime.now()
-                        current_year = now.year
-                        current_month = now.month
-                        current_day = now.day
-                        
-                        # Logic:
-                        # If parsed time (HH:MM) is significantly earlier than now (e.g. 10am vs 6pm), it's overwhelmingly likely to be tomorrow.
-                        # If parsed time is later (e.g. 8pm vs 6pm), it could be today.
-                        # BUT /next/ endpoint usually means "Tomorrow's Schedule".
-                        # While /matches/ is "Today".
-                        # We will assume Tomorrow by default for /next/ URL.
-                        
-                        match_date = now + timedelta(days=1)
-                        match_date = match_date.replace(hour=hour, minute=minute, second=0, microsecond=0)
-                        
-                        # Sanity Check: If result is > 48 hours away, something is wrong? No, /next/ is strictly near future.
-                        # What if it's actually TODAY?
-                        # Using 20 hour offset check?
-                        # Getting closer: rely on Tomorrow default for this specific URL.
-                        
-                        # If the page header specifically said "Tomorrow", we should respect that (todo)
-                        
-                        print(f"   -> Found: {p1} vs {p2} @ {match_date}")
-                        
-
-                        matches.append({
-                            'player1': p1,
-                            'player2': p2,
-                            'tournament': current_tournament,
-                            'surface': current_surface,
-                            'date': match_date
-                        })
-                        
-                        buffer_player = None # Pair consumed
-                        
-                    else:
-                        # Buffer this as Player 1
-                        buffer_player = p_name
-                        buffer_time = t_text
-                        
-                except Exception as e:
-                    # print(f"Row Parse Error: {e}")
-                    buffer_player = None
+                if not cells:
                     continue
-        
-        return matches
+                
+                # Look for player link in this row
+                links = row.find_all('a')
+                player_links = [a for a in links if '/player/' in str(a.get('href', ''))]
+                
+                if not player_links:
+                    continue
+                    
+                player_name = player_links[0].get_text(strip=True)
+                if not player_name:
+                    continue
+                
+                # Check for time in first cell  
+                time_cell = cells[0].get_text(strip=True)
+                time_match = re.search(r'(\d{1,2}:\d{2})', time_cell)
+                
+                # Check for score (completed match - skip)
+                has_score = False
+                for cell in cells:
+                    cell_text = cell.get_text(strip=True)
+                    if re.search(r'^\d+-\d+$', cell_text):
+                        has_score = True
+                        break
+                
+                if has_score:
+                    pending_player = None
+                    continue
+                
+                if time_match:
+                    # This is Player 1 (row with time)
+                    pending_player = player_name
+                    pending_time = time_match.group(1)
+                elif pending_player:
+                    # This is Player 2 - complete the match
+                    p1 = pending_player
+                    p2 = player_name
+                    
+                    match_date_final = date_obj
+                    if pending_time and ':' in pending_time:
+                        try:
+                            hh, mm = map(int, pending_time.split(':'))
+                            match_date_final = date_obj.replace(hour=hh, minute=mm)
+                        except: pass
+                    
+                    matches.append({
+                        'player1': p1,
+                        'player2': p2,
+                        'tournament': current_tournament,
+                        'surface': current_surface,
+                        'date': match_date_final
+                    })
+                    pending_player = None
+                    pending_time = None
+
     except Exception as e:
-        print(f"Error scraping upcoming matches: {e}")
-        return []
+        print(f"Failed to scrape {date_str}: {e}")
+        
+    return matches
 
 def run_upcoming_scraper():
     print(f"[{datetime.now()}] Starting Upcoming Matches Scraper...")
     
     db = get_db_client()
-    if not db:
-        print("ERROR: Supabase credentials not configured")
-        return
-    
-    # Import the helper function
+    if not db: return
+
     from db_client import get_or_create_player
     
-    matches = scrape_upcoming_matches()
+    # Scrape Today and Tomorrow
+    target_dates = [datetime.now(), datetime.now() + timedelta(days=1)]
+    
+    matches = []
+    for d in target_dates:
+        matches.extend(scrape_date(d))
+        
     print(f"Found {len(matches)} upcoming matches")
     
-    # DEBUG OUTPUT
-    if matches:
-        print("\n--- SAMPLE DATA (First 3) ---")
-        for m in matches[:3]:
-            print(f"{m['player1']} vs {m['player2']} | {m['tournament']} ({m['surface']}) | {m['date']}")
-        print("-----------------------------\n")
-    
     saved_count = 0
-    table_name = 'upcoming_matches'
     
-    # Check if table exists by trying to select (cheap check) or just try insert
-    # If fail, fallback to 'matches'
-    use_fallback = False
-    try:
-        # Dry run select?
-        # db.from_(table_name).select('id').limit(1).execute()
-        pass 
-    except:
-        # use_fallback = True
-        pass
-
     for m in matches:
         try:
-            # Resolve Player IDs
             p1_id = get_or_create_player(db, m['player1'])
             p2_id = get_or_create_player(db, m['player2'])
             
             if not p1_id or not p2_id:
                 continue
 
-            # Payload for upcoming_matches
-            upcoming_match = {
-                "player1_name": m['player1'],
-                "player2_name": m['player2'],
-                "player1_id": p1_id,
-                "player2_id": p2_id,
-                "tournament": m['tournament'],
-                "surface": m['surface'],
-                "match_date": m['date'].isoformat(),
-                "source": "TennisExplorer"
-            }
-            
-            # Try insert into upcoming_matches
-            try:
-                # Upsert by unique constraint?
-                # Need to use .upsert() or check existence. 
-                # Simplest is insert and ignore error or check first.
-                
-                # Check exist
-                q = db.from_(table_name).select('id') \
-                    .eq('player1_name', m['player1']) \
-                    .eq('player2_name', m['player2']) \
-                    .eq('match_date', upcoming_match['match_date']) \
-                    .limit(1).execute()
-                
-                if not q.data:
-                    db.from_(table_name).insert(upcoming_match).execute()
-                    print(f"  [SAVED UPCOMING] {m['player1']} vs {m['player2']}")
-                    saved_count += 1
-                else:
-                    # print(f"  [SKIP] Exists")
-                    pass
-                    
-            except Exception as e:
-                # Fallback to 'matches' table logic if upcoming_matches fails (e.g. table not found)
-                if "relation" in str(e) or "does not exist" in str(e) or "404" in str(e): 
-                   # print(f"  [WARN] Table {table_name} error ({e}). Fallback to 'matches'.")
-                   
-                   # Fallback Logic
-                   db_match = {
-                       "tournament_name": m['tournament'],
-                       "date": m['date'].isoformat(),
-                       "player1_id": p1_id,
-                       "player2_id": p2_id,
-                       "surface": m['surface'], # Assuming 'matches' has surface
-                       "round": "Upcoming"
-                   }
-                   
-                   # Check exist legacy
-                   ex = db.from_('matches').select('id').eq('date', db_match['date']).eq('player1_id', p1_id).eq('player2_id', p2_id).limit(1).execute()
-                   if not ex.data:
-                       db.from_('matches').insert(db_match).execute()
-                       print(f"  [SAVED LEGACY] {m['player1']} vs {m['player2']}")
-                       saved_count += 1
-                else:
-                    print(f"  [ERR] Insert failed: {e}")
-
-        except Exception as e:
-            print(f"  [ERR] Processing match {m.get('player1')} vs {m.get('player2')}: {e}")
-    
-    print(f"Scraper finished. {saved_count} matches saved.")
-
-if __name__ == "__main__":
-    run_upcoming_scraper()
-import os
-import time
-import json
-from datetime import datetime, timedelta
-from dotenv import load_dotenv
-import requests as http_requests
-from curl_cffi import requests as cffi_requests
-from bs4 import BeautifulSoup
-from db_client import get_db_client
-
-load_dotenv()
-
-def scrape_upcoming_matches():
-    """Scrape upcoming matches from tennis calendar"""
-    url = "https://www.tennisexplorer.com/next/"
-    
-    try:
-        response = cffi_requests.get(url, impersonate="chrome110", timeout=10)
-        soup = BeautifulSoup(response.content, 'html.parser')
-        
-        matches = []
-        # Find match tables
-        tables = soup.find_all('table', class_='result')
-        
-        # Find match tables
-        tables = soup.find_all('table', class_='result')
-        
-        for table in tables:
-            rows = table.find_all('tr')
-            
-            buffer_player = None
-            buffer_time = None
-            
-            for row in rows:
-                if 'head' in row.get('class', []):
-                    # Inspect Header
-                    print(f"DEBUG HEADER: {row}") 
-                    # New section/tournament often clears buffer
-                    buffer_player = None
-                    continue
-                try:
-                    cells = row.find_all('td')
-                    if len(cells) < 4:
-                        continue
-                        
-                    # Extract basics
-                    t_text = cells[0].get_text(strip=True) # Time
-                    p_name = cells[1].get_text(strip=True) # Player Name
-                    
-                    # Check for scores to exclude finished/live
-                    # Columns 2, 3, 4 usually scores. If they have digits, it's likely started/done.
-                    # Exception: Some rows have empty scores but are just 'not started'
-                    c2 = cells[2].get_text(strip=True)
-                    c3 = cells[3].get_text(strip=True)
-                    has_score = (c2.isdigit() or c3.isdigit())
-                    
-                    if has_score:
-                        buffer_player = None # Reset if we hit a finished match line
-                        continue
-                        
-                    if not p_name:
-                        continue
-
-                    if buffer_player:
-                        # We have a P1 waiting, this must be P2
-                        p1 = buffer_player
-                        p2 = p_name
-                        match_time_str = buffer_time if buffer_time else t_text
-                        
-                        # Set proper date
-                        # TennisExplorer /next/ lists matches for "tomorrow" usually, 
-                        # but check if header indicates date... (Header check is complex).
-                        # Assumption: /next/ is strictly tomorrow.
-                        
-                        # Better Logic:
-                        # If time is < current_time, it might be tomorrow (wrapping).
-                        # If time is > current_time, it might be today?
-                        # Actually, /next/ is usually 1 day ahead of user timezone or server timezone.
-                        # Safe bet: Today + 1 day, set hours/min.
-                        
-                        base_date = datetime.now().date() + timedelta(days=1) # Tomorrow Date Object
-                        
-                        match_date = datetime(
-                            year=base_date.year, 
-                            month=base_date.month, 
-                            day=base_date.day,
-                            hour=12, minute=0
-                        ) # Default noon
-                        
-                        try:
-                            # Try to parse time HH:MM
-                            if ':' in match_time_str:
-                                hh, mm = map(int, match_time_str.split(':'))
-                                match_date = datetime(
-                                    year=base_date.year, 
-                                    month=base_date.month, 
-                                    day=base_date.day,
-                                    hour=hh, minute=mm
-                                )
-                        except Exception as e:
-                            # print(f"Time Parse Error: {e}")
-                            pass
-
-                        matches.append({
-                            'player1': p1,
-                            'player2': p2,
-                            'tournament': "Upcoming", 
-                            'date': match_date
-                        })
-                        
-                        buffer_player = None # Pair consumed
-                        
-                    else:
-                        # Buffer this as Player 1
-                        buffer_player = p_name
-                        buffer_time = t_text
-                        
-                except Exception as e:
-                    print(f"Row Parse Error: {e}")
-                    buffer_player = None
-                    continue
-        
-        return matches
-        
-        return matches
-    except Exception as e:
-        print(f"Error scraping upcoming matches: {e}")
-        return []
-
-def run_upcoming_scraper():
-    print(f"[{datetime.now()}] Starting Upcoming Matches Scraper...")
-    
-    db = get_db_client()
-    
-    if not db:
-        print("ERROR: Supabase credentials not configured")
-        return
-    
-    # Import the helper function
-    from db_client import get_or_create_player
-    
-    matches = scrape_upcoming_matches()
-    matches = scrape_upcoming_matches()
-    print(f"Found {len(matches)} upcoming matches")
-    
-    if matches:
-        print("\n--- SAMPLE DATA (First 3 matches) ---")
-        for m in matches[:3]:
-            # print(json.dumps(m, default=str, indent=2))
-            print(f"{m['player1']} vs {m['player2']} @ {m['date']}")
-        print("-------------------------------------\n")
-    
-    saved_count = 0
-    for m in matches:
-        try:
-            # Resolve Player IDs
-            p1_id = get_or_create_player(db, m['player1'])
-            p2_id = get_or_create_player(db, m['player2'])
-            
-            if not p1_id or not p2_id:
-                continue
-
+            # Upsert into 'matches' table with status='scheduled'
             db_match = {
-                "tournament_name": m['tournament'],
                 "date": m['date'].isoformat(),
+                "tournament_name": m['tournament'],
+                "surface": m['surface'],
                 "player1_id": p1_id,
                 "player2_id": p2_id,
+                "status": "scheduled",
                 "round": "Upcoming"
             }
             
-            # Check if match exists
-            existing = db.from_('matches').select('id').eq('date', db_match['date']).eq('player1_id', p1_id).eq('player2_id', p2_id).limit(1).execute()
+            # Check existing match (same players, roughly same time)
+            # Use a day range or exact query?
+            # We'll check for match on same day with same players
+            day_str = m['date'].strftime("%Y-%m-%d")
+            day_start = day_str + "T00:00:00"
+            day_end = day_str + "T23:59:59"
             
-            if not existing.data:
+            existing = db.from_('matches').select('id') \
+                .eq('player1_id', p1_id) \
+                .eq('player2_id', p2_id) \
+                .gte('date', day_start) \
+                .lte('date', day_end) \
+                .limit(1).execute()
+                
+            if existing.data:
+                # Update info if needed (e.g. time change)
+                db.from_('matches').update({
+                    "date": db_match['date'],
+                    "status": "scheduled"
+                }).eq('id', existing.data[0]['id']).execute()
+            else:
                 db.from_('matches').insert(db_match).execute()
-                print(f"  [SAVED] {m['player1']} vs {m['player2']}")
+                print(f"  [NEW] {m['player1']} vs {m['player2']}")
                 saved_count += 1
+                
         except Exception as e:
-            print(f"  [ERR] {m.get('player1', '?')} vs {m.get('player2', '?')}: {e}")
-    
-    print(f"Scraper finished. {saved_count} new upcoming matches saved.")
+            print(f"  [ERR] {m['player1']} vs {m['player2']}: {e}")
+            
+    print(f"Scraper finished. {saved_count} new upcoming matches saved to 'matches'.")
 
 if __name__ == "__main__":
     run_upcoming_scraper()
