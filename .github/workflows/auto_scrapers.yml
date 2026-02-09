@@ -29,7 +29,7 @@ jobs:
         run: |
           pip install --upgrade pip
           pip install -r scrapers/requirements.txt
-          playwright install chromium
+
       
       - name: Run Upcoming Scraper
         working-directory: ./scrapers
