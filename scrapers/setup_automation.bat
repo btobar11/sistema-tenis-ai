@@ -1,43 +1,32 @@
 @echo off
-REM Windows Task Scheduler Setup Script
-REM Creates automated tasks for tennis match scraping with proper descriptions
+REM Windows Task Scheduler CLEANUP Script
+REM Removes automated tasks for tennis match scraping to prevent local execution
 
 echo ========================================
-echo Tennis Match Scraper - Task Scheduler Setup
+echo Tennis Match Scraper - REMOVING LOCAL TASKS
 echo ========================================
 echo.
 
-set SCRIPT_DIR=%~dp0
-REM Remove trailing backslash if present
-if "%SCRIPT_DIR:~-1%"=="\" set SCRIPT_DIR=%SCRIPT_DIR:~0,-1%
-
-echo Creating Task: EDGESET Live Monitor
-schtasks /delete /tn "EDGESET Live Monitor" /f >nul 2>&1
-schtasks /create /tn "EDGESET Live Monitor" /tr "\"%SCRIPT_DIR%\run_scraper.bat\"" /sc hourly /mo 3 /f /rl HIGHEST
+echo Deleting Task: EDGESET Live Monitor
+schtasks /delete /tn "EDGESET Live Monitor" /f
 if %ERRORLEVEL% EQU 0 (
-    echo [OK] Live Monitor task created successfully
+    echo [OK] Live Monitor task removed successfully
 ) else (
-    echo [ERROR] Failed to create Live Monitor task with error %ERRORLEVEL%
+    echo [INFO] Live Monitor task not found or already removed
 )
 
 echo.
-echo Creating Task: EDGESET Upcoming Scraper
-schtasks /create /tn "EDGESET Upcoming Scraper" /tr "\"%SCRIPT_DIR%\run_upcoming.bat\"" /sc daily /st 06:00 /f /rl HIGHEST
+echo Deleting Task: EDGESET Upcoming Scraper
+schtasks /delete /tn "EDGESET Upcoming Scraper" /f
 if %ERRORLEVEL% EQU 0 (
-    echo [OK] Upcoming Scraper task created successfully
+    echo [OK] Upcoming Scraper task removed successfully
 ) else (
-    echo [ERROR] Failed to create Upcoming Scraper task with error %ERRORLEVEL%
+    echo [INFO] Upcoming Scraper task not found or already removed
 )
 
 echo.
 echo ========================================
-echo Setup Complete!
+echo Cleanup Complete! Local automation disabled.
 echo ========================================
 echo.
-echo Tasks created:
-echo 1. EDGESET Live Monitor - Attempts to run every 3 hours.
-echo 2. EDGESET Upcoming Scraper - Runs daily at 6:00 AM.
-echo.
-echo To view tasks: Open Task Scheduler (taskschd.msc)
-echo.
-pause
+

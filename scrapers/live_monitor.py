@@ -9,7 +9,11 @@ import argparse
 # Add parent directory to path to allow importing 'metrics' and 'ai_engine'
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
+import time
+from datetime import datetime, timedelta
+from db_client import get_db_client, get_or_create_player
 from match_scraper import scrape_today_results, scrape_match_details
+from stats_utils import scrape_detailed_stats, save_stats
 
 # Load env from parent or current dir
 load_dotenv()
@@ -114,21 +118,51 @@ def monitor_cycle(db, tracked_players):
             # Optimization: Check if match already exists and is finished
             try:
                 # Basic date string for query
+                # Basic date string for query
                 base_date = m['date'][:10]
-                # Check for exact P1/P2 match as per insert_match logic 
-                # (Note: This assumes P1=Winner convention or consistency with DB)
+                day_start = base_date + "T00:00:00"
+                day_end = base_date + "T23:59:59"
+
+                # Robust check for (p1, p2) OR (p2, p1)
                 existing = db.table('matches')\
-                    .select('id, status')\
-                    .eq('player1_id', p1_id)\
-                    .eq('player2_id', p2_id)\
-                    .gte('date', base_date)\
-                    .lte('date', base_date + "T23:59:59")\
-                    .limit(1)\
+                    .select('id, status, player1_id, player2_id')\
+                    .gte('date', day_start)\
+                    .lte('date', day_end)\
+                    .or_(f"player1_id.eq.{p1_id},player2_id.eq.{p1_id}")\
                     .execute()
                 
-                if existing.data and existing.data[0].get('status') == 'finished':
-                     print(f"     [SKIP] Already finished in DB (ID: {existing.data[0]['id']})")
-                     continue
+                if existing.data:
+                    # Filter in python to be sure (since OR query checks if EITHER matches p1_id)
+                    # We need (p1=A AND p2=B) OR (p1=B AND p2=A)
+                    # The query `.or_(f"player1_id.eq.{p1_id},player2_id.eq.{p1_id}")` returns matches where P1 is A OR P2 is A.
+                    # We then need to check if the OTHER player is B.
+                    found_match = None
+                    for em in existing.data:
+                        if (em['player1_id'] == p1_id and em['player2_id'] == p2_id) or \
+                           (em['player1_id'] == p2_id and em['player2_id'] == p1_id):
+                            found_match = em
+                            break
+                    
+                    if found_match and found_match.get('status') == 'finished':
+                         print(f"     [SKIP] Already finished in DB (ID: {found_match['id']})")
+                         
+                         # Check if we have stats for this finished match
+                         # This is a good place to double check if stats were missed
+                         if m.get('detail_url'):
+                             # Quick check or just re-scrape to be safe? 
+                             # Let's simple scrape and save (idempotent)
+                             print(f"     [STATS] Ensuring stats for existing match...")
+                             stats = scrape_detailed_stats(m['detail_url'])
+                             if stats:
+                                 if found_match['player1_id'] == p1_id:
+                                      save_stats(db, found_match['id'], p1_id, stats['p1'])
+                                      save_stats(db, found_match['id'], p2_id, stats['p2'])
+                                 else:
+                                      # Swap
+                                      save_stats(db, found_match['id'], found_match['player1_id'], stats['p2'])
+                                      save_stats(db, found_match['id'], found_match['player2_id'], stats['p1'])
+                         
+                         continue
             except Exception as check_e:
                 print(f"     [WARN] Check existing failed: {check_e}")
 
@@ -172,9 +206,20 @@ def monitor_cycle(db, tracked_players):
         
         # Save to DB
         if db:
-            success = db.insert_match(db_match)
-            if success:
-                print(f"     [SAVED] {db_match['winner_name']} vs {m['loser']}")
+                match_id = db.insert_match(db_match)
+                
+                # Check for Detailed Stats (Live or Finished)
+                if m.get('detail_url'): # Use m (scraped data) here
+                    # Only scrape stats if status is finished or set 1+ completed to avoid too much traffic?
+                    # TennisExplorer stats appear usually when match is live too.
+                    print(f"     [STATS] Scraping deep stats for {db_match['winner_name']} vs {m['loser']}...")
+                    stats = scrape_detailed_stats(m['detail_url'])
+                    if stats and match_id:
+                         save_stats(db, match_id, p1_id, stats['p1'])
+                         save_stats(db, match_id, p2_id, stats['p2'])
+                
+                if match_id:
+                    print(f"     [OK] Saved/Updated: {db_match['winner_name']} vs {m['loser']}")
                 new_matches_count += 1
                 
                 # Update ELO Immediately

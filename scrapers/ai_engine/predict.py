@@ -21,9 +21,26 @@ HEADERS = {
 MODEL_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'tennis_model.pkl')
 
 def load_ai_model():
+    # Try to download from Supabase Storage first (Cloud environment support)
+    try:
+        from supabase import create_client, Client
+        supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
+        print("Attempting to download 'tennis_model.pkl' from Supabase Storage...")
+        
+        # Download returns bytes
+        res = supabase.storage.from_("ai_models").download("tennis_model.pkl")
+        
+        # Save to local path so joblib can load it
+        with open(MODEL_PATH, 'wb') as f:
+            f.write(res)
+        print("Model downloaded successfully.")
+    except Exception as e:
+        print(f"Info: Could not download model from cloud ({e}). Using local file if exists.")
+
     if not os.path.exists(MODEL_PATH):
-        print("Model not found. Run training.py first.")
+        print("CRITICAL: Model not found locally or in cloud. Run training.py first.")
         return None
+        
     return joblib.load(MODEL_PATH)
 
 def get_player_history_rest(player_id, before_date):

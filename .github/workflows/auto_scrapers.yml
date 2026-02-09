@@ -28,7 +28,8 @@ jobs:
       - name: Install dependencies
         run: |
           pip install --upgrade pip
-          pip install curl_cffi beautifulsoup4 lxml supabase python-dateutil
+          pip install -r scrapers/requirements.txt
+          playwright install chromium
       
       - name: Run Upcoming Scraper
         working-directory: ./scrapers
@@ -80,7 +81,7 @@ jobs:
       - name: Install dependencies
         run: |
           pip install --upgrade pip
-          pip install supabase
+          pip install -r requirements.txt
       
       - name: Calculate Value Bets
         working-directory: ./scrapers

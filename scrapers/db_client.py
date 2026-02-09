@@ -1,143 +1,94 @@
 import os
-import requests as http_requests
 import json
 from dotenv import load_dotenv
+from supabase import create_client, Client
 
 load_dotenv()
 
-class QueryBuilder:
-    def __init__(self, url, headers, table):
-        self.url = url
-        self.headers = headers
-        self.table = table
-        self.params = {}
-        self.method = 'GET'
-        self.json_body = None
+# Wrapper to maintain compatibility with existing scraper code
+class QueryBuilderWrapper:
+    def __init__(self, query):
+        self.query = query
 
     def select(self, columns='*'):
-        self.method = 'GET'
-        self.params['select'] = columns
+        self.query = self.query.select(columns)
         return self
 
     def eq(self, column, value):
-        self.params[column] = f'eq.{value}'
+        self.query = self.query.eq(column, value)
         return self
     
     def in_(self, column, values):
-        # values list -> (val1,val2)
-        val_str = ','.join([str(v) for v in values])
-        self.params[column] = f'in.({val_str})'
+        self.query = self.query.in_(column, values)
         return self
 
     def gte(self, column, value):
-        self.params[column] = f'gte.{value}'
+        self.query = self.query.gte(column, value)
         return self
 
     def lte(self, column, value):
-        self.params[column] = f'lte.{value}'
+        self.query = self.query.lte(column, value)
+        return self
+
+    def or_(self, filters):
+        # Official SDK syntax for OR: .or_('cond1,cond2')
+        self.query = self.query.or_(filters)
         return self
         
     def order(self, column, desc=False):
-        direction = 'desc' if desc else 'asc'
-        self.params['order'] = f'{column}.{direction}'
+        self.query = self.query.order(column, desc=desc)
         return self
 
     def limit(self, count):
-        self.params['limit'] = str(count)
-        # Limit implies list response usually, but Supabase REST gives list.
-        # Header Prefer: return=representation needed sometimes.
+        self.query = self.query.limit(count)
         return self
     
     def insert(self, data):
-        self.method = 'POST'
-        self.json_body = data
-        self.headers['Prefer'] = 'return=representation' # To get data back
+        self.query = self.query.insert(data)
         return self
 
     def upsert(self, data, on_conflict=None):
-        self.method = 'POST'
-        self.json_body = data
-        # Merge duplicates is the standard PostgREST upsert
-        pref = 'return=representation,resolution=merge-duplicates'
+        opts = {}
         if on_conflict:
-            # PostgREST 9+ supports on_conflict via strictly query param usually, 
-            # but resolution=merge-duplicates uses PK constraint.
-            pass 
-        self.headers['Prefer'] = pref
+            opts['on_conflict'] = on_conflict
+        self.query = self.query.upsert(data, **opts)
         return self
 
     def update(self, data):
-        self.method = 'PATCH'
-        self.json_body = data
-        self.headers['Prefer'] = 'return=representation'
+        self.query = self.query.update(data)
         return self
 
-
     def execute(self):
-        endpoint = f"{self.url}/rest/v1/{self.table}"
         try:
-            r = None
-            if self.method == 'GET':
-                r = http_requests.get(endpoint, headers=self.headers, params=self.params)
-            elif self.method == 'POST':
-                r = http_requests.post(endpoint, headers=self.headers, json=self.json_body, params=self.params)
-            elif self.method == 'PATCH':
-                r = http_requests.patch(endpoint, headers=self.headers, json=self.json_body, params=self.params)
+            # Official SDK execute() returns APIResponse(data=..., count=...)
+            response = self.query.execute()
             
-            # Mimic Supabase Response object
+            # Mimic the old Response object structure (data, error)
             class Response:
                 def __init__(self, data, error=None):
                     self.data = data
                     self.error = error
             
-            if r.status_code >= 200 and r.status_code < 300:
-                return Response(r.json(), None)
-            else:
-                return Response(None, r.text)
-                
+            return Response(response.data, None)
         except Exception as e:
+            # Handle SDK errors (which raise exceptions) and return as error object
+            class Response:
+                def __init__(self, data, error):
+                    self.data = data
+                    self.error = str(error)
             return Response(None, str(e))
 
 class SupabaseFluentClient:
     def __init__(self, url, key):
-        self.url = url
-        self.key = key
-        self.headers = {
-            "apikey": key,
-            "Authorization": f"Bearer {key}",
-            "Content-Type": "application/json"
-        }
+        self.client: Client = create_client(url, key)
 
     def from_(self, table):
-        return QueryBuilder(self.url, self.headers, table)
+        # 'table' method initiates the query builder in official SDK
+        return QueryBuilderWrapper(self.client.table(table))
         
     def table(self, table):
         # Alias for from_
         return self.from_(table)
-
-    def _request_with_retry(self, method, endpoint, json=None, **kwargs):
-        # Shim to support raw DB calls from StatsEngine
-        try:
-            # Merge custom headers if present in kwargs
-            req_headers = self.headers.copy()
-            if 'headers' in kwargs:
-                req_headers.update(kwargs.pop('headers'))
-            
-            # Default timeout if not provided
-            if 'timeout' not in kwargs:
-                kwargs['timeout'] = 10
-
-            # print(f"  [DB] Doing {method} to ...{endpoint[-20:]}")
-
-            if method.lower() == 'get':
-                return http_requests.get(endpoint, headers=req_headers, **kwargs)
-            elif method.lower() == 'post':
-                return http_requests.post(endpoint, headers=req_headers, json=json, **kwargs)
-            elif method.lower() == 'patch':
-                return http_requests.patch(endpoint, headers=req_headers, json=json, **kwargs)
-        except Exception as e:
-            print(f"Request Error ({method}): {e}")
-            return None
 
     def get_or_create_player(self, name):
         """
@@ -164,14 +115,6 @@ class SupabaseFluentClient:
         Updates if exists, Inserts if new.
         """
         try:
-            # Basic duplicate check criteria
-            # We need date, winner_id, loser_id (or player1_id/player2_id depending on how it's stored)
-            # match_data expected keys: date, player1_id, player2_id, winner_id, score_full, etc.
-            
-            # Check existing
-            # Note: Dates in DB might be ISO strings. match_data['date'] should be formatted.
-            # match_scraper uses date + 'T00:00:00+00:00' if it's just YYYY-MM-DD
-            
             # Robust Date Check: Ignore time, check full day range
             try:
                 # Handle ISO string "YYYY-MM-DDTHH:MM:SS..."
@@ -183,19 +126,28 @@ class SupabaseFluentClient:
                 day_start = match_data['date']
                 day_end = match_data['date']
 
+            p1 = match_data['player1_id']
+            p2 = match_data['player2_id']
+
+            # Check for existing match
             existing = self.table('matches')\
-                .select('id')\
+                .select('id, player1_id, player2_id')\
                 .gte('date', day_start)\
                 .lte('date', day_end)\
-                .eq('player1_id', p1)\
-                .eq('player2_id', p2)\
-                .limit(1)\
+                .or_(f"player1_id.eq.{p1},player2_id.eq.{p1}")\
                 .execute()
-                
+            
+            match_id = None
             if existing.data:
+                for m in existing.data:
+                    # Check if the other player is p2
+                    if (m['player1_id'] == p1 and m['player2_id'] == p2) or \
+                       (m['player1_id'] == p2 and m['player2_id'] == p1):
+                        match_id = m['id']
+                        break
+            
+            if match_id:
                 # Update
-                match_id = existing.data[0]['id']
-                # filter out ids and date from data to avoid issues
                 update_data = {k: v for k, v in match_data.items() if k not in ['id', 'player1_id', 'player2_id', 'date']}
                 self.table('matches').update(update_data).eq('id', match_id).execute()
                 return True
@@ -226,7 +178,7 @@ class DatabaseClient:
             print("[DB] Error: SUPABASE_URL or SUPABASE_KEY missing.")
             return None
             
-        print("[DB] Using Custom Fluent REST Client")
+        # print("[DB] Using Official Supabase Client (Clean Adapter)")
         return SupabaseFluentClient(url, key)
 
 def get_db_client():
@@ -239,7 +191,6 @@ def get_db_client():
 # Helper for resolving players using the new client
 def get_or_create_player(client, name):
     # This logic belongs in services, but kept here for scrapers reuse
-    # Using the fluent syntax
     try:
         r = client.table('players').select('id').eq('name', name).execute()
         if r.data:

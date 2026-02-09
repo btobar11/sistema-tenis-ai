@@ -1,14 +1,4 @@
 @echo off
-REM Automated Tennis Match Scraper
-REM Runs every 3 hours to fetch latest matches
-
-cd /d "%~dp0"
-
-echo [%date% %time%] Starting scraper...
-python live_monitor.py --once
-
-if %ERRORLEVEL% EQU 0 (
-    echo [%date% %time%] Scraper completed successfully
-) else (
-    echo [%date% %time%] Scraper failed with error code %ERRORLEVEL%
-)
+REM Local execution disabled in favor of GitHub Actions
+echo [%date% %time%] Application is configured to run on GitHub Actions only. Local scraper disabled.
+exit /b 0

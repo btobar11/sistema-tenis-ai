@@ -185,7 +185,21 @@ def train():
         'surface_encoder': le_surface,
         'features': features
     }, MODEL_PATH)
-    print(f"Model saved to {MODEL_PATH}")
+    print(f"Model saved locally to {MODEL_PATH}")
+
+    # Upload to Supabase Storage
+    try:
+        from supabase import create_client, Client
+        supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
+        
+        print("Uploading model to Supabase Storage (bucket: 'ai_models')...")
+        with open(MODEL_PATH, 'rb') as f:
+            # upsert=True is important to overwrite
+            supabase.storage.from_("ai_models").upload("tennis_model.pkl", f, file_options={"cache-control": "3600", "upsert": "true"})
+        print("SUCCESS: Model uploaded to cloud storage.")
+    except Exception as e:
+        print(f"WARNING: Could not upload model to Supabase Storage: {e}")
+        print("Ensure you have a public bucket named 'ai_models'.")
 
 if __name__ == "__main__":
     train()
