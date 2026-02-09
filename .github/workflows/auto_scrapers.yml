@@ -81,7 +81,7 @@ jobs:
       - name: Install dependencies
         run: |
           pip install --upgrade pip
-          pip install -r requirements.txt
+          pip install -r scrapers/requirements.txt
       
       - name: Calculate Value Bets
         working-directory: ./scrapers
