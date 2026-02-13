@@ -80,7 +80,24 @@ class QueryBuilderWrapper:
 
 class SupabaseFluentClient:
     def __init__(self, url, key):
+        self.url = url
+        self.key = key
         self.client: Client = create_client(url, key)
+
+    def _request_with_retry(self, method, url, **kwargs):
+        import requests
+        import time
+        headers = {
+            "apikey": self.key,
+            "Authorization": f"Bearer {self.key}"
+        }
+        for attempt in range(3):
+            try:
+                if method.lower() == 'get':
+                    return requests.get(url, headers=headers, **kwargs)
+            except:
+                time.sleep(1)
+        return None
 
     def from_(self, table):
         # 'table' method initiates the query builder in official SDK
@@ -140,7 +157,6 @@ class SupabaseFluentClient:
             match_id = None
             if existing.data:
                 for m in existing.data:
-                    # Check if the other player is p2
                     if (m['player1_id'] == p1 and m['player2_id'] == p2) or \
                        (m['player1_id'] == p2 and m['player2_id'] == p1):
                         match_id = m['id']
@@ -148,13 +164,27 @@ class SupabaseFluentClient:
             
             if match_id:
                 # Update
-                update_data = {k: v for k, v in match_data.items() if k not in ['id', 'player1_id', 'player2_id', 'date']}
-                self.table('matches').update(update_data).eq('id', match_id).execute()
-                return True
+                # Filter to known columns to avoid errors
+                valid_cols = ['tournament_name', 'surface', 'round', 'winner_id', 'score_full', 'stats_json', 'status', 'prediction']
+                update_data = {k: v for k, v in match_data.items() if k in valid_cols}
+                
+                res = self.table('matches').update(update_data).eq('id', match_id).execute()
+                if hasattr(res, 'error') and res.error:
+                    print(f"Update Failed: {res.error}")
+                    return None
+                return match_id
             else:
                 # Insert
-                self.table('matches').insert(match_data).execute()
-                return True
+                # Filter to known columns
+                valid_cols = ['tournament_name', 'surface', 'round', 'winner_id', 'score_full', 'stats_json', 'status', 'prediction']
+                insert_data = {k: v for k, v in match_data.items() if k in valid_cols or k in ['date', 'player1_id', 'player2_id']}
+
+                res = self.table('matches').insert(insert_data).execute()
+                if res.data and len(res.data) > 0:
+                    return res.data[0]['id']
+                
+                print(f"Insert Failed: {getattr(res, 'error', 'No Error Attr')}")
+                return None
                 
         except Exception as e:
             print(f"Insert Match Error: {e}")

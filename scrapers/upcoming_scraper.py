@@ -67,9 +67,9 @@ def scrape_date(date_obj):
                     
                     # Infer Surface
                     t_lower = current_tournament.lower()
-                    if 'clay' in t_lower: current_surface = 'CLAY'
-                    elif 'grass' in t_lower: current_surface = 'GRASS'
-                    else: current_surface = 'HARD'
+                    if 'clay' in t_lower: current_surface = 'clay'
+                    elif 'grass' in t_lower: current_surface = 'grass'
+                    else: current_surface = 'hard'
                     
                     pending_player = None  # Reset on new tournament
                     continue
@@ -197,9 +197,12 @@ def run_upcoming_scraper():
                     "status": "scheduled"
                 }).eq('id', existing.data[0]['id']).execute()
             else:
-                db.from_('matches').insert(db_match).execute()
-                print(f"  [NEW] {m['player1']} vs {m['player2']}")
-                saved_count += 1
+                res = db.from_('matches').insert(db_match).execute()
+                if res.error:
+                    print(f"  [ERR-DB] {res.error}")
+                else:
+                    print(f"  [NEW] {m['player1']} vs {m['player2']}")
+                    saved_count += 1
                 
         except Exception as e:
             print(f"  [ERR] {m['player1']} vs {m['player2']}: {e}")

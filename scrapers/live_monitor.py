@@ -180,11 +180,11 @@ def monitor_cycle(db, tracked_players):
         # We already have p1_id, p2_id if db is present
             
         # Try to infer surface from tournament name
-        surface = "HARD"
+        surface = "hard"
         t_name_upper = m['tournament'].upper()
-        if "CLAY" in t_name_upper: surface = "CLAY"
-        elif "GRASS" in t_name_upper: surface = "GRASS"
-        elif "INDOOR" in t_name_upper: surface = "INDOOR" 
+        if "CLAY" in t_name_upper: surface = "clay"
+        elif "GRASS" in t_name_upper: surface = "grass"
+        elif "INDOOR" in t_name_upper: surface = "hard" # Map indoor to hard 
         
         # Prepare DB Payload
         match_date = m['date']

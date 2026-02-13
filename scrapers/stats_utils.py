@@ -178,11 +178,12 @@ def save_stats(db, match_id, player_id, s):
         headers = {"Prefer": "resolution=ignore-duplicates"} 
         
         # We need to use internal _request or construct raw call if client helper doesn't expose headers well
-        # Our db_client's `from_().insert()` might not expose headers easily without modifying client.
-        # Fallback: Try insert, catch error.
-        
-        db.from_('match_stats').insert(payload).execute()
-        # print("      [Saved] Stats inserted.")
+        # print(f"Payload keys: {list(payload.keys())}")
+        res = db.from_('match_stats').insert(payload).execute()
+        if hasattr(res, 'error') and res.error:
+             print(f"      [DB Error] {res.error}")
+        else:
+             print("      [Saved] Stats inserted.")
     except Exception as e:
         if "unique constraint" in str(e) or "duplicate key" in str(e):
              pass # Ignore duplicates as per idempotency
