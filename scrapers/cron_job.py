@@ -41,21 +41,44 @@ def run_cron_cycle(mode='all'):
             print(f"[Cron] Live Monitor Failed:")
             traceback.print_exc()
 
-    # 3. Update Upcoming Matches
+    # 3. Update Upcoming Matches (& Past Results for completeness)
     if mode in ['all', 'upcoming']:
-        print("\n[Cron] Updating Upcoming Matches...")
+        print("\n[Cron] Updating Upcoming Matches & Past Results...")
         try:
+            # First, ensure yesterday's results are finalized (updates finished matches)
+            # This handles matches that finished late after the last cron run
+            from scrapers.match_scraper import scrape_today_results
+            from datetime import datetime, timedelta
+            
+            yesterday = datetime.now() - timedelta(days=1)
+            print(f"[Cron] Catching up on results for {yesterday.strftime('%Y-%m-%d')}...")
+            scrape_today_results(yesterday)
+            
             from scrapers.upcoming_scraper import run_upcoming_scraper
             run_upcoming_scraper()
-        except ImportError:
-            # Fallback if running from inside scrapers dir without package context? 
+            
+            # Trigger AI Prediction for the newly scraped matches
+            print("\n[Cron] Triggering AI Prediction...")
             try:
+                from scrapers.ai_engine.predict import predict_matches
+                predict_matches()
+            except Exception as e:
+                print(f"[Cron] AI Prediction Failed: {e}")
+
+        except ImportError:
+            # Fallback
+            try:
+                from datetime import datetime, timedelta
                 from upcoming_scraper import run_upcoming_scraper
+                from match_scraper import scrape_today_results
+                
+                yesterday = datetime.now() - timedelta(days=1)
+                scrape_today_results(yesterday)
                 run_upcoming_scraper()
             except Exception as e:
-                 print(f"[Cron] Upcoming Scraper Import Failed: {e}")
+                 print(f"[Cron] Scraper Import Failed: {e}")
         except Exception as e:
-            print(f"[Cron] Upcoming Scraper Failed:")
+            print(f"[Cron] Scraper Failed:")
             traceback.print_exc()
 
     # 4. Run Value Bet Analysis (Real Odds)

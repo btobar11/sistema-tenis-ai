@@ -192,17 +192,25 @@ def run_upcoming_scraper():
                 
             if existing.data:
                 # Update info if needed (e.g. time change)
-                db.from_('matches').update({
-                    "date": db_match['date'],
-                    "status": "scheduled"
-                }).eq('id', existing.data[0]['id']).execute()
+                try:
+                    db.from_('matches').update({
+                        "date": db_match['date'],
+                        "status": "scheduled"
+                    }).eq('id', existing.data[0]['id']).execute()
+                except Exception as e:
+                     print(f"  [ERR-UPD] {m['player1']} vs {m['player2']}: {e}")
             else:
-                res = db.from_('matches').insert(db_match).execute()
-                if res.error:
-                    print(f"  [ERR-DB] {res.error}")
-                else:
-                    print(f"  [NEW] {m['player1']} vs {m['player2']}")
-                    saved_count += 1
+                try:
+                    res = db.from_('matches').insert(db_match).execute()
+                    if hasattr(res, 'error') and res.error:
+                        print(f"  [ERR-DB] {res.error}")
+                        print(f"  Payload: {json.dumps(db_match, default=str)}")
+                    else:
+                        print(f"  [NEW] {m['player1']} vs {m['player2']}")
+                        saved_count += 1
+                except Exception as e:
+                     print(f"  [ERR-INS] {m['player1']} vs {m['player2']}: {e}")
+                     print(f"  Payload: {json.dumps(db_match, default=str)}")
                 
         except Exception as e:
             print(f"  [ERR] {m['player1']} vs {m['player2']}: {e}")

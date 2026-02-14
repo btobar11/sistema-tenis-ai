@@ -264,20 +264,31 @@ def scrape_today_results(target_date=None):
     return all_matches
 
 if __name__ == "__main__":
+    import argparse
     import os
+    import json
+    from datetime import datetime, timedelta
     from dotenv import load_dotenv
     load_dotenv()
     from db_client import get_db_client, get_or_create_player
+
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--days', type=int, default=0, help='Days back to scrape (default 0 = today)')
+    args = parser.parse_args()
+
+    target_date = datetime.now() - timedelta(days=args.days)
+    print(f"--- Scraping for {target_date.strftime('%Y-%m-%d')} ---")
     
     print("Testing extraction...")
-    res = scrape_today_results()
-    print(f"Found {len(res)} matches today.")
+    res = scrape_today_results(target_date)
+    print(f"Found {len(res)} matches.")
     
     if not res:
         print("No matches to save.")
     else:
         db = get_db_client()
         saved = 0
+        updated = 0
         
         for m in res:
             try:
@@ -297,16 +308,13 @@ if __name__ == "__main__":
                     "player2_id": loser_id,
                     "winner_id": winner_id,
                     "score_full": m['score'],
-                    "surface": None  # Could extract from tournament if needed
+                    "surface": None 
                 }
                 
-                # Check if match exists (by date range + players combo)
-                # We check for matches on the same DAY (ignoring time)
                 day_start = m['date'] + "T00:00:00"
                 day_end = m['date'] + "T23:59:59"
                 
-                # We need to construct the query carefully.
-                # Note: supabase-py usage: .gte('date', day_start).lte('date', day_end)
+                # Check A vs B
                 existing = db.from_('matches').select('id') \
                     .eq('player1_id', winner_id) \
                     .eq('player2_id', loser_id) \
@@ -314,26 +322,42 @@ if __name__ == "__main__":
                     .lte('date', day_end) \
                     .limit(1).execute()
                 
+                if not existing.data:
+                    # Check B vs A (swapped)
+                    existing = db.from_('matches').select('id') \
+                        .eq('player1_id', loser_id) \
+                        .eq('player2_id', winner_id) \
+                        .gte('date', day_start) \
+                        .lte('date', day_end) \
+                        .limit(1).execute()
+                
                 if existing.data:
                     # Update
-                    db.from_('matches').update({
-                        "winner_id": winner_id,
-                        "score_full": m['score'],
-                        "status": "finished",
-                        "winner_name": m['winner'] # Ensure winner name is updated
-                    }).eq('id', existing.data[0]['id']).execute()
-                    print(f"  [UPD] {m['winner']} d. {m['loser']} {m['score']}")
+                    try:
+                        db.from_('matches').update({
+                            "winner_id": winner_id,
+                            "score_full": m['score'],
+                            "status": "finished",
+                            "winner_name": m['winner']
+                        }).eq('id', existing.data[0]['id']).execute()
+                        print(f"  [UPD] {m['winner']} d. {m['loser']} {m['score']}")
+                        updated += 1
+                    except Exception as e:
+                         print(f"  [ERR-UPD] Failed to update {m['winner']} vs {m['loser']}: {e}")
                 else:
                     # Insert
-                    # Ensure status is set
                     match_record['status'] = 'finished'
                     match_record['winner_name'] = m['winner']
-                    db.from_('matches').insert(match_record).execute()
-                    print(f"  [NEW] {m['winner']} d. {m['loser']} {m['score']}")
+                    try:
+                        db.from_('matches').insert(match_record).execute()
+                        print(f"  [NEW] {m['winner']} d. {m['loser']} {m['score']}")
+                        saved += 1
+                    except Exception as e:
+                        print(f"  [ERR-INS] Failed to insert {m['winner']} vs {m['loser']}: {e}")
                 
-                saved += 1
             except Exception as e:
                 print(f"  [ERR] {m.get('raw_text', 'Unknown')}: {e}")
         
-        print(f"\nSaved/Updated {saved} matches.")
+        print(f"\nSaved {saved}, Updated {updated} matches.")
+
 

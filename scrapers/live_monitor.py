@@ -242,8 +242,8 @@ def monitor_cycle(db, tracked_players):
             if parent_dir not in sys.path:
                 sys.path.insert(0, parent_dir)
                 
-            from ai_engine.predict import predict_upcoming_matches
-            predict_upcoming_matches()
+            from ai_engine.predict import predict_matches
+            predict_matches()
             
         except Exception as e:
             print(f"  [AI Error] Could not run prediction: {e}")

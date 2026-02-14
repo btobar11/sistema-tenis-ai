@@ -67,8 +67,10 @@ def get_h2h_rest(p1, p2, before_date):
     # The get_player_history_rest already fetches P1 matches. We can just check OPPONENT in that list.
     return [] # Handled in logic below
 
-def predict_upcoming_matches():
-    print(f"[{datetime.now()}] AI Predictor (REST) Starting...")
+    return [] # Handled in logic below
+
+def predict_matches(start_date=None, status_filter='scheduled'):
+    print(f"[{datetime.now()}] AI Predictor (REST) Starting... Date: {start_date or 'Today'}, Status: {status_filter or 'All'}")
     
     artifact = load_ai_model()
     if not artifact: return
@@ -76,23 +78,29 @@ def predict_upcoming_matches():
     model = artifact['model']
     le_surface = artifact['surface_encoder']
     
-    # 1. Fetch Scheduled Matches (Filter by Date >= Today)
+    # 1. Fetch Matches
     url = f"{SUPABASE_URL}/rest/v1/matches"
-    today_iso = datetime.now().strftime("%Y-%m-%d") # API expects YYYY-MM-DD for simpler comparison or ISO
+    
+    # Default to today if not provided
+    target_date = start_date or datetime.now().strftime("%Y-%m-%d")
+    
     params = {
-        "date": f"gte.{today_iso}", 
+        "date": f"gte.{target_date}", 
         "select": "*"
     }
+    
+    # Apply status filter if provided (pass None to fetch all statuses)
+    if status_filter:
+        params['status'] = f"eq.{status_filter}"
+        
     try:
         resp = requests.get(url, headers=HEADERS, params=params)
         if resp.status_code == 200:
             matches = resp.json()
             if not matches:
                 print(f"[DEBUG] Fetch successful but 0 matches found.")
-                print(f"[DEBUG] Query URL: {url}")
         else:
             print(f"[ERROR] Fetch failed. Status: {resp.status_code}")
-            print(f"[ERROR] Body: {resp.text}")
             matches = []
     except Exception as e:
         print(f"[ERROR] Exception fetching matches: {e}")
@@ -108,41 +116,47 @@ def predict_upcoming_matches():
         p2 = m.get('player2_id')
         if not p1 or not p2: continue
         
+        # Check if analysis already exists? 
+        # For backfill, we might want to overwrite or skip.
+        # Current logic upserts, which is fine.
+        
         surface = m.get('surface', 'Hard')
+        match_date = m.get('date').split('T')[0] # Extract YYYY-MM-DD for history filter
         
         # 2. Build Features
         
-        # Fetch P1 history
-        hist_p1 = get_player_history_rest(p1, today_iso)
-        # Fetch P2 history
-        hist_p2 = get_player_history_rest(p2, today_iso)
+        # Fetch P1 history BEFORE this match
+        hist_p1 = get_player_history_rest(p1, match_date)
+        # Fetch P2 history BEFORE this match
+        hist_p2 = get_player_history_rest(p2, match_date)
         
+        # ... (rest of feature calc is same) ...
+        # Copied helper function here to ensure scope access if not global
         def calculate_stats(history, player, opponent, surf):
             if not history: return 0.5, 0.5, 0.5
             
+            # Helper to check if player won
+            def did_win(match_row, pid):
+                if match_row.get('winner_id') == pid: return True
+                return False
+
             # Surface WR
             s_matches = [x for x in history if x.get('surface') == surf]
-            wins = len([x for x in s_matches if x.get('winner_id') == player])
+            wins = len([x for x in s_matches if did_win(x, player)])
             wr = wins / len(s_matches) if s_matches else 0.5
             
-            # Form
+            # Form (Last 10)
             rec = history[:10]
-            wins_rec = len([x for x in rec if x.get('winner_id') == player])
+            wins_rec = len([x for x in rec if did_win(x, player)])
             form = wins_rec / len(rec) if rec else 0.5
             
-            # H2H - Filter from history where opponent is opponent
-            # In history, 'opponent' is not explicitly stored in matches table rows, 
-            # we must infer it. A match has p1_id, p2_id.
-            # If we are 'player', 'opponent' is the other one.
-            # But get_player_history_rest returns row dicts.
-            
-            # Refine H2H logic for ID schema:
-            h2h_matches = [
+            # H2H 
+            params_h2h = [
                 x for x in history 
                 if (x.get('player1_id') == opponent or x.get('player2_id') == opponent)
             ]
-            wins_h2h = len([x for x in h2h_matches if x.get('winner_id') == player])
-            h2h = wins_h2h / len(h2h_matches) if h2h_matches else 0.5
+            wins_h2h = len([x for x in params_h2h if did_win(x, player)])
+            h2h = wins_h2h / len(params_h2h) if params_h2h else 0.5
             
             return wr, form, h2h
 
@@ -164,40 +178,44 @@ def predict_upcoming_matches():
         }])
         
         # Predict
-        prob_win = model.predict_proba(feats)[0][1] # P1 wins
+        try:
+            prob_win_p1 = model.predict_proba(feats)[0][1] # Probability P1 wins
+        except:
+            prob_win_p1 = 0.5
         
-        # Save
-        if prob_win > 0.5:
-             pick = p1 # Pick ID
-             # Ideally we want pick NAME. We might need to fetch it or store ID.
-             # analysis_results usually stores Pick Name? 
-             # Let's check schema/previous usage. "suggested_pick" usually string.
-             # We can store ID for now or fetch name.
-             # For speed, store ID. Or fetch.
-             conf = prob_win
+        # Determine Pick & Confidence
+        if prob_win_p1 > 0.5:
+             pick_id = p1
+             conf = prob_win_p1
         else:
-             pick = p2
-             conf = 1 - prob_win
+             pick_id = p2
+             conf = 1.0 - prob_win_p1
+             
+        if conf == 0.5: conf = 0.51 
              
         risk = "low" if conf > 0.75 else "medium" if conf > 0.6 else "high"
         
         payload = {
             "match_id": m['id'],
-            "suggested_pick": pick, # storing ID for now
+            "suggested_pick": pick_id, 
             "confidence_percent": round(conf * 100, 1),
             "risk_level": risk,
-            "ai_model_version": "v1_rfc_rest_syn",
+            "ai_model_version": "v2_rf_live",
+            "trust_score": round(conf * 100, 1), 
             "created_at": today_iso
         }
         
-        # Upsert
+        # Upsert Analysis
         u_url = f"{SUPABASE_URL}/rest/v1/analysis_results"
         requests.post(u_url, headers=HEADERS, json=payload) 
         
         predictions_made += 1
-        print(f"Predicted: {pick} ({payload['confidence_percent']}%)")
+        # Debug helper
+        p1_name = m.get('player1_name') or m.get('id')
+        p2_name = m.get('player2_name') or m.get('id')
+        print(f"Predicted: {p1_name} vs {p2_name} -> Pick: {pick_id} ({payload['confidence_percent']}%)")
         
     print(f"Done. Predicted {predictions_made} matches.")
 
 if __name__ == "__main__":
-    predict_upcoming_matches()
+    predict_matches()

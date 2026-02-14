@@ -219,16 +219,49 @@ def get_db_client():
     return db.client
 
 # Helper for resolving players using the new client
-def get_or_create_player(client, name):
-    # This logic belongs in services, but kept here for scrapers reuse
-    try:
-        r = client.table('players').select('id').eq('name', name).execute()
-        if r.data:
-            return r.data[0]['id']
+def get_or_create_player(client, name_raw):
+    """
+    Resolves a player name to an ID, creating the player if they don't exist.
+    Extracts ranking if present in name like 'Sinner J. (1)'.
+    """
+    import re
+    
+    # 1. Extract Rank
+    rank = None
+    name = name_raw.strip()
+    
+    # Match (123) at end
+    match = re.search(r'\s*\((\d+)\)$', name)
+    if match:
+        rank = int(match.group(1))
+        name = name[:match.start()].strip()
         
-        r = client.table('players').insert({"name": name}).execute()
+    try:
+        # 2. Check if exists
+        r = client.table('players').select('id, rank_single').eq('name', name).execute()
+        if r.data:
+            pid = r.data[0]['id']
+            # Update rank if we have a new one
+            if rank:
+                try:
+                    client.table('players').update({'rank_single': rank}).eq('id', pid).execute()
+                    # print(f"  Updated Rank for {name}: {rank}")
+                except: pass
+            return pid
+        
+        # 3. Create if not exists
+        new_p = {"name": name, "hand": "R", "rank_single": rank}
+        r = client.table('players').insert(new_p).execute()
         if r.data:
             return r.data[0]['id']
+            
     except Exception as e:
-        print(f"Sync Player Error: {e}")
+        print(f"Sync Player Error ({name}): {e}")
+        
+        # Fallback: Try simple search again in case of race condition or error
+        try:
+             r = client.table('players').select('id').eq('name', name).execute()
+             if r.data: return r.data[0]['id']
+        except: pass
+        
     return None

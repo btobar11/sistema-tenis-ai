@@ -37,4 +37,4 @@ jobs:
           PYTHONPATH: .
         run: |
           python scrapers/cron_job.py --mode upcoming
-          python scrapers/cron_job.py --mode value
+
